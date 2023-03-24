@@ -1,0 +1,10 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "internalDB",
+            "database": "${workspaceFolder:ciapp}/public/sqliteDatabases/internalDataBase.sqlite"
+        }
+    ]
+}
