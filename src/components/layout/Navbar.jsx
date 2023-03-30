@@ -45,7 +45,7 @@ function Navbar() {
 
 
                         <li className={activeMenu === 'usuarios' ? 'active' : ''} onClick={() => { setActiveMenu('login') }}>
-                            <NavLink id="usuarios" to="/"><i className="fa-solid fa-user"></i> Usuários</NavLink>
+                            <NavLink id="usuarios" to="/usuarios"><i className="fa-solid fa-user"></i> Usuários</NavLink>
                         </li>
 
 
