@@ -10,8 +10,6 @@ import Prestadores from './components/prestadores/Index';
 import PrestadoresCreate from './components/prestadores/Create';
 
 import Usuarios from "./components/usuarios/Index";
-import UsuariosCreate from "./components/usuarios/Create";
-import UsuariosEdit from "./components/usuarios/Edit";
 
 
 const Main = () => {
@@ -40,8 +38,7 @@ const Main = () => {
                         <Route path="prestadores/create" element={<Private><PrestadoresCreate /></Private>} />
 
                         <Route path="usuarios" element={<Private><Usuarios /></Private>} />
-                        <Route path="usuarios/create" element={<Private><UsuariosCreate /></Private>} />
-                        <Route path="usuarios/edit/:id" element={<Private><UsuariosEdit /></Private>} />
+                       
                         
                     </Route>
                 </Routes>

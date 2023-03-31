@@ -6,6 +6,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
 import Table from '../layout/Table';
 import ModalUsuario from './ModalUsuario';
+import { toast } from "react-toastify";
 
 
 
@@ -45,12 +46,18 @@ export default function Usuarios() {
             user: object.user,
             password: object.password,
         }
-      
+
         const postResult = await window.api.Action({ controller: "Usuarios", action: "Create", params: payload });
-        // console.log(postResult); // TOAST
+
+        if (!postResult.status) {
+            toast.error(postResult.text, { autoClose: 3000 });
+        } else {
+            toast.success(postResult.text, { autoClose: 3000 });
+        }
+
         handleModalUsuario(false, null);
         await fetchData();
-    
+
     }
 
 
@@ -62,10 +69,15 @@ export default function Usuarios() {
             user: object.user,
             password: object.password,
         }
-        console.log(payload)
+
 
         const postResult = await window.api.Action({ controller: "Usuarios", action: "Edit", params: payload });
-        console.log(postResult); // TOAST
+
+        if (!postResult.status) {
+            toast.error(postResult.text, { autoClose: 3000 });
+        } else {
+            toast.success(postResult.text, { autoClose: 3000 });
+        }
         handleModalUsuario(false, null);
         await fetchData();
     }
@@ -75,11 +87,12 @@ export default function Usuarios() {
         const handleClickDelete = async (id) => {
 
             const result = await window.api.Action({ controller: "Usuarios", action: "Delete", params: id });
-            window.api.Alert({ status: result.status, text: result.text, title: result.status ? "Sucesso!" : "Erro!" });
+           
             if (result.status) {
+                toast.success(result.text, { autoClose: 3000 });
                 await fetchData();
             } else {
-                console.log("Erro")
+                toast.error(result.text, { autoClose: 3000 });
             }
         }
 

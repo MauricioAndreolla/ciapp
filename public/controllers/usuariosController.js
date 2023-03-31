@@ -30,7 +30,7 @@ module.exports = {
             return { status: false, text: `Erro interno no servidor.` };
         }
 
-        return { status: true, text: `Usuário ${payload.userName} criada!` };
+        return { status: true, text: `Usuário ${payload.userName} criado(a)!` };
     },
 
     async Delete(id) {
@@ -75,7 +75,7 @@ module.exports = {
             return { status: false, text: error.message };
         }
 
-        return { status: true, text: `Usuario ${payload.userName} salvo!` };
+        return { status: true, text: `Usuario ${payload.userName} editado!` };
 
 
 
