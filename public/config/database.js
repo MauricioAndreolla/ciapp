@@ -34,7 +34,10 @@ class Database {
                 host: this.host,
                 port: this.port,
                 dialect: 'mysql',
-                createDatabase: true
+                createDatabase: true,
+                pool: {
+                    max: Infinity // remove o limite de conexões simultâneas
+                }
             });
         }
         else if (this.dialet === 1) {
@@ -47,7 +50,7 @@ class Database {
         return this.sequelize;
 
     }
-    static async ConnectExternalDatabase() {
+    static async ConnectExternalDatabase(force = false) {
         let resultText = "Conectando com base externa de dados...\n";
         try {
             let externalDatabase = await this.ConnectDatabase();
@@ -62,7 +65,7 @@ class Database {
             if (!bind.status)
                 return { status: false, text: resultText };
 
-            await externalDatabase.sync();
+            await externalDatabase.sync({ force: force });
             resultText += "Tabelas sincronizadas com sucesso.\n";
             this.connected = true;
             return { status: true, text: resultText };

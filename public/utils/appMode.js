@@ -3,4 +3,7 @@ const MODO_APLICACAO = {
     entidade: 1
   };
   
-module.exports = MODO_APLICACAO.central;
+module.exports = {
+  modo: MODO_APLICACAO.central,
+  MODO_APLICACAO
+};

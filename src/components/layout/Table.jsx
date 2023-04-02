@@ -42,7 +42,7 @@ const Table = ({ data, columns, onEdit, onDelete }) => {
     }
 
     return (
-        <>
+        <div>
             <div className="col-md-2 search-table">
                 <i className="fas fa-search"></i>
                 <input className="form-control shadow-none input-custom" value={globalFilter} onChange={handleSearch} placeholder="Pesquisar..." />
@@ -79,8 +79,20 @@ const Table = ({ data, columns, onEdit, onDelete }) => {
                                     <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                                 ))}
                                 <td>
-                                    <button className="btn" title="Editar" onClick={() => onEdit(row.original)}> <i className="fa fa-edit"></i></button>
-                                    <button className="btn" title="Excluir" onClick={() => onDelete(row.original)}> <i className="fa fa-trash"></i></button>
+                                    {
+                                        onEdit ?
+                                        <button className="btn" title="Editar" onClick={() => onEdit(row.original)}> <i className="fa fa-edit"></i></button>
+                                        :null
+                                      
+                                    }
+
+                                    {
+                                          onDelete ?
+                                          <button className="btn" title="Excluir" onClick={() => onDelete(row.original)}> <i className="fa fa-trash"></i></button>
+                                          :null
+                                    }
+                                  
+                                   
                                 </td>
                             </tr>
                         );
@@ -112,7 +124,7 @@ const Table = ({ data, columns, onEdit, onDelete }) => {
                     ))}
                 </select>
             </div>
-        </>
+        </div>
     );
 
 }

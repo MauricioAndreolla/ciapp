@@ -1,7 +1,61 @@
 
 
 const Usuario = require('./Usuario');
+const Habilidade = require('./Habilidade');
+const Beneficio = require('./Beneficio');
+const Curso = require('./Curso');
+const Droga = require('./Droga');
+const Cidade = require('./Cidade');
+const UF = require('./UF');
+const Endereco = require('./Endereco');
+const Prestador = require('./Prestador');
+const Familiar = require('./Familiar');
+const FichaMedica = require('./FichaMedica');
+const PrestadoresBeneficios = require('./PrestadoresBeneficios');
+const PrestadoresHabilidades = require('./PrestadoresHabilidades');
+const PrestadoresCursos = require('./PrestadoresCursos');
+const FichaMedicaDrogas = require('./FichaMedicaDrogas');
+
+Endereco.belongsTo(Cidade);
+Cidade.belongsTo(UF);
+
+Endereco.hasOne(Prestador);
+Prestador.belongsTo(Endereco);
+
+Familiar.belongsTo(Prestador);
+Prestador.hasMany(Familiar);
+
+Prestador.belongsToMany(Beneficio, {through: PrestadoresBeneficios});
+Beneficio.belongsToMany(Prestador, {through: PrestadoresBeneficios});
+
+Prestador.belongsToMany(Habilidade, {through: PrestadoresHabilidades});
+Habilidade.belongsToMany(Prestador, {through: PrestadoresHabilidades});
+
+Prestador.belongsToMany(Curso, {through: PrestadoresCursos});
+Curso.belongsToMany(Prestador, {through: PrestadoresCursos});
+
+FichaMedica.belongsTo(Prestador);
+Prestador.hasOne(FichaMedica);
+
+
+FichaMedica.belongsToMany(Droga, {through: FichaMedicaDrogas});
+Droga.belongsToMany(FichaMedica, {through: FichaMedicaDrogas});
 
 module.exports = {
-    Usuario
+    Usuario,
+    Habilidade,
+    Curso,
+    Droga,
+    Beneficio,
+    UF,
+    Cidade,
+    Endereco,
+    Prestador,
+    Familiar,
+    FichaMedica,
+    PrestadoresBeneficios,
+    PrestadoresHabilidades,
+    PrestadoresCursos,
+    FichaMedicaDrogas
+
 };
