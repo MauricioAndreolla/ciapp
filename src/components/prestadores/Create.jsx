@@ -21,17 +21,17 @@ const Create = () => {
     const [tempID, setempID] = useState(0);
     const [image, setImage] = useState('');
     const [prestador, setPrestador] = useState({
-        nome: 'Gabriel da Silva Rodrigues',
-        cpf: '033.952.180-58',
-        nome_mae: 'Maria de Fátima da Silva Rodrigues',
-        dt_nascimento: '1997-02-01',
-        estado_civil: 1,
-        etnia: 2,
-        escolaridade: 6,
+        nome: '',
+        cpf: '',
+        nome_mae: '',
+        dt_nascimento: '',
+        estado_civil: 0,
+        etnia: 0,
+        escolaridade: 0,
         renda_familiar: 0,
-        telefone1: '(54) 99947-4046',
-        telefone2: '(54) 3205-1121',
-        religiao: 'Católico',
+        telefone1: '',
+        telefone2: '',
+        religiao: '',
         possui_beneficios: false,
         familiares: [],
         beneficios: [],
@@ -45,11 +45,11 @@ const Create = () => {
     });
 
     const [endereco, setEndereco] = useState({
-        rua: 'Av. Dr Mário Lopes',
-        cep: '95043-240',
-        numero: '1910',
-        bairro: 'Nossa Senhora de Fátima',
-        complemento: 'Apto 11',
+        rua: '',
+        cep: '',
+        numero: '',
+        bairro: '',
+        complemento: '',
         id_cidade: ''
     });
 
