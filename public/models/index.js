@@ -44,7 +44,7 @@ Droga.belongsToMany(FichaMedica, {through: FichaMedicaDrogas});
 
 module.exports = {
     Usuario,
-    Entidade
+    Entidade,
     Habilidade,
     Curso,
     Droga,
