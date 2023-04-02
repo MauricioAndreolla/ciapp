@@ -5,6 +5,12 @@ const Centrais = require('../controllers/centraisController');
 const Entidades = require('../controllers/entidadesController');
 const Agendamentos = require('../controllers/agendamentosController');
 const Config = require('../controllers/configController');
+const Habilidade = require('../controllers/habilidadeController');
+const Curso = require('../controllers/cursoController');
+const Droga = require('../controllers/drogaController');
+const Beneficio = require('../controllers/beneficioController');
+const Cidades = require('../controllers/cidadesController');
+const Prestador = require('../controllers/prestadorController');
 module.exports = {
 
     async Action(controller, action, params) {

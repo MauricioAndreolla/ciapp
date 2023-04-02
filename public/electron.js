@@ -47,7 +47,7 @@ app.on('window-all-closed', () => {
 app.whenReady().then(async () => {
 
     //Testar conexão com banco interno
-    let connInternal = await connectInternalDatabase();
+    let connInternal =await connectInternalDatabase();
 
     if (!connInternal.status) {
         dialog.showErrorBox("Não foi possível instanciar a base de dados interna no sistema.", connInternal.text);
@@ -55,7 +55,7 @@ app.whenReady().then(async () => {
     }
     else {
 
-        let connExternal = await Database.ConnectExternalDatabase();
+        let connExternal = await Database.ConnectExternalDatabase(false);
 
         if (!connExternal.status) {
             dialog.showMessageBox({
@@ -95,7 +95,7 @@ const connectInternalDatabase = async () => {
 
 ipcMain.handle('MODO_APLICACAO', async () => {
 
-    return MODO_APLICACAO;
+    return MODO_APLICACAO.modo;
 })
 
 ipcMain.handle('maximize', async () => {
