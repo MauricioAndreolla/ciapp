@@ -1,8 +1,7 @@
-import { useNavigate, NavLink } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import React, { useState, useEffect } from "react";
 import Title from "../layout/Title";
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
 import Table from '../layout/Table';
 import ModalUsuario from './ModalUsuario';

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { toast } from "react-toastify";
+
 
 
 const ModalUsuario = ({ Model, show, onHide, onAdd, onEdit }) => {
