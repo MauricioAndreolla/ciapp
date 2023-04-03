@@ -1,6 +1,9 @@
 
 const Login = require('../controllers/loginController');
 const Usuarios = require('../controllers/usuariosController');
+const Centrais = require('../controllers/centraisController');
+const Entidades = require('../controllers/entidadesController');
+const Agendamentos = require('../controllers/agendamentosController');
 const Config = require('../controllers/configController');
 const Habilidade = require('../controllers/habilidadeController');
 const Curso = require('../controllers/cursoController');

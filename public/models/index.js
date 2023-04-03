@@ -2,6 +2,7 @@
 
 const Usuario = require('./Usuario');
 const Habilidade = require('./Habilidade');
+const Entidade = require('./Entidade');
 const Beneficio = require('./Beneficio');
 const Curso = require('./Curso');
 const Droga = require('./Droga');
@@ -43,6 +44,7 @@ Droga.belongsToMany(FichaMedica, {through: FichaMedicaDrogas});
 
 module.exports = {
     Usuario,
+    Entidade,
     Habilidade,
     Curso,
     Droga,
@@ -57,5 +59,5 @@ module.exports = {
     PrestadoresHabilidades,
     PrestadoresCursos,
     FichaMedicaDrogas
-
+    
 };

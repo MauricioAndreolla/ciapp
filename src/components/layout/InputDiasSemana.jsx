@@ -1,4 +1,3 @@
-
 import Select from 'react-select';
 
 const InputDiasSemana = (props) => {

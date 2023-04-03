@@ -11,6 +11,19 @@ import PrestadoresCreate from './components/prestadores/Create';
 
 import Usuarios from "./components/usuarios/Index";
 
+import Centrais from "./components/centrais/Index";
+import CentraisCreate from "./components/centrais/Create";
+import CentraisEdit from "./components/centrais/Edit";
+
+import Entidades from './components/entidades/Index';
+import EntidadesCreate from './components/entidades/Create';
+import EntidadesDescredenciar from './components/entidades/Descredenciar';
+import EntidadesEdit from './components/entidades/Edit';
+
+import AgendamentosEntidade from './components/agendamentos/AgendamentosEntidade';
+import AgendamentosCreate from './components/agendamentos/Create';
+import AgendamentosEdit from './components/agendamentos/Edit';
+import Agendamentos from './components/agendamentos/Index';
 
 const Main = () => {
 
@@ -38,7 +51,20 @@ const Main = () => {
                         <Route path="prestadores/create" element={<Private><PrestadoresCreate /></Private>} />
 
                         <Route path="usuarios" element={<Private><Usuarios /></Private>} />
+
+                        <Route path="centrais" element={<Private><Centrais /></Private>} />
+                        <Route path="centrais/Create" element={<Private><CentraisCreate /></Private>} />
+                        <Route path="centrais/Edit" element={<Private><CentraisEdit /></Private>} />
                        
+                        <Route path="entidades" element={<Private><Entidades /></Private>} />
+                        <Route path="entidades/Create" element={<Private><EntidadesCreate /></Private>} />
+                        <Route path="entidades/Edit/:id" element={<Private><EntidadesEdit /></Private>} />
+                        <Route path="entidades/Descredenciar" element={<Private><EntidadesDescredenciar /></Private>} />
+
+                        <Route path="agendamentos" element={<Private><Agendamentos /></Private>} />
+                        <Route path="agendamentos/Create" element={<Private><AgendamentosCreate /></Private>} />
+                        <Route path="agendamentos/Edit/:id" element={<Private><AgendamentosEdit /></Private>} />
+                        <Route path="agendamentos/AgendamentoEntidade" element={<Private><AgendamentosEntidade /></Private>} />
                         
                     </Route>
                 </Routes>

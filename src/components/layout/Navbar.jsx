@@ -17,15 +17,15 @@ function Navbar() {
                 </li>
 
                 <li className={activeMenu === 'instituicoes' ? 'active' : ''} onClick={() => { setActiveMenu('instituicoes') }}>
-                    <NavLink id="entidades" to="/"><i className="fa-solid fa-archway"></i> Entidades</NavLink>
+                    <NavLink id="entidades" to="/entidades"><i className="fa-solid fa-archway"></i> Entidades</NavLink>
                 </li>
 
                 <li className={activeMenu === 'centrais' ? 'active' : ''} onClick={() => { setActiveMenu('centrais') }}>
-                    <NavLink id="centrais" to="/"><i className="fa-solid fa-archway"></i> Centrais</NavLink>
+                    <NavLink id="centrais" to="/centrais"><i className="fa-solid fa-archway"></i> Centrais</NavLink>
                 </li>
 
                 <li className={activeMenu === 'agendamentos' ? 'active' : ''} onClick={() => { setActiveMenu('agendamentos') }}>
-                    <NavLink id="agendamentos" to="/"><i className="fa-solid fa-clipboard-user"></i> Agendamentos</NavLink>
+                    <NavLink id="agendamentos" to="/agendamentos"><i className="fa-solid fa-clipboard-user"></i> Agendamentos</NavLink>
                 </li>
 
                 <li className="nav-item dropdown">
@@ -39,9 +39,7 @@ function Navbar() {
 
 
 
-                        {/* <li className={activeMenu === 'atividaes' ? 'active' : ''} onClick={() => { setActiveMenu('login') }}>
-                            <NavLink id="atividades" to="/atividades"><i className="fa-brands fa-galactic-republic"></i> Atividades</NavLink>
-                        </li> */}
+                       
 
 
                         <li className={activeMenu === 'usuarios' ? 'active' : ''} onClick={() => { setActiveMenu('login') }}>

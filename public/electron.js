@@ -85,7 +85,6 @@ const connectInternalDatabase = async () => {
         await internalDatabase.sync({ force: false });
         resultText += "Tabelas sincronizadas com sucesso.\n";
         return { status: true, text: resultText };
-
     } catch (error) {
         resultText += "ERRO AO CONECTAR NA BASE INTERNA: " + error;
         return { status: false, text: resultText };
