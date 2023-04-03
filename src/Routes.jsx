@@ -8,6 +8,7 @@ import Layout from './components/layout/Layout';
 
 import Prestadores from './components/prestadores/Index';
 import PrestadoresCreate from './components/prestadores/Create';
+// import PrestadoresEdit from './components/prestadores/Edit';
 
 import Usuarios from "./components/usuarios/Index";
 
@@ -49,6 +50,7 @@ const Main = () => {
 
                         <Route path="prestadores" element={<Private><Prestadores /></Private>} />
                         <Route path="prestadores/create" element={<Private><PrestadoresCreate /></Private>} />
+                        <Route path="prestadores/edit/:id" element={<Private><PrestadoresCreate /></Private>}/>
 
                         <Route path="usuarios" element={<Private><Usuarios /></Private>} />
 

@@ -1,13 +1,16 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Select from 'react-select';
 import _ from 'lodash';
 
 const Endereco = (props) => {
+
     const [cidades, setCidades] = useState([{ value: -1, label: "Digite uma cidade" }]);
+
+
     const debouncedGetCidades = _.debounce(async (inputValue) => {
         try {
-            const data = await window.api.Action({ controller: "Cidades", action: "GetCidades", params: inputValue });
+            const data = await window.api.Action({ controller: "Cidades", action: "GetCidades", params: { inputValue: inputValue}});
             setCidades(data);
         } catch (error) {
             console.log(error);
@@ -17,6 +20,20 @@ const Endereco = (props) => {
     const handleInputChange = (inputValue) => {
         debouncedGetCidades(inputValue);
     }
+
+    const GetCidadeById = async (id_cidade)=>{
+        const data = await window.api.Action({ controller: "Cidades", action: "GetCidadeById", params: id_cidade });
+        setCidades(data);
+    }
+
+     useEffect(() => {
+        if (props.endereco.id_cidade) {
+            GetCidadeById(props.endereco.id_cidade);
+        } else {
+            setCidades([{ value: -1, label: "Digite uma cidade" }]);
+        }
+    }, [props.endereco.id_cidade]);
+    
 
     return (
         <>

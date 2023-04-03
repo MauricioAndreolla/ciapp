@@ -4,17 +4,45 @@ const { Sequelize, Op } = require('sequelize');
 
 module.exports = {
 
-    async GetCidades(inputValue) {
+    async GetCidades(payload) {
 
         let where = {};
+        if (payload.inputValue) {
+            where[Op.or] = [
+                Sequelize.where(Sequelize.fn('UPPER', Sequelize.col('Cidade.nome')), {
+                    [Op.like]: `%${payload.inputValue.toUpperCase()}%`
+                })
+            ];
+        }
+        else{
+            if (payload.id_cidade && payload.id_cidade > 0) {
+                if (!where[Op.or]) {
+                    where[Op.or] = [];
+                }
+                where[Op.or].push({ id: payload.id_cidade });
+            }
+        }
 
-        if(inputValue) where = Sequelize.where(Sequelize.fn('UPPER', Sequelize.col('Cidade.nome')), {
-            [Op.like]: `%${inputValue.toUpperCase()}%`
-          })
+       
 
         let data = await db.models.Cidade.findAll({
             include: db.models.UF,
             where: where,
+            limit: 10
+        });
+
+        let formatedData = data.map(s => { return { value: s.id, label: `${s.nome} - ${s.UF.sigla}` } })
+        return formatedData;
+
+    },
+
+
+    async GetCidadeById(id) {
+
+        let data = await db.models.Cidade.findAll({
+
+            where: { id: id },
+            include: db.models.UF,
             limit: 10
         });
 

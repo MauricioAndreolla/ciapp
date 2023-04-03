@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from 'react-router-dom'
 import Title from "../layout/Title";
 import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
 import { NavLink } from "react-router-dom";
@@ -15,9 +15,12 @@ import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import InputDiasSemana from '../layout/InputDiasSemana';
 import Endereco from "../layout/Endereco";
+import Load from "../layout/Load";
 
 const Create = () => {
     const navigate = useNavigate();
+    const [load, setLoad] = useState(false);
+    const { id } = useParams();
     const [tempID, setempID] = useState(0);
     const [image, setImage] = useState('');
     const [prestador, setPrestador] = useState({
@@ -50,7 +53,7 @@ const Create = () => {
         numero: '',
         bairro: '',
         complemento: '',
-        id_cidade: ''
+        id_cidade: null
     });
 
     const [trabalho, setTrabalho] = useState({
@@ -92,7 +95,7 @@ const Create = () => {
                 {
                     label: 'Sim',
                     onClick: async () => {
-
+                        setLoad(true);
                         const postResult = await window.api.Action({
                             controller: "Prestador", action: "Create", params: {
                                 prestador: prestador,
@@ -101,10 +104,52 @@ const Create = () => {
                                 image: image
                             }
                         });
-                        
+                        setLoad(false);
                         if (postResult.status) {
                             toast.success(postResult.text);
                             askModal(postResult.id);
+                        }
+                        else {
+                            toast.error(postResult.text, { autoClose: false });
+                        }
+
+                    }
+                },
+                {
+                    className: 'btn-blue',
+                    label: 'Não',
+                    onClick: () => {
+                    }
+                }
+            ]
+        });
+
+
+    }
+
+    const handleEdit = async () => {
+
+
+        confirmAlert({
+            title: 'Confirmação',
+            message: `Confirma as alterações do prestador ${prestador.nome}`,
+            buttons: [
+                {
+                    label: 'Sim',
+                    onClick: async () => {
+                        setLoad(true);
+                        const postResult = await window.api.Action({
+                            controller: "Prestador", action: "Edit", params: {
+                                prestador: prestador,
+                                endereco: endereco,
+                                trabalho: trabalho,
+                                image: image
+                            }
+                        });
+                        setLoad(false);
+                        if (postResult.status) {
+                            toast.success(postResult.text);
+
                         }
                         else {
                             toast.error(postResult.text, { autoClose: false });
@@ -164,13 +209,81 @@ const Create = () => {
     }
 
     const handlePrestador = (evt, prop_name = null) => {
-        const value = evt.value ?? evt.target.value;
+        var value = evt.value ?? evt.target.value;
+
+        let prop = prop_name ? prop_name : evt.target.name;
+
+        switch (prop) {
+            case 'cpf':
+                value = formatCpf(value);
+                break;
+            case 'telefone1':
+            case 'telefone2':
+                value = formatPhone(value);
+                break;
+        }
 
         setPrestador({
             ...prestador,
-            [prop_name ? prop_name : evt.target.name]: value
+            [prop]: value
         })
     }
+
+
+    function handleInputChange(event) {
+        const inputValue = event.target.value;
+        const formattedValue = formatCurrency(inputValue);
+        setPrestador({
+            ...prestador,
+            ["renda_familiar"]: formattedValue
+        })
+    }
+
+    function formatCurrency(value) {
+        // remove tudo que não for dígito
+        let inputValue = value.replace(/\D/g, '');
+        // adiciona o ponto e o separador de milhar
+        inputValue = (inputValue / 100).toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+        return inputValue;
+    }
+
+
+    function formatCpf(value) {
+        value = value.replace(/\D/g, "");
+        if (value.replace(/\D/g, "").length > 11) {
+            value = value.slice(0, 11);
+        }
+
+        return value
+            .replace(/\D/g, "") // Remove caracteres não numéricos
+            .replace(/(\d{3})(\d)/, "$1.$2") // Adiciona o primeiro ponto
+            .replace(/(\d{3})(\d)/, "$1.$2") // Adiciona o segundo ponto
+            .replace(/(\d{3})(\d{1,2})$/, "$1-$2"); // Adiciona o hífen
+    }
+
+    function formatPhone(value) {
+        let formattedValue = value.replace(/\D/g, ""); // Remove caracteres não numéricos
+
+        if (formattedValue.length === 10) {
+            // Adiciona máscara para telefone residencial
+            formattedValue = formattedValue.replace(
+                /^(\d{2})(\d{4})(\d{4})$/,
+                "($1) $2-$3"
+            );
+        } else if (formattedValue.length === 11) {
+            // Adiciona máscara para celular com dígito 9
+            formattedValue = formattedValue.replace(
+                /^(\d{2})(\d{5})(\d{4})$/,
+                "($1) $2-$3"
+            );
+        }
+
+        return formattedValue;
+    }
+
 
     const handleSaude = (evt, prop_name = null) => {
 
@@ -286,8 +399,6 @@ const Create = () => {
 
         setShowModalBeneficio(false)
     }
-
-
 
     const [showModalHabilidade, setShowModalHabilidade] = useState(false);
 
@@ -572,24 +683,81 @@ const Create = () => {
         { Header: 'Profissão', accessor: 'familiar_profissao' },
     ];
 
+    useEffect(() => {
+
+        if (id) {
+           
+            const fetchData = async () => {
+                setLoad(true);
+                let data = await window.api.Action({ controller: "Prestador", action: "GetPrestador", params: id });
+             ;
+                data = data[0];
+                setImage(data.image);
+                setPrestador({
+                    id: data.id,
+                    nome: data.nome,
+                    cpf: data.cpf,
+                    nome_mae: data.nome_mae,
+                    dt_nascimento: data.dt_nascimento.toISOString().slice(0, 10),
+                    estado_civil: data.estado_civil,
+                    etnia: data.etnia,
+                    escolaridade: data.escolaridade,
+                    renda_familiar: data.renda_familiar,
+                    telefone1: data.telefone1,
+                    telefone2: data.telefone2,
+                    religiao: data.religiao,
+                    familiares: data.familiares,
+                    beneficios: data.beneficios,
+                    habilidades: data.habilidades,
+                    cursos: data.cursos,
+                    saude: data.saude
+                });
+
+                setTrabalho(data.trabalho);
+                setEndereco({
+                    id: data.endereco.id,
+                    rua: data.endereco.rua,
+                    cep: data.endereco.cep,
+                    numero: data.endereco.numero,
+                    bairro: data.endereco.bairro,
+                    complemento: data.endereco.complemento,
+                    id_cidade: data.endereco.id_cidade
+                });
+                setLoad(false);
+            }
+
+            fetchData();
+        }
+
+    }, []);
+
     return (
         <>
-            <Title title={"Novo Prestador"} />
+            {
+                id ? <Title title={"Editar Prestador"} /> : <Title title={"Novo Prestador"} />
+            }
+
 
             <div className='menu'>
 
-                <button className='menu-button button-green' onClick={() => { handleCreate() }}>
-                    <i className='fa-solid fa-save'></i> Salvar
-                </button>
+                {
+                    id ?
+                        <button className='menu-button button-green' onClick={() => { handleEdit() }}>
+                            <i className='fa-solid fa-save'></i> Salvar
+                        </button>
+                        :
+                        <button className='menu-button button-green' onClick={() => { handleCreate() }}>
+                            <i className='fa-solid fa-save'></i> Salvar
+                        </button>
+                }
                 <button className='menu-button button-red' onClick={() => { navigate('/prestadores') }}>
                     <i className='fa-solid fa-times'></i> Cancelar
                 </button>
             </div>
 
-            <Title title={"Dados do Prestador"} />
-            <div className="row">
+            <div className="row" style={{ paddingTop: "1rem" }}>
 
-                <div className="col-md-2 col-sm-12">
+                <div className="col-md-2 col-sm-12" >
                     <div className="input-group mb-2 mt-2">
                         <label className="file-input-custom" htmlFor="inputGroupFile04" id="upload-file-layout">
 
@@ -768,6 +936,20 @@ const Create = () => {
                             />
                         </div>
 
+                        <div className="col-md-3">
+                            <label htmlFor="renda_familiar">Renda Familiar</label>
+                            <input
+                                id="renda_familiar"
+                                name='renda_familiar'
+                                className="form-control shadow-none input-custom"
+                                type="text"
+                                placeholder="Renda Familiar"
+                                value={prestador.renda_familiar}
+                                onInput={handleInputChange}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+
                     </div>
 
 
@@ -782,43 +964,43 @@ const Create = () => {
                     <Nav variant="pills">
                         <Nav.Item>
                             <Nav.Link eventKey="endereco">
-                                Endereço
+                                <i className="fas fa-address-card"></i>  Endereço
                             </Nav.Link>
                         </Nav.Item>
 
                         <Nav.Item>
                             <Nav.Link eventKey="familiares">
-                                Familiares
+                                <i className="fas fa-users"></i>  Familiares
                             </Nav.Link>
                         </Nav.Item>
 
                         <Nav.Item>
                             <Nav.Link eventKey="beneficios">
-                                Benefícios
+                                <i className="fas fa-hand-holding-usd"></i>   Benefícios
                             </Nav.Link>
                         </Nav.Item>
 
                         <Nav.Item>
                             <Nav.Link eventKey="trabalho">
-                                Trabalho
+                                <i className="fas fa-briefcase"></i>   Trabalho
                             </Nav.Link>
                         </Nav.Item>
 
                         <Nav.Item>
                             <Nav.Link eventKey="habilidades">
-                                Habilidades
+                                <i className="fas fa-tools"></i> Habilidades
                             </Nav.Link>
                         </Nav.Item>
 
                         <Nav.Item>
                             <Nav.Link eventKey="cursos">
-                                Cursos e especialidades
+                                <i className="fas fa-graduation-cap"></i>  Cursos e especialidades
                             </Nav.Link>
                         </Nav.Item>
 
                         <Nav.Item>
                             <Nav.Link eventKey="saude">
-                                Saúde
+                                <i className="fas fa-heartbeat"></i>   Saúde
                             </Nav.Link>
                         </Nav.Item>
 
@@ -826,8 +1008,6 @@ const Create = () => {
 
                     <Tab.Content>
                         <Tab.Pane eventKey="endereco">
-
-                            <Title title={"Dados de Endereço"} />
                             <div className="row">
                                 <div className="col-md-12 no-padding">
                                     <Endereco endereco={endereco} handleChange={handleEndereco} />
@@ -836,8 +1016,6 @@ const Create = () => {
                         </Tab.Pane>
 
                         <Tab.Pane eventKey="familiares">
-
-                            <Title title={"Dados de Familiares"} />
                             <div className="row">
                                 <div className="col-md-12 no-padding">
                                     <div className='menu'>
@@ -852,8 +1030,6 @@ const Create = () => {
                         </Tab.Pane>
 
                         <Tab.Pane eventKey="beneficios">
-
-                            <Title title={"Dados de Benefícios do Governo"} />
 
                             <div className="row">
                                 <div className="col-md-12 no-padding">
@@ -874,8 +1050,6 @@ const Create = () => {
                         </Tab.Pane>
 
                         <Tab.Pane eventKey="trabalho">
-
-                            <Title title={"Dados de Trabalho"} />
                             <div className="row">
 
                                 <div className="col-md-12">
@@ -931,8 +1105,6 @@ const Create = () => {
 
                         <Tab.Pane eventKey="habilidades">
 
-                            <Title title={"Dados de Habilidades"} />
-
                             <div className="row">
                                 <div className="col-md-12 no-padding">
                                     <div className='menu'>
@@ -951,8 +1123,6 @@ const Create = () => {
                         </Tab.Pane>
 
                         <Tab.Pane eventKey="cursos">
-
-                            <Title title={"Dados de Curso e especializações"} />
 
                             <div className="row">
                                 <div className="col-md-12 no-padding">
@@ -973,8 +1143,6 @@ const Create = () => {
                         </Tab.Pane>
 
                         <Tab.Pane eventKey="saude">
-
-                            <Title title={"Dados de Saúde"} />
 
                             <div className="row">
                                 <hr></hr>
@@ -1047,6 +1215,7 @@ const Create = () => {
             <ModalBeneficios show={showModalBeneficio} onHide={() => { handleModalBeneficio(false) }} onAdd={addNewBeneficio} />
             <ModalCurso show={showModalCurso} onHide={() => { handleModalCurso(false) }} onAdd={addNewCurso} />
             <ModalUsoDroga show={showModalUsoDroga} onHide={() => { handleModalUsoDroga(false) }} onAdd={addNewUsoDroga} />
+            <Load show={load} />
         </>
     );
 }

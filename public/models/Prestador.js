@@ -47,6 +47,8 @@ Prestador.init({
         type: DataTypes.BLOB('long'),
         get() {
           let buffer = this.getDataValue('image');
+
+          if(!buffer) return null;
   
           let imgBase64 = "";
   

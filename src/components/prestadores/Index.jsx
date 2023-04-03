@@ -14,6 +14,7 @@ const Index = () => {
     const fetchData = async () => {
 
         const data = await window.api.Action({ controller: "Prestador", action: "GetPrestadores", params: null });
+     
         setPrestadores(data);
     }
     useEffect(() => {

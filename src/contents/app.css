@@ -7,13 +7,21 @@
   --green: #5bc559;
   --light-red: #eb8787;
 }
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./fonts/Montserrat/Montserrat-VariableFont_wght.ttf') format('truetype');
+}
+
 /* 
 .tab-pane{
   padding: 0 !important;
 } */
 
-
-.no-padding{
+body{
+  font-family: 'Montserrat', sans-serif !important;
+}
+.no-padding {
   padding: 0 !important;
 }
 
@@ -357,7 +365,7 @@ input {
 
 }
 
-.content-container{
+.content-container {
   margin-top: 0.5rem;
 }
 
@@ -366,41 +374,43 @@ input {
   border-bottom: 2px solid var(--dark-grey);
 }
 
-.form-group-inline{
+.form-group-inline {
   display: flex;
 }
 
-.form-group-inline .form-group:not(:first-child){
+.form-group-inline .form-group:not(:first-child) {
   margin-left: 1rem;
 }
 
-.nav-link{
+.nav-link {
   color: var(--dark-grey);
 }
 
-.nav-link.active{
+.nav-link.active {
   border: none;
   border-radius: 10px 10px 0px 0;
   background: var(--dark-blue) !important;
   color: white !important;
 }
 
-.tab-pane{
+.tab-pane {
   background: white !important;
   padding: 1rem;
 }
+
 .input-form label {
   font-size: 10pt !important;
   margin-top: 1rem;
   display: inline-flex;
   align-self: center;
 }
+
 .input-form.inline {
   display: flex;
   align-self: center;
 }
 
-.input-form .label-radio{
+.input-form .label-radio {
   padding-left: 1rem;
   align-self: center;
   display: inline-flex;
@@ -408,12 +418,12 @@ input {
 }
 
 
-.input-form .label-radio input{
+.input-form .label-radio input {
   width: 2rem;
   cursor: pointer;
 }
 
-.search-table{
+.search-table {
   margin: 1rem;
   float: right;
   display: flex !important;
@@ -422,7 +432,8 @@ input {
   align-items: center;
 }
 
-table th, table td{
+table th,
+table td {
   color: var(--dark-blue) !important;
   font-weight: 500;
 }
@@ -433,22 +444,43 @@ table th, table td{
   justify-content: center;
 }
 
-.table-btn-footer button:not(:first-child), .table-btn-footer select, .table-btn-footer span {
+.table-btn-footer button:not(:first-child),
+.table-btn-footer select,
+.table-btn-footer span {
   margin-left: 1rem;
 }
 
-.table-btn-footer select{
+.table-btn-footer select {
   max-width: 150px !important;
 }
 
-.table-actions{
+.table-actions {
   width: 100px;
 }
 
-.zero-count{
+.zero-count {
   background: var(--white-grey);
   padding: 1rem;
   text-align: center;
   margin-top: 0.5rem;
   color: var(--dark-blue);
+}
+
+.load-message {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  color: white;
+  background: #000000;
+  opacity: 0.7;
+  z-index: 99;
+}
+
+.load-message h3 {
+  margin: auto;
 }

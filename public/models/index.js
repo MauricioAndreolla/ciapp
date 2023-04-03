@@ -12,9 +12,7 @@ const Endereco = require('./Endereco');
 const Prestador = require('./Prestador');
 const Familiar = require('./Familiar');
 const FichaMedica = require('./FichaMedica');
-const PrestadoresBeneficios = require('./PrestadoresBeneficios');
-const PrestadoresHabilidades = require('./PrestadoresHabilidades');
-const PrestadoresCursos = require('./PrestadoresCursos');
+const Trabalho = require('./Trabalho');
 const FichaMedicaDrogas = require('./FichaMedicaDrogas');
 
 Endereco.belongsTo(Cidade);
@@ -26,14 +24,19 @@ Prestador.belongsTo(Endereco);
 Familiar.belongsTo(Prestador);
 Prestador.hasMany(Familiar);
 
-Prestador.belongsToMany(Beneficio, {through: PrestadoresBeneficios});
-Beneficio.belongsToMany(Prestador, {through: PrestadoresBeneficios});
+Trabalho.belongsTo(Prestador);
+Prestador.hasOne(Trabalho);
 
-Prestador.belongsToMany(Habilidade, {through: PrestadoresHabilidades});
-Habilidade.belongsToMany(Prestador, {through: PrestadoresHabilidades});
+// Prestador.hasMany(Beneficio);
+// Beneficio.hasMany(Prestador);
+Prestador.belongsToMany(Beneficio, {through: "PrestadoresBeneficios"});
+Beneficio.belongsToMany(Prestador, {through: "PrestadoresBeneficios"});
 
-Prestador.belongsToMany(Curso, {through: PrestadoresCursos});
-Curso.belongsToMany(Prestador, {through: PrestadoresCursos});
+Prestador.belongsToMany(Habilidade, {through: "PrestadoresHabilidades"});
+Habilidade.belongsToMany(Prestador, {through: "PrestadoresHabilidades"});
+
+Prestador.belongsToMany(Curso, {through: "PrestadoresCursos"});
+Curso.belongsToMany(Prestador, {through: "PrestadoresCursos"});
 
 FichaMedica.belongsTo(Prestador);
 Prestador.hasOne(FichaMedica);
@@ -55,9 +58,7 @@ module.exports = {
     Prestador,
     Familiar,
     FichaMedica,
-    PrestadoresBeneficios,
-    PrestadoresHabilidades,
-    PrestadoresCursos,
+    Trabalho,
     FichaMedicaDrogas
     
 };
