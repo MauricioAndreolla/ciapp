@@ -13,7 +13,7 @@ function Navbar() {
                     <NavLink id="prestadores" to="/prestadores"><i className="fa-regular fa-circle-user"></i> Prestadores</NavLink>
                 </li>
                 <li className={activeMenu === 'processos' ? 'active' : ''} onClick={() => { setActiveMenu('processos') }}>
-                    <NavLink id="processos" to="/"><i className="fa-regular fa-file-lines"></i> Processos</NavLink>
+                    <NavLink id="processos" to="/processos"><i className="fa-regular fa-file-lines"></i> Processos</NavLink>
                 </li>
 
                 <li className={activeMenu === 'instituicoes' ? 'active' : ''} onClick={() => { setActiveMenu('instituicoes') }}>

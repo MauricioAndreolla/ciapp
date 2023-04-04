@@ -10,6 +10,9 @@ import Prestadores from './components/prestadores/Index';
 import PrestadoresCreate from './components/prestadores/Create';
 // import PrestadoresEdit from './components/prestadores/Edit';
 
+import Processos from './components/processos/Index';
+import ProcessosCreate from './components/processos/Create';
+
 import Usuarios from "./components/usuarios/Index";
 
 import Centrais from "./components/centrais/Index";
@@ -51,6 +54,11 @@ const Main = () => {
                         <Route path="prestadores" element={<Private><Prestadores /></Private>} />
                         <Route path="prestadores/create" element={<Private><PrestadoresCreate /></Private>} />
                         <Route path="prestadores/edit/:id" element={<Private><PrestadoresCreate /></Private>}/>
+
+                        
+                        <Route path="processos" element={<Private><Processos /></Private>} />
+                        <Route path="processos/create/:id_prestador" element={<Private><ProcessosCreate /></Private>} />
+                        <Route path="processos/edit/:id" element={<Private><ProcessosCreate /></Private>}/>
 
                         <Route path="usuarios" element={<Private><Usuarios /></Private>} />
 

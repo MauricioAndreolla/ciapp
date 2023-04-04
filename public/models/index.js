@@ -14,6 +14,8 @@ const Familiar = require('./Familiar');
 const FichaMedica = require('./FichaMedica');
 const Trabalho = require('./Trabalho');
 const FichaMedicaDrogas = require('./FichaMedicaDrogas');
+const Vara = require('./Vara');
+const Processo = require('./Processo');
 
 Endereco.belongsTo(Cidade);
 Cidade.belongsTo(UF);
@@ -45,6 +47,16 @@ Prestador.hasOne(FichaMedica);
 FichaMedica.belongsToMany(Droga, {through: FichaMedicaDrogas});
 Droga.belongsToMany(FichaMedica, {through: FichaMedicaDrogas});
 
+Vara.hasMany(Processo);
+Processo.belongsTo(Vara);
+
+Prestador.hasMany(Processo);
+Processo.belongsTo(Prestador);
+
+
+Entidade.hasMany(Processo);
+Processo.belongsTo(Entidade);
+
 module.exports = {
     Usuario,
     Entidade,
@@ -59,6 +71,8 @@ module.exports = {
     Familiar,
     FichaMedica,
     Trabalho,
-    FichaMedicaDrogas
+    FichaMedicaDrogas,
+    Vara,
+    Processo
     
 };

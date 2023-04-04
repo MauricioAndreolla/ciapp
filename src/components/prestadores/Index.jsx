@@ -62,6 +62,7 @@ const Index = () => {
                                     <td>{r.cpf}</td>
                                     <td>ULTIMO PROCESSO</td>
                                     <td>HORAS CUMPRIR</td>
+
                                     <td>HORAS CUMPRIDAS</td>
                                     <td>
                                         <div className="btn-group" role="group">
@@ -70,8 +71,9 @@ const Index = () => {
                                                 <i className='fa fa-cog'></i> opções
                                             </span>
                                             <ul className="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                
                                                 <li> <NavLink className="dropdown-item" id="edit" to={`/prestadores/edit/${r.id}`}> <i className='fa fa-edit'></i> Editar</NavLink></li>
-                                                <li> <NavLink className="dropdown-item" id="edit" to={`/processos/create/${r.id}`}> <i className='fa fa-plus'></i> Novo Processo</NavLink></li>
+                                                <li> <NavLink className="dropdown-item" id="novoProcesso" to={`/processos/create/${r.id}`}> <i className='fa fa-plus'></i> Novo Processo</NavLink></li>
                                                 {/* <li> <a className="dropdown-item" onClick={() => { GerarListagem(r.id, r.ultimo_processo, r.nome) }} to="#"><i className="fa-solid fa-file"></i> Gerar Relatório</a></li>
                                                 <li> <a className="dropdown-item" onClick={() => { DeletePrestador(r.id, r.nome) }} to="#"><i className="fa-solid fa-trash"></i> Excluir</a></li> */}
                                             </ul>

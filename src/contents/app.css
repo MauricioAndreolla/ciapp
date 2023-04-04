@@ -21,6 +21,12 @@
 body{
   font-family: 'Montserrat', sans-serif !important;
 }
+
+.nome-prestador{
+  color: var(--dark-blue) !important;
+  margin: 0 !important;
+}
+
 .no-padding {
   padding: 0 !important;
 }
@@ -267,9 +273,23 @@ input {
   color: var(--dark-blue);
 }
 
+.top-page{
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.content-page{
+  margin-top: 7.1rem;
+  height: calc(100% - 120px);
+  overflow: auto;
+}
+
 .menu {
   background: white;
   border-bottom: 1px solid #e3e3e3;
+
 }
 
 .menu-button {
@@ -484,3 +504,4 @@ table td {
 .load-message h3 {
   margin: auto;
 }
+

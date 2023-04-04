@@ -161,6 +161,13 @@ module.exports = {
         return mappedValues;
     },
 
+    async GetPrestadorSimple(id){
+        let Prestadores = await db.models.Prestador.findByPk(id);
+        return {
+            nome: Prestadores.nome
+        }
+    },
+
     async Create(payload) {
         try {
 

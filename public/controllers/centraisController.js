@@ -1,3 +1,4 @@
+
 const db = require('../config/database');
 const { Op } = require("sequelize");
 const { TipoInstituicao } = require('../utils/enums');
@@ -35,7 +36,7 @@ module.exports = {
         
         try {
 
-            let check =  await db.sequelize.models.Instituicoes.findAll({
+            let check =  await db.models.Instituicoes.findAll({
                 where: {
                     tipo_instituicao: TipoInstituicao.Central,
                     cnpj: parseInt(payload.cnpj)
@@ -44,7 +45,7 @@ module.exports = {
             if(check.length > 0)
                 return { status: false, text: `CNPJ já cadastrado no sistema` };
 
-            await db.sequelize.models.Endereco.create({
+            await db.models.Endereco.create({
                 nome: payload.endereco.nome,
                 rua: payload.endereco.rua,
                 cep: payload.endereco.cep,
@@ -53,7 +54,7 @@ module.exports = {
                 complemento: payload.endereco.complemento,
                 CidadeId: payload.endereco.id_cidade
             }).then(async (endereco) => {
-                await db.sequelize.models.Instituicoes.create({
+                await db.models.Instituicoes.create({
                     nome: payload.nome,
                     cnpj: parseInt(payload.cnpj),
                     email: payload.email,
@@ -105,7 +106,7 @@ module.exports = {
 
         try {
 
-            let check =  await db.sequelize.models.Instituicoes.findAll({
+            let check =  await db.models.Instituicoes.findAll({
                 where: {
                     tipo_instituicao: TipoInstituicao.Central,
                     cnpj: parseInt(payload.cnpj),
@@ -117,7 +118,7 @@ module.exports = {
             if(check.length > 0)
                 return { status: false, text: `CNPJ já cadastrado no sistema` };
 
-            let Central = await db.sequelize.models.Instituicoes.findByPk(payload.id);
+            let Central = await db.models.Instituicoes.findByPk(payload.id);
             Central.nome = payload.nome;
             Central.cnpj = parseInt(payload.cnpj);
             Central.email = payload.email;
@@ -125,7 +126,7 @@ module.exports = {
             Central.telefone2 = payload.telefone2;
             await Central.save();
 
-            let Endereco = await db.sequelize.models.Endereco.findByPk(payload.endereco.id);
+            let Endereco = await db.models.Endereco.findByPk(payload.endereco.id);
             Endereco.rua = payload.endereco.rua,
                 Endereco.cep = payload.endereco.cep,
                 Endereco.numero = payload.endereco.numero,
@@ -148,8 +149,8 @@ module.exports = {
     async Delete(id) {
         let Central = {};
         try {
-            Central = await db.sequelize.models.Instituicoes.findByPk(id);
-            let Endereco = await db.sequelize.models.Endereco.findByPk(Central.EnderecoId);
+            Central = await db.models.Instituicoes.findByPk(id);
+            let Endereco = await db.models.Endereco.findByPk(Central.EnderecoId);
             await Central.destroy();
             await Endereco.destroy();
         } catch (error) {
@@ -162,7 +163,6 @@ module.exports = {
     async GetCentrais(search) {
 
         let where = {};
-        let someAttributes = {};
         where.tipo_instituicao = TipoInstituicao.Central;
 
         if (search) {
@@ -184,10 +184,10 @@ module.exports = {
 
 
 
-        const data = await db.sequelize.models.Instituicoes.findAll({
+        const data = await db.models.Instituicoes.findAll({
 
             where: where,
-            include: [db.sequelize.models.Endereco],
+            include: [db.models.Endereco],
         });
 
         return data.map(s => {
@@ -210,6 +210,47 @@ module.exports = {
                 }
             }
         });
-    }
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    async GetCentraisSelect() {
+
+        const data = await db.models.Entidade.findAll({
+
+            where: {
+                tipo_instituicao: TipoInstituicao.Central
+            },
+        });
+
+        return data.map(s => {
+            return {
+                value: s.id,
+                label: `${s.id} - ${s.nome}`
+            }
+        });
+    },
+
 
 }

@@ -11,6 +11,8 @@ const Droga = require('../controllers/drogaController');
 const Beneficio = require('../controllers/beneficioController');
 const Cidades = require('../controllers/cidadesController');
 const Prestador = require('../controllers/prestadorController');
+const Vara = require('../controllers/varaController');
+const Processo = require('../controllers/processoController');
 module.exports = {
 
     async Action(controller, action, params) {
