@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from 'react-router-dom'
 import Title from "../layout/Title";
 import { toast } from 'react-toastify';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
@@ -7,15 +7,17 @@ import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-boot
 import Table from '../layout/Table';
 import ModalTarefa from './ModalTarefa';
 import { confirmAlert } from "react-confirm-alert";
+import Endereco from "../layout/Endereco";
 
 
 
 const Create = () => {
     const navigate = useNavigate();
     const [tempID, setempID] = useState(0);
+    const { id } = useParams();
 
     const [entidade, setEntidade] = useState({
-        nomeEntidade: '',
+        nome: '',
         cnpj: '',
         telefone1: '',
         telefone2: '',
@@ -35,14 +37,35 @@ const Create = () => {
     });
 
 
+    useEffect( () => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        console.log(id);
+
+        if (id != null) {
+            const data = await window.api.Action({ controller: "Entidades", action: "GetEntidade", params: id });
+            console.log(data);
+            // setEndereco(endereco);
+            // setEntidade(entidade);
+        }
+    }
+
     const getTempID = async () => {
         setempID(tempID - 1);
         return tempID - 1;
-     }
+    }
 
     const submitEntidade = async () => {
 
-        const postResult = await window.api.Action({ controller: "Entidades", action: "Create", params: entidade });
+        const payload = {
+            entidade,
+            endereco
+        }
+
+
+        const postResult = await window.api.Action({ controller: "Entidades", action: "Create", params: payload });
 
         if (!postResult.status) {
             toast.error(postResult.text, { autoClose: 3000 });
@@ -51,21 +74,30 @@ const Create = () => {
         }
     }
 
+
+
     const handleEntidade = (evt, prop_name = null) => {
-        const value =  evt.value ?? evt.target.value;
-        
+        const value = evt.value ?? evt.target.value;
+
         setEntidade({
             ...entidade,
             [prop_name ? prop_name : evt.target.name]: value
         })
-        
-     
+    }
+
+    const handleEndereco = (evt, name = null) => {
+        const value = evt.value ?? evt.target.value;
+
+        setEndereco({
+            ...endereco,
+            [name ? name : evt.target.name]: value
+        })
     }
 
     const columnsTarefa = [
         { Header: 'Titulo', accessor: 'titulo' },
         { Header: 'Descricao', accessor: 'descricao' },
-        { id: 'status' ,Header: 'Status', accessor: d => d.status == true ? 'Ativa' : 'Inativa' }
+        { id: 'status', Header: 'Status', accessor: d => d.status == true ? 'Ativa' : 'Inativa' }
     ];
 
     const [modelTarefa, setModelTarefa] = useState({
@@ -117,19 +149,19 @@ const Create = () => {
     }
 
     const EditTarefa = (object) => {
-       
+
         if (object) {
             var tarefas = entidade.tarefas;
 
             var exist = tarefas.find(s => s.titulo == object.titulo && s.id != object.id);
-         
+
             if (exist) {
                 toast.error(`Tarefa "${object.titulo}" já informado`, { autoClose: false });
                 HandleModalTarefa(false);
                 return;
             }
 
-            
+
 
             const index = tarefas.findIndex(s => s.id == object.id);
             tarefas.splice(index, 1, object);
@@ -146,7 +178,7 @@ const Create = () => {
     const CreateTarefa = async (object) => {
         if (object) {
             var tarefas = entidade.tarefas;
-            
+
             var exist = tarefas.find(s => s.titulo == object.titulo);
             if (exist) {
                 toast.error(`Tarefa "${object.titulo}" já informado`, { autoClose: false });
@@ -156,9 +188,9 @@ const Create = () => {
             if (object.novo_registro) {
                 object.id = await getTempID();
             }
-           
+
             tarefas.push(object);
-            console.log(object);
+
             setEntidade({
                 ...entidade,
                 ["tarefas"]: tarefas
@@ -175,7 +207,7 @@ const Create = () => {
 
             <div className='menu'>
 
-                <button className='menu-button button-green' onClick={() => { }}>
+                <button className='menu-button button-green' onClick={submitEntidade}>
                     <i className='fa-solid fa-save'></i> Salvar
                 </button>
                 <button className='menu-button button-red' onClick={() => { navigate('/entidades') }}>
@@ -193,14 +225,14 @@ const Create = () => {
                         <div className="col-md-4">
 
                             <div className="input-form">
-                                <label htmlFor="nomeEntidade">Nome</label>
+                                <label htmlFor="nome">Nome</label>
                                 <input
-                                    id="nomeEntidade"
-                                    name="nomeEntidade"
+                                    id="nome"
+                                    name="nome"
                                     className="form-control shadow-none input-custom"
                                     type="text"
                                     placeholder="Nome da entidade"
-                                    value={entidade.nomeEntidade}
+                                    value={entidade.nome}
                                     required={true}
                                     onChange={handleEntidade}
                                 />
@@ -284,7 +316,7 @@ const Create = () => {
 
                         <div className="form-check form-check-inline">
 
-                            <input className="form-check-input" type="radio" name="tipoInstituicao" id="entidade" defaultChecked onChange={handleEntidade} value="0" />
+                            <input className="form-check-input" type="radio" name="tipoInstituicao" id="entidade" defaultChecked onChange={handleEntidade} value="1" />
                             <label className="form-check-label" htmlFor="entidade">
                                 Entidade parceira
                             </label>
@@ -292,18 +324,13 @@ const Create = () => {
 
                         <div className="form-check form-check-inline">
 
-                            <input className="form-check-input" type="radio" name="tipoInstituicao" id="central" onChange={handleEntidade} value="1"/>
+                            <input className="form-check-input" type="radio" name="tipoInstituicao" id="central" onChange={handleEntidade} value="0" />
                             <label className="form-check-label" htmlFor="central">
                                 Central
                             </label>
 
                         </div>
-
                     </div>
-                    <div className="col-md-6">
-                        Endereço
-                    </div>
-
                 </div>
             </div>
 
@@ -311,8 +338,14 @@ const Create = () => {
                 <div className='col-md-12'>
 
                     <div className="tabs-tarefas">
-                        <Tab.Container defaultActiveKey="tarefas">
+                        <Tab.Container defaultActiveKey="endereco">
                             <Nav variant="pills">
+                                <Nav.Item>
+                                    <Nav.Link eventKey="endereco">
+                                        Endereço
+                                    </Nav.Link>
+                                </Nav.Item>
+
                                 <Nav.Item>
                                     <Nav.Link eventKey="tarefas">
                                         Tarefas
@@ -321,12 +354,23 @@ const Create = () => {
                             </Nav>
 
                             <Tab.Content>
+                                <Tab.Pane eventKey="endereco">
+
+                                    <Title title={"Dados de Endereço"} />
+                                    <div className="row">
+                                        <div className="col-md-12 no-padding">
+                                            <Endereco endereco={endereco} handleChange={handleEndereco} />
+                                        </div>
+                                    </div>
+                                </Tab.Pane>
+
+
                                 <Tab.Pane eventKey="tarefas">
                                     <Title title={"Dados das tarefas"} />
                                     <div className="row">
                                         <div className="col-md-12 no-padding">
                                             <div className='menu'>
-                                                <button className='menu-button button-blue' onClick={() => { HandleModalTarefa(true) } }>
+                                                <button className='menu-button button-blue' onClick={() => { HandleModalTarefa(true) }}>
                                                     <i className='fa-solid fa-plus'></i> Adicionar Tarefa
                                                 </button>
                                             </div>

@@ -43,10 +43,6 @@ Curso.belongsToMany(Prestador, {through: "PrestadoresCursos"});
 FichaMedica.belongsTo(Prestador);
 Prestador.hasOne(FichaMedica);
 
-
-FichaMedica.belongsToMany(Droga, {through: FichaMedicaDrogas});
-Droga.belongsToMany(FichaMedica, {through: FichaMedicaDrogas});
-
 Vara.hasMany(Processo);
 Processo.belongsTo(Vara);
 
@@ -57,9 +53,15 @@ Processo.belongsTo(Prestador);
 Entidade.hasMany(Processo);
 Processo.belongsTo(Entidade);
 
+
+FichaMedica.belongsToMany(Droga, {through: FichaMedicaDrogas});
+Droga.belongsToMany(FichaMedica, {through: FichaMedicaDrogas});
+
 module.exports = {
+    Tarefa,
     Usuario,
     Entidade,
+    Tarefa,
     Habilidade,
     Curso,
     Droga,
