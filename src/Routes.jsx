@@ -15,13 +15,9 @@ import ProcessosCreate from './components/processos/Create';
 
 import Usuarios from "./components/usuarios/Index";
 
-import Centrais from "./components/centrais/Index";
-import CentraisCreate from "./components/centrais/Create";
-import CentraisEdit from "./components/centrais/Edit";
 
 import Entidades from './components/entidades/Index';
 import EntidadesCreate from './components/entidades/Create';
-import EntidadesEdit from './components/entidades/Edit';
 
 import AgendamentosEntidade from './components/agendamentos/AgendamentosEntidade';
 import AgendamentosCreate from './components/agendamentos/Create';
@@ -60,11 +56,7 @@ const Main = () => {
                         <Route path="processos/edit/:id" element={<Private><ProcessosCreate /></Private>}/>
 
                         <Route path="usuarios" element={<Private><Usuarios /></Private>} />
-
-                        <Route path="centrais" element={<Private><Centrais /></Private>} />
-                        <Route path="centrais/Create" element={<Private><CentraisCreate /></Private>} />
-                        <Route path="centrais/Edit" element={<Private><CentraisEdit /></Private>} />
-                       
+  
                         <Route path="entidades" element={<Private><Entidades /></Private>} />
                         <Route path="entidades/Edit/:id" element={<Private><EntidadesCreate /></Private>} />
                         <Route path="entidades/Create" element={<Private><EntidadesCreate /></Private>} />

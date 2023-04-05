@@ -23,6 +23,7 @@ const Index = () => {
     const fetchData = async () => {
         const data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: null });
         setEntidades(data);
+        console.log(entidades)
     }
 
     useEffect(() => {

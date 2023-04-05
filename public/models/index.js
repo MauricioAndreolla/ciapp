@@ -55,6 +55,8 @@ Entidade.hasMany(Processo);
 Processo.belongsTo(Entidade);
 
 Endereco.hasOne(Entidade);
+Entidade.belongsTo(Endereco);
+
 Entidade.hasMany(Tarefa);
 
 

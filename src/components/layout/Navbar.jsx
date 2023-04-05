@@ -20,10 +20,6 @@ function Navbar() {
                     <NavLink id="entidades" to="/entidades"><i className="fa-solid fa-archway"></i> Entidades</NavLink>
                 </li>
 
-                <li className={activeMenu === 'centrais' ? 'active' : ''} onClick={() => { setActiveMenu('centrais') }}>
-                    <NavLink id="centrais" to="/centrais"><i className="fa-solid fa-archway"></i> Centrais</NavLink>
-                </li>
-
                 <li className={activeMenu === 'agendamentos' ? 'active' : ''} onClick={() => { setActiveMenu('agendamentos') }}>
                     <NavLink id="agendamentos" to="/agendamentos"><i className="fa-solid fa-clipboard-user"></i> Agendamentos</NavLink>
                 </li>
