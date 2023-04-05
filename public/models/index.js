@@ -16,6 +16,7 @@ const Trabalho = require('./Trabalho');
 const FichaMedicaDrogas = require('./FichaMedicaDrogas');
 const Vara = require('./Vara');
 const Processo = require('./Processo');
+const Tarefa = require('./Tarefa');
 
 Endereco.belongsTo(Cidade);
 Cidade.belongsTo(UF);
@@ -52,6 +53,9 @@ Processo.belongsTo(Prestador);
 
 Entidade.hasMany(Processo);
 Processo.belongsTo(Entidade);
+
+Endereco.hasOne(Entidade);
+Entidade.hasMany(Tarefa);
 
 
 FichaMedica.belongsToMany(Droga, {through: FichaMedicaDrogas});
