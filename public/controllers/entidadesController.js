@@ -40,7 +40,6 @@ module.exports = {
 
             let check = await db.models.Entidade.findAll({
                 where: {
-                    tipo_instituicao: payload.entidade.tipoInstituicao,
                     cnpj: parseInt(payload.entidade.cnpj)
                 }
             })
@@ -96,13 +95,13 @@ module.exports = {
         if (!payload)
             return { status: false, text: "Nenhuma informação recebida" };
 
-        if (!payload.nome)
+        if (!payload.entidade.nome)
             return { status: false, text: "Informe um nome" };
 
-        if (!payload.cnpj)
+        if (!payload.entidade.cnpj)
             return { status: false, text: "Informe um CNPJ" };
 
-        if (!payload.telefone1 || !payload.telefone2)
+        if (!payload.entidade.telefone1 || !payload.entidade.telefone2)
             return { status: false, text: "Informe um telefone" };
 
         if (!payload.endereco)
@@ -122,25 +121,15 @@ module.exports = {
 
 
         try {
+            const [tarefasPayload] = payload.entidade.tarefas;
 
-            let check = await db.models.Entidade.findAll({
-                where: {
-                    tipo_instituicao: TipoInstituicao.Entidade,
-                    cnpj: parseInt(payload.cnpj),
-                    id: {
-                        [Op.ne]: payload.id
-                    }
-                }
-            })
-            if (check.length > 0)
-                return { status: false, text: `CNPJ já cadastrado no sistema` };
-
-            let Entidade = await db.models.Entidade.findByPk(payload.id);
-            Entidade.nome = payload.nome;
-            Entidade.cnpj = parseInt(payload.cnpj);
-            Entidade.email = payload.email;
-            Entidade.telefone1 = payload.telefone1;
-            Entidade.telefone2 = payload.telefone2;
+            let Entidade = await db.models.Entidade.findByPk(payload.entidade.id);
+            Entidade.nome = payload.entidade.nome;
+            Entidade.cnpj = parseInt(payload.entidade.cnpj);
+            Entidade.email = payload.entidade.email;
+            Entidade.telefone1 = payload.entidade.telefone1;
+            Entidade.telefone2 = payload.entidade.telefone2;
+            Entidade.tipo_instituicao = payload.entidade.tipo_instituicao;
             await Entidade.save();
 
             let Endereco = await db.models.Endereco.findByPk(payload.endereco.id);
@@ -152,41 +141,43 @@ module.exports = {
                 Endereco.CidadeId = payload.endereco.id_cidade;
             await Endereco.save();
 
-
-            if (payload.tarefas.length > 0) {
-                await db.models.Tarefa.destroy({
-                    where: {
-                        InstituicoId: Entidade.id
-                    }
-                })
-                for (let i = 0; i < payload.tarefas.length; i++) {
-
-                    const tarefa = payload.tarefas[i];
-
-                    await db.models.Tarefa.create({
-                        InstituicoId: Entidade.id,
-                        titulo: tarefa.titulo,
-                        descricao: tarefa.descricao,
-                        status: parseInt(tarefa.status)
+            console.log("to aqui " + tarefasPayload)
+            if (tarefasPayload) {
+                if (tarefasPayload.length > 0) {
+                    await db.models.Tarefa.destroy({
+                        where: {
+                            EntidadeId: Entidade.id
+                        }
                     })
+                    for (let i = 0; i < tarefasPayload.length; i++) {
 
-                }
-            } else {
-                await db.models.Tarefa.destroy({
-                    where: {
-                        InstituicoId: Entidade.id
+                        const tarefa = tarefasPayload[i];
+
+                        await db.models.Tarefa.create({
+                            EntidadeId: Entidade.id,
+                            titulo: tarefa.titulo,
+                            descricao: tarefa.descricao,
+                            status: parseInt(tarefa.status)
+                        })
+
                     }
-                })
+                } else {
+                    await db.models.Tarefa.destroy({
+                        where: {
+                            EntidadeId: Entidade.id
+                        }
+                    })
+                }
             }
 
 
 
 
         } catch (error) {
-            return { status: false, text: "Erro interno no servidor." };
+            return { status: false, text: `Erro interno no servidor. ${error}` };
         }
 
-        return { status: true, text: `Entidade ${payload.nome} salva!` };
+        return { status: true, text: `Entidade ${payload.entidade.nome} editada!` };
 
 
     },
@@ -285,7 +276,37 @@ module.exports = {
             }
         );
 
-        console.log(data)
+
+        return {
+            id: data.dataValues.id,
+            nome: data.dataValues.nome,
+            cnpj: data.dataValues.cnpj,
+            email: data.dataValues.email,
+            telefone1: data.dataValues.telefone1,
+            telefone2: data.dataValues.telefone2,
+            tipo_instituicao: data.dataValues.tipo_instituicao,
+            dt_descredenciamento: data.dataValues.dt_descredenciamento,
+            observacao: data.dataValues.observacao,
+            endereco: {
+                id: data.dataValues.Endereco.id,
+                cep: data.dataValues.Endereco.cep,
+                rua: data.dataValues.Endereco.rua,
+                numero: data.dataValues.Endereco.numero,
+                bairro: data.dataValues.Endereco.bairro,
+                complemento: data.dataValues.Endereco.complemento,
+                id_cidade: data.dataValues.Endereco.CidadeId,
+            },
+            tarefas: data.dataValues.Tarefas.map((e) => {
+                return {
+                    id: e.id,
+                    titulo: e.titulo,
+                    descricao: e.descricao,
+                    status: e.status,
+                }
+            })
+
+        }
+
 
     },
 
@@ -307,7 +328,6 @@ module.exports = {
     async Credenciar(id) {
 
         try {
-            console.log(id)
             let Entidade = await db.models.Entidade.findByPk(id);
             Entidade.dt_descredenciamento = null;
             Entidade.observacao = null;

@@ -41,14 +41,19 @@ const Create = () => {
         fetchData();
     }, []);
 
-    const fetchData = async () => {
-        console.log(id);
+    const handleEditOrNew = () => {
+        if (id == null){
+            submitEntidade();
+        } else {
+            editEntidade();
+        }
+    }
 
+    const fetchData = async () => {
         if (id != null) {
             const data = await window.api.Action({ controller: "Entidades", action: "GetEntidade", params: id });
-            console.log(data);
-            // setEndereco(endereco);
-            // setEntidade(entidade);
+            setEntidade(data);
+            setEndereco(data.endereco);
         }
     }
 
@@ -58,14 +63,25 @@ const Create = () => {
     }
 
     const submitEntidade = async () => {
-
         const payload = {
             entidade,
             endereco
         }
-
-
         const postResult = await window.api.Action({ controller: "Entidades", action: "Create", params: payload });
+
+        if (!postResult.status) {
+            toast.error(postResult.text, { autoClose: 3000 });
+        } else {
+            toast.success(postResult.text, { autoClose: 3000 });
+        }
+    }
+
+    const editEntidade = async () => {
+        const payload = {
+            entidade,
+            endereco
+        }
+        const postResult = await window.api.Action({ controller: "Entidades", action: "Edit", params: payload });
 
         if (!postResult.status) {
             toast.error(postResult.text, { autoClose: 3000 });
@@ -207,7 +223,7 @@ const Create = () => {
 
             <div className='menu'>
 
-                <button className='menu-button button-green' onClick={submitEntidade}>
+                <button className='menu-button button-green' onClick={handleEditOrNew}>
                     <i className='fa-solid fa-save'></i> Salvar
                 </button>
                 <button className='menu-button button-red' onClick={() => { navigate('/entidades') }}>

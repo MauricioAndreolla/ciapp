@@ -23,7 +23,6 @@ const Index = () => {
     const fetchData = async () => {
         const data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: null });
         setEntidades(data);
-        console.log(entidades)
     }
 
     useEffect(() => {
@@ -38,6 +37,9 @@ const Index = () => {
         navigate(`Edit/${evt.id}`);
     }
 
+    const teste = () => {
+        console.log(teste);
+    }
 
     const ModalDescredenciarShow = (object) => {
         HandleModalDescredenciar(true, object);
@@ -100,8 +102,6 @@ const Index = () => {
                 </div>
             </div>
 
-
-
             <div className='row table-container mt-5'>
                 <div className='col-md-12'>
                     {entidades.length > 0 ?
@@ -126,7 +126,8 @@ const Index = () => {
                                                     columns={columnsEntidades}
                                                     data={entidades}
                                                     onEdit={editEntidade}
-                                                    onDelete={(e) => e.dt_descredenciamento == null ? ModalDescredenciarShow(e) : Credenciar(e)} />
+                                                    onDelete={(e) => e.dt_descredenciamento == null ? ModalDescredenciarShow(e) : Credenciar(e)}
+                                                    />
                                             </div>
                                         </div>
                                     </Tab.Pane>
