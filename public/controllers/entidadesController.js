@@ -121,7 +121,7 @@ module.exports = {
 
 
         try {
-            const [tarefasPayload] = payload.entidade.tarefas;
+
 
             let Entidade = await db.models.Entidade.findByPk(payload.entidade.id);
             Entidade.nome = payload.entidade.nome;
@@ -141,38 +141,27 @@ module.exports = {
                 Endereco.CidadeId = payload.endereco.id_cidade;
             await Endereco.save();
 
-            console.log("to aqui " + tarefasPayload)
-            if (tarefasPayload) {
-                if (tarefasPayload.length > 0) {
-                    await db.models.Tarefa.destroy({
-                        where: {
-                            EntidadeId: Entidade.id
-                        }
-                    })
-                    for (let i = 0; i < tarefasPayload.length; i++) {
+            if (payload.entidade.tarefas) {
 
-                        const tarefa = tarefasPayload[i];
-
-                        await db.models.Tarefa.create({
-                            EntidadeId: Entidade.id,
-                            titulo: tarefa.titulo,
-                            descricao: tarefa.descricao,
-                            status: parseInt(tarefa.status)
-                        })
-
+                await db.models.Tarefa.destroy({
+                    where: {
+                        EntidadeId: payload.entidade.id
                     }
-                } else {
-                    await db.models.Tarefa.destroy({
-                        where: {
-                            EntidadeId: Entidade.id
-                        }
+                });
+
+                payload.entidade.tarefas.forEach(async (tarefa) => {
+
+                    console.log(tarefa)
+
+                    await db.models.Tarefa.create({
+                        titulo: tarefa.titulo,
+                        descricao: tarefa.descricao,
+                        status: tarefa.status,
+                        EntidadeId: payload.entidade.id,
                     })
-                }
+
+                });
             }
-
-
-
-
         } catch (error) {
             return { status: false, text: `Erro interno no servidor. ${error}` };
         }

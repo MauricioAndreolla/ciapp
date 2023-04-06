@@ -81,6 +81,8 @@ const Create = () => {
             entidade,
             endereco
         }
+
+        console.log(payload)
         const postResult = await window.api.Action({ controller: "Entidades", action: "Edit", params: payload });
 
         if (!postResult.status) {
