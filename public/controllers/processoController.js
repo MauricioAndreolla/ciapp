@@ -1,7 +1,30 @@
 const db = require('../config/database');
 const { Op } = require('sequelize');
+const { unformatCurrency, formatCurrency } = require('../utils/utils')
+
+
+
+const checkDadosOrigatorios = (payload) => {
+
+    if (!payload.processo.id_central || !payload.processo.id_central.value)
+        return { status: false, text: `Campo "Central reponsável" é obrigatório.` };
+
+    if (!payload.processo.nro_processo)
+        return { status: false, text: `Campo "Número do processo" é obrigatório.` };
+
+    if (!payload.processo.id_vara || !payload.processo.id_vara.value || payload.processo.id_vara.value <= 0)
+        return { status: false, text: `Campo "Nome da Vara Judicial" é obrigatório.` };
+
+    if (!payload.processo.horas_cumprir || parseInt(payload.processo.horas_cumprir) <= 0)
+        return { status: false, text: `Campo "Horas a cumprir" é obrigatório.` };
+
+    return { status: true };
+
+
+}
 
 module.exports = {
+
     async GetProcesso(id) {
         const Processo = await db.models.Processo.findByPk(id, {
             include: [
@@ -26,7 +49,7 @@ module.exports = {
             prd_descricao: Processo.prd_descricao,
             horas_cumprir: Processo.horas_cumprir,
             possui_multa: Processo.possui_multa,
-            valor_a_pagar: Processo.valor_a_pagar,
+            valor_a_pagar: formatCurrency(Processo.valor_a_pagar),
             qtd_penas_anteriores: Processo.qtd_penas_anteriores,
             nome_prestador: Processo.Prestadore.nome,
             // horas_cumpridas: Processo.AtestadoFrequencia.map(s => {
@@ -38,6 +61,7 @@ module.exports = {
 
 
     },
+
     async GetProcessos(search) {
         let where = {};
         if (search) {
@@ -80,6 +104,10 @@ module.exports = {
     async Create(payload) {
         try {
 
+            let checkDados = checkDadosOrigatorios(payload);
+            if (!checkDados.status)
+                return checkDados;
+
             const Processo = await db.models.Processo.create({
                 PrestadoreId: parseInt(payload.id_prestador),
                 EntidadeId: payload.processo.id_central.value,
@@ -91,11 +119,11 @@ module.exports = {
                 inciso: payload.processo.inciso,
                 detalhamento: payload.processo.detalhamento,
                 prd: payload.processo.prd,
-                prd_descricao: payload.processo.prd_descricao,
+                prd_descricao: payload.processo.prd ? payload.processo.prd_descricao : null,
                 persecucao_penal: payload.processo.persecucao_penal,
                 horas_cumprir: parseInt(payload.processo.horas_cumprir),
-                possui_multa: payload.processo.possui_multa,
-                valor_a_pagar: parseFloat(payload.processo.valor_a_pagar),
+                possui_multa: payload.processo.prd ? payload.processo.possui_multa : false,
+                valor_a_pagar: payload.processo.prd && payload.processo.possui_multa ? unformatCurrency(payload.processo.valor_a_pagar ?? '0') ?? 0 : 0,
                 qtd_penas_anteriores: parseInt(payload.processo.qtd_penas_anteriores),
             });
 
@@ -109,21 +137,26 @@ module.exports = {
 
     async Edit(payload) {
         try {
+
+            let checkDados = checkDadosOrigatorios(payload);
+            if (!checkDados.status)
+                return checkDados;
+
             let Processo = await db.models.Processo.findByPk(payload.id);
             Processo.EntidadeId = payload.processo.id_central.value,
-            Processo.VaraId= payload.processo.id_vara.value,
-            Processo.nro_prcesso = parseInt(payload.processo.nro_processo);
+                Processo.VaraId = payload.processo.id_vara.value,
+                Processo.nro_prcesso = parseInt(payload.processo.nro_processo);
             Processo.nro_artigo_penal = payload.processo.nro_artigo_penal;
             Processo.pena_originaria = payload.processo.pena_originaria;
             Processo.pena_originaria_regime = parseInt(payload.processo.pena_originaria_regime);
             Processo.inciso = payload.processo.inciso;
             Processo.detalhamento = payload.processo.detalhamento;
             Processo.prd = payload.processo.prd;
-            Processo.prd_descricao = payload.processo.prd_descricao;
+            Processo.prd_descricao = payload.processo.prd ? payload.processo.prd_descricao : null;
             Processo.persecucao_penal = payload.processo.persecucao_penal;
             Processo.horas_cumprir = parseInt(payload.processo.horas_cumprir);
-            Processo.possui_multa = payload.processo.possui_multa;
-            Processo.valor_a_pagar = parseFloat(payload.processo.valor_a_pagar);
+            Processo.possui_multa = payload.processo.prd ? payload.processo.possui_multa : false;
+            Processo.valor_a_pagar = payload.processo.prd && payload.processo.possui_multa ? unformatCurrency(payload.processo.valor_a_pagar ?? '0') ?? 0 : 0;
             Processo.qtd_penas_anteriores = parseInt(payload.processo.qtd_penas_anteriores);
             await Processo.save();
 

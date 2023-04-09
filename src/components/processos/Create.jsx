@@ -161,6 +161,27 @@ const Create = () => {
         })
     }
 
+    function handleInputChange(event) {
+        const inputValue = event.target.value;
+        const formattedValue = formatCurrency(inputValue);
+        setProcesso({
+            ...processo,
+            ["valor_a_pagar"]: formattedValue
+        })
+    }
+
+    function formatCurrency(value) {
+        // remove tudo que não for dígito
+        let inputValue = value.replace(/\D/g, '');
+        // adiciona o ponto e o separador de milhar
+        inputValue = (inputValue / 100).toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+        return inputValue;
+    }
+
+
     const getVaras = async () => {
         handleModaCreateVara(false);
         let data = await window.api.Action({ controller: "Vara", action: "GetVaras" });
@@ -171,7 +192,7 @@ const Create = () => {
 
 
         const fetchData = async () => {
-            let data = await window.api.Action({ controller: "Centrais", action: "GetCentraisSelect" });
+            let data = await window.api.Action({ controller: "Entidades", action: "GetCentraisSelect" });
 
             setCentrais(data);
             setProcesso({
@@ -263,7 +284,9 @@ const Create = () => {
 
                             <div className="input-form">
 
-                                <label htmlFor="id_central">Central responsável</label>
+                                <label htmlFor="id_central">Central responsável
+                                <small className="campo-obrigatorio"></small>
+                                </label>
                                 <Select
                                     options={centrais}
                                     id="id_central"
@@ -276,7 +299,9 @@ const Create = () => {
 
                             <div className="input-form">
 
-                                <label htmlFor="nro_processo">Número do processo</label>
+                                <label htmlFor="nro_processo">Número do processo
+                                <small className="campo-obrigatorio"></small>
+                                </label>
                                 <input
                                     id="nro_processo"
                                     name="nro_processo"
@@ -290,7 +315,9 @@ const Create = () => {
                             </div>
                             <div className="input-form">
 
-                                <label htmlFor="vara">Nome da Vara Judicial  </label>
+                                <label htmlFor="vara">Nome da Vara Judicial 
+                                <small className="campo-obrigatorio"></small>
+                                 </label>
 
                                 <Select
                                     options={varas}
@@ -323,7 +350,9 @@ const Create = () => {
 
                                 <div className="input-form col-md-6">
 
-                                    <label htmlFor="horas_cumprir">Horas a cumprir</label>
+                                    <label htmlFor="horas_cumprir">Horas a cumprir
+                                    <small className="campo-obrigatorio"></small>
+                                    </label>
                                     <input
                                         id="horas_cumprir"
                                         name="horas_cumprir"
@@ -549,11 +578,12 @@ const Create = () => {
                                                                 id="valor_a_pagar"
                                                                 name="valor_a_pagar"
                                                                 className="form-control shadow-none input-custom"
-                                                                type="number"
+                                                                type="text"
                                                                 placeholder=""
                                                                 value={processo.valor_a_pagar}
                                                                 required={true}
-                                                                onChange={handleProcesso}
+                                                                onInput={handleInputChange}
+                                                                onChange={handleInputChange}
                                                             />
                                                         </div>
                                                         : null

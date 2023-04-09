@@ -10,7 +10,7 @@ const Endereco = (props) => {
 
     const debouncedGetCidades = _.debounce(async (inputValue) => {
         try {
-            const data = await window.api.Action({ controller: "Cidades", action: "GetCidades", params: { inputValue: inputValue}});
+            const data = await window.api.Action({ controller: "Cidades", action: "GetCidades", params: { inputValue: inputValue } });
             setCidades(data);
         } catch (error) {
             console.log(error);
@@ -21,26 +21,34 @@ const Endereco = (props) => {
         debouncedGetCidades(inputValue);
     }
 
-    const GetCidadeById = async (id_cidade)=>{
+    const GetCidadeById = async (id_cidade) => {
         const data = await window.api.Action({ controller: "Cidades", action: "GetCidadeById", params: id_cidade });
         setCidades(data);
     }
 
-     useEffect(() => {
+    const handleCepChange = (event) => {
+        const { value } = event.target;
+        props.handleChange({value: formatCep(value)}, "cep")
+    };
+    const formatCep = (cep) => cep.replace(/\D/g, "").replace(/(\d{5})(\d{3})/, "$1-$2");
+
+    useEffect(() => {
         if (props.endereco.id_cidade) {
             GetCidadeById(props.endereco.id_cidade);
         } else {
             setCidades([{ value: -1, label: "Digite uma cidade" }]);
         }
     }, [props.endereco.id_cidade]);
-    
+
 
     return (
         <>
             <div className="row form-group">
 
                 <div className="input-form col-md-12">
-                    <label htmlFor="rua">Rua</label>
+                    <label htmlFor="rua">Rua
+                        {props.camposObrigatorios ? <small className="campo-obrigatorio"></small> : null}
+                    </label>
                     <input
                         id="rua"
                         name="rua"
@@ -55,7 +63,9 @@ const Endereco = (props) => {
 
 
                 <div className="input-form col-md-4">
-                    <label htmlFor="numero">Número</label>
+                    <label htmlFor="numero">Número
+                        {props.camposObrigatorios ? <small className="campo-obrigatorio"></small> : null}
+                    </label>
                     <input
                         id="numero"
                         name="numero"
@@ -69,7 +79,9 @@ const Endereco = (props) => {
                 </div>
 
                 <div className="input-form col-md-8">
-                    <label htmlFor="bairro">Bairro</label>
+                    <label htmlFor="bairro">Bairro
+                        {props.camposObrigatorios ? <small className="campo-obrigatorio"></small> : null}
+                    </label>
                     <input
                         id="bairro"
                         name="bairro"
@@ -83,21 +95,25 @@ const Endereco = (props) => {
                 </div>
 
                 <div className="input-form col-md-4">
-                    <label htmlFor="cep">CEP</label>
+                    <label htmlFor="cep">CEP
+                        {props.camposObrigatorios ? <small className="campo-obrigatorio"></small> : null}
+                    </label>
                     <input
                         id="cep"
                         name="cep"
                         className="form-control shadow-none input-custom"
                         type="text"
-                        placeholder=""
+                        placeholder="00000-000"
                         required={true}
                         value={props.endereco.cep}
-                        onChange={props.handleChange}
+                        onChange={handleCepChange}
                     />
                 </div>
 
                 <div className="input-form col-md-8">
-                    <label htmlFor="id_cidade">Cidade</label>
+                    <label htmlFor="id_cidade">Cidade
+                        {props.camposObrigatorios ? <small className="campo-obrigatorio"></small> : null}
+                    </label>
 
                     <Select
                         options={cidades}

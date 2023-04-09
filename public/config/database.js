@@ -46,7 +46,7 @@ class Database {
         else if (this.dialet === 1) {
             this.sequelize = new Sequelize({
                 dialect: 'sqlite',
-                storage: './public/sqliteDatabases/ciapp.sqlite',
+                storage: 'C://ciapp/database/ciapp.sqlite',
             });
         }
 

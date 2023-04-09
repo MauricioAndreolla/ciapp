@@ -9,7 +9,7 @@ const routes = require('./utils/routes');
 const internalDatabase = require('./config/internalDatabase');
 const Database = require('./config/database');
 const startUrl = process.env.ELECTRON_START_URL || `file://${path.join(__dirname, '../build/index.html')}`;
-
+const fs = require('fs');
 let win = null;
 const createWindow = () => {
 
@@ -33,9 +33,13 @@ const createWindow = () => {
     win.loadURL(startUrl);
     win.setMenu(null);
     win.setTitle("Central Integrada de Alternativas Penais");
-    win.webContents.on('did-frame-finish-load', () => {
-        win.webContents.openDevTools({ mode: 'detach' });
-    });
+
+    if(isDev){
+        win.webContents.on('did-frame-finish-load', () => {
+            win.webContents.openDevTools({ mode: 'detach' });
+        });
+    }
+    
 
 }
 
@@ -45,6 +49,12 @@ app.on('window-all-closed', () => {
 })
 
 app.whenReady().then(async () => {
+
+    //Verificar se a pasta onde irá ficar as bases SQlite existe
+    if (!fs.existsSync('C://ciapp/database')){
+        fs.mkdirSync('C://ciapp/database', { recursive: true });
+    }
+
 
     //Testar conexão com banco interno
     let connInternal =await connectInternalDatabase();

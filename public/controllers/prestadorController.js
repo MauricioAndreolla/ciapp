@@ -1,24 +1,65 @@
 const db = require('../config/database');
 const { Op } = require('sequelize');
 
+const { unformatCurrency, formatCurrency } = require('../utils/utils')
 
-const unformatCurrency = (value) => {
-    let unformattedValue = value.replace(/\D/g, '');
-    unformattedValue = unformattedValue.replace(',', '.');
-    return parseFloat(unformattedValue);
-  };
-  
-  const formatCurrency = (inputValue) => {
-    inputValue = (inputValue / 100).toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-    return inputValue;
-  };
+const checkDadosOrigatorios = (payload) => {
+
+    if (!payload.prestador.nome || !payload.prestador.nome.trim())
+        return { status: false, text: `Campo "Nome" é obrigatório.` };
+
+    if (!payload.prestador.cpf || !payload.prestador.cpf.trim())
+        return { status: false, text: `Campo "CPF" é obrigatório.` };
+
+    if (!payload.prestador.dt_nascimento || !payload.prestador.dt_nascimento.trim())
+        return { status: false, text: `Campo "Data de Nascimento" é obrigatório.` };
+
+    if (!payload.prestador.telefone1 || !payload.prestador.telefone1.trim())
+        return { status: false, text: `Campo "Telefone" é obrigatório.` };
+
+    if (!payload.endereco.rua || !payload.endereco.rua.trim())
+        return { status: false, text: `Campo "Rua" é obrigatório.` };
+
+    if (!payload.endereco.cep || !payload.endereco.cep.trim())
+        return { status: false, text: `Campo "CEP" é obrigatório.` };
+
+    if (!payload.endereco.numero || !payload.endereco.numero.trim())
+        return { status: false, text: `Campo "Número" é obrigatório.` };
+
+    if (!payload.endereco.bairro || !payload.endereco.bairro.trim())
+        return { status: false, text: `Campo "Bairro" é obrigatório.` };
+
+    if (!payload.endereco.id_cidade)
+        return { status: false, text: `Campo "Cidade" é obrigatório.` };
+
+    return { status: true };
+
+
+}
 module.exports = {
 
-    async GetPrestadores() {
-        let Prestadores = await db.models.Prestador.findAll();
+    async GetPrestadores(search) {
+
+        let where = {};
+        if (search) {
+            if (search.id)
+                where.id = search.id;
+
+            if (search.nome) {
+                where.nome = {
+                    [Op.substring]: search.nome
+                }
+            }
+            if (search.cpf) {
+                where.cpf = {
+                    [Op.substring]: search.cpf
+                }
+            }
+        }
+
+        let Prestadores = await db.models.Prestador.findAll({
+            where: where
+        });
 
         return Prestadores.map(s => {
             return {
@@ -161,7 +202,7 @@ module.exports = {
         return mappedValues;
     },
 
-    async GetPrestadorSimple(id){
+    async GetPrestadorSimple(id) {
         let Prestadores = await db.models.Prestador.findByPk(id);
         return {
             nome: Prestadores.nome
@@ -170,6 +211,10 @@ module.exports = {
 
     async Create(payload) {
         try {
+
+            let checkDados = checkDadosOrigatorios(payload);
+            if (!checkDados.status)
+                return checkDados;
 
             let checkPrestador = await db.models.Prestador.findAll({
                 where: {
@@ -310,6 +355,10 @@ module.exports = {
 
     async Edit(payload) {
         try {
+
+            let checkDados = checkDadosOrigatorios(payload);
+            if (!checkDados.status)
+                return checkDados;
 
             let checkPrestador = await db.models.Prestador.findAll({
                 where: {
@@ -482,7 +531,7 @@ module.exports = {
                     await Droga.addFichaMedicas([FichaMedica]);
 
                 }
-            }else{
+            } else {
                 FichaMedica.setDrogas([]);
             }
 
