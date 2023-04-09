@@ -8,12 +8,13 @@ import Table from '../layout/Table';
 import ModalTarefa from './ModalTarefa';
 import { confirmAlert } from "react-confirm-alert";
 import Endereco from "../layout/Endereco";
-
+import Load from '../layout/Load';
 
 
 const Create = () => {
     const navigate = useNavigate();
     const [tempID, setempID] = useState(0);
+    const [load, setLoad] = useState(false);
     const { id } = useParams();
 
     const [entidade, setEntidade] = useState({
@@ -37,17 +38,18 @@ const Create = () => {
     });
 
 
-    useEffect( () => {
+    useEffect(() => {
         fetchData();
     }, []);
 
     const handleEditOrNew = () => {
-        if (id == null){
+        if (id == null) {
             submitEntidade();
         } else {
             editEntidade();
         }
     }
+
 
     const fetchData = async () => {
         if (id != null) {
@@ -62,18 +64,42 @@ const Create = () => {
         return tempID - 1;
     }
 
+
     const submitEntidade = async () => {
         const payload = {
             entidade,
             endereco
         }
-        const postResult = await window.api.Action({ controller: "Entidades", action: "Create", params: payload });
 
-        if (!postResult.status) {
-            toast.error(postResult.text, { autoClose: 3000 });
-        } else {
-            toast.success(postResult.text, { autoClose: 3000 });
-        }
+        console.log(entidade);
+
+        confirmAlert({
+            title: 'Confirmação',
+            message: `Confirma a criação da entidade ${entidade.nome}`,
+            buttons: [
+                {
+                    label: 'Sim',
+                    onClick: async () => {
+                        setLoad(true);
+                        const postResult = await window.api.Action({ controller: "Entidades", action: "Create", params: payload });
+                        setLoad(false);
+                        if (postResult.status) {
+                            toast.success(postResult.text, { autoClose: 3000 });
+                        }
+                        else {
+                            toast.error(postResult.text, { autoClose: false });
+                        }
+
+                    }
+                },
+                {
+                    className: 'btn-blue',
+                    label: 'Não',
+                    onClick: () => {
+                    }
+                }
+            ]
+        });
     }
 
     const editEntidade = async () => {
@@ -82,20 +108,75 @@ const Create = () => {
             endereco
         }
 
-        console.log(payload)
-        const postResult = await window.api.Action({ controller: "Entidades", action: "Edit", params: payload });
+        confirmAlert({
+            title: 'Confirmação',
+            message: `Confirma a edição da entidade ${entidade.nome}`,
+            buttons: [
+                {
+                    label: 'Sim',
+                    onClick: async () => {
+                        setLoad(true);
+                        const postResult = await window.api.Action({ controller: "Entidades", action: "Edit", params: payload });
+                        setLoad(false);
+                        if (postResult.status) {
+                            toast.success(postResult.text, { autoClose: 3000 });
+                        }
+                        else {
+                            toast.error(postResult.text, { autoClose: false });
+                        }
 
-        if (!postResult.status) {
-            toast.error(postResult.text, { autoClose: 3000 });
-        } else {
-            toast.success(postResult.text, { autoClose: 3000 });
-        }
+                    }
+                },
+                {
+                    className: 'btn-blue',
+                    label: 'Não',
+                    onClick: () => {
+                    }
+                }
+            ]
+        });
     }
 
+    const formatPhone = (value) => {
 
+        let formattedValue = value.replace(/\D/g, ""); // Remove caracteres não numéricos
+
+        if (formattedValue.length === 10) {
+            // Adiciona máscara para telefone residencial
+            formattedValue = formattedValue.replace(
+                /^(\d{2})(\d{4})(\d{4})$/,
+                "($1) $2-$3"
+            );
+        } else if (formattedValue.length === 11) {
+            // Adiciona máscara para celular com dígito 9
+            formattedValue = formattedValue.replace(
+                /^(\d{2})(\d{5})(\d{4})$/,
+                "($1) $2-$3"
+            );
+        }
+
+        return formattedValue;
+    }
+
+    const formatCNPJ = (cnpj) => {
+        // Remove todos os caracteres não numéricos do CNPJ
+        let cnpjLimpo = cnpj.replace(/[^\d]/g, "");
+
+        // Formata o CNPJ com pontos e traço
+        return `${cnpjLimpo.slice(0, 2)}.${cnpjLimpo.slice(2, 5)}.${cnpjLimpo.slice(5, 8)}/${cnpjLimpo.slice(8, 12)}-${cnpjLimpo.slice(12)}`;
+    }
 
     const handleEntidade = (evt, prop_name = null) => {
-        const value = evt.value ?? evt.target.value;
+        let value = evt.value ?? evt.target.value;
+
+        if (evt.target.name == "telefone1" || evt.target.name == "telefone2") {
+            value = formatPhone(value);
+        } else {
+            if (evt.target.name == "cnpj") {
+                value = formatCNPJ(value);
+            }
+        }
+
 
         setEntidade({
             ...entidade,
@@ -269,6 +350,7 @@ const Create = () => {
                                     required={true}
                                     value={entidade.cnpj}
                                     onChange={handleEntidade}
+                                    maxLength={17}
                                 />
                             </div>
                         </div>
@@ -276,7 +358,7 @@ const Create = () => {
                         <div className="col-md-4">
 
                             <div className="input-form">
-                                <label htmlFor="phone-2">Email</label>
+                                <label htmlFor="email">Email</label>
                                 <input
                                     id="email"
                                     className="form-control shadow-none input-custom"
@@ -293,7 +375,7 @@ const Create = () => {
 
                         <div className="col-md-4">
                             <div className="input-form">
-                                <label htmlFor="telefone1">Telefone 1</label>
+                                <label htmlFor="telefone1">Telefone 1 (obrigatório)</label>
                                 <input
                                     id="telefone1"
                                     className="form-control shadow-none input-custom"
@@ -303,6 +385,7 @@ const Create = () => {
                                     required={true}
                                     value={entidade.telefone1}
                                     onChange={handleEntidade}
+                                    maxLength={15}
                                 />
                             </div>
                         </div>
@@ -320,6 +403,7 @@ const Create = () => {
                                     placeholder="(00) 0000-0000"
                                     required={false}
                                     onChange={handleEntidade}
+                                    maxLength={15}
                                 />
                             </div>
 
@@ -334,7 +418,7 @@ const Create = () => {
 
                         <div className="form-check form-check-inline">
 
-                            <input className="form-check-input" type="radio" name="tipoInstituicao" id="entidade" defaultChecked onChange={handleEntidade} value="1" />
+                            <input className="form-check-input" type="radio" name="tipoInstituicao" id="entidade" defaultChecked onChange={handleEntidade} value="0" />
                             <label className="form-check-label" htmlFor="entidade">
                                 Entidade parceira
                             </label>
@@ -342,7 +426,7 @@ const Create = () => {
 
                         <div className="form-check form-check-inline">
 
-                            <input className="form-check-input" type="radio" name="tipoInstituicao" id="central" onChange={handleEntidade} value="0" />
+                            <input className="form-check-input" type="radio" name="tipoInstituicao" id="central" onChange={handleEntidade} value="1" />
                             <label className="form-check-label" htmlFor="central">
                                 Central
                             </label>
@@ -360,13 +444,13 @@ const Create = () => {
                             <Nav variant="pills">
                                 <Nav.Item>
                                     <Nav.Link eventKey="endereco">
-                                        Endereço
+                                        <i className="fas fa-address-card"></i>  Endereço
                                     </Nav.Link>
                                 </Nav.Item>
 
                                 <Nav.Item>
                                     <Nav.Link eventKey="tarefas">
-                                        Tarefas
+                                        <i className="fa-solid fa-clipboard-list"></i> Tarefas
                                     </Nav.Link>
                                 </Nav.Item>
                             </Nav>
@@ -384,7 +468,7 @@ const Create = () => {
 
 
                                 <Tab.Pane eventKey="tarefas">
-                                    <Title title={"Dados das tarefas"} />
+                                    <Title title={"Dados das Tarefas"} />
                                     <div className="row">
                                         <div className="col-md-12 no-padding">
                                             <div className='menu'>
@@ -403,6 +487,7 @@ const Create = () => {
             </div>
 
             <ModalTarefa Model={modelTarefa} show={showModalTarefa} onHide={() => { HandleModalTarefa(false) }} onAdd={CreateTarefa} onEdit={EditTarefa} />
+            <Load show={load} />
         </>
     )
 

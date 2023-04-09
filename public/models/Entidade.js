@@ -15,7 +15,7 @@ Entidade.init({
   cnpj:
   {
     allowNull: false,
-    type: DataTypes.INTEGER
+    type: DataTypes.STRING
   },
 
   email:
@@ -26,11 +26,11 @@ Entidade.init({
   telefone1:
   {
     allowNull: false,
-    type: DataTypes.INTEGER
+    type: DataTypes.STRING
   },
   telefone2: {
     allowNull: true,
-    type: DataTypes.INTEGER
+    type: DataTypes.STRING
   },
   tipo_instituicao:
   {

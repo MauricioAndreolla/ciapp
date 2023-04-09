@@ -4,38 +4,40 @@ import { useState, useEffect } from "react";
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import Title from "../layout/Title";
-
+import { toast } from 'react-toastify';
+import { Alert, Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
+import Table from '../layout/Table';
 
 
 export default function Index(props) {
 
     const navigate = useNavigate();
-    const [agendamentos, setAgendamentos] = useState([]);
-    const [search, setSearch] = useState({
-        processo: ''
-    });
+    const [agendamentos, setAgendamentos] = useState({});
+
 
     const fetchData = async () => {
-        const data = await window.api.Action({ controller: "Agendamentos", action: "GetAgendamentos", params: search });
+        const data = await window.api.Action({ controller: "Agendamentos", action: "GetAgendamentos", params: null });
         setAgendamentos(data);
-
     }
 
     useEffect(() => {
         fetchData();
-    }, [search]);
+    }, []);
+
+    const columnsAgendamento = [
+        { Header: 'Processo', accessor: 'processo' },
+        { Header: 'Prestador', accessor: 'prestador' },
+        { Header: 'Data e hora inicial', accessor: 'inicial' },
+        { Header: 'Data e hora final', accessor: 'final' },
+        { Header: 'Tarefa', accessor: 'tarefa' },
+    ]
 
     const CreateAgendamento = () => {
         navigate('create');
     }
 
-    const handleSearch = async (evt) => {
-        const value = evt.target.value;
-        console.log(value)
-        setSearch({
-            ...search,
-            [evt.target.name]: value
-        });
+    const EditAgendamento = (evt) => {
+        navigate(`/Edit:${evt}`);
     }
 
     const DeleteAgendamento = (id) => {
@@ -48,7 +50,7 @@ export default function Index(props) {
                 fetchData();
             }
         }
-        
+
         confirmAlert({
             customUI: ({ onClose }) => {
                 return (
@@ -77,63 +79,51 @@ export default function Index(props) {
         <>
             <Title title={"Agendamentos"} />
 
-            <div className="row search-container">
-             
-                <div className="input-form col-md-3">
-                    <input
-                        id="processo"
-                        name="processo"
-                        className="form-control input rounded-2"
-                        type="text"
-                        placeholder="Processo"
-                        required={true}
-                        value={search.processo}
-                        onChange={handleSearch}
-                    />
-                </div>
+
+            <div className='menu'>
+
+                <button className='menu-button button-green' onClick={() => { CreateAgendamento() }}>
+                    <i className='fa-solid fa-plus'></i> Novo
+                </button>
             </div>
 
-            <button type="button" className='btn btn-custom' onClick={() => { CreateAgendamento() }}><i className='fa fa-plus'></i> Novo</button>
-
-            <div className='row table-container'>
+            <div className='row table-container mt-5'>
                 <div className='col-md-12'>
-                    <table className='table table-small'>
-                        <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Processo</th>
-                                <th>Hora inicial</th>
-                                <th>Hora final</th>
-                                <th>Opções</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            { agendamentos.length ? agendamentos.map(r => (
+                    {agendamentos.length > 0 ?
+                        <div className="tabs-agendamentos">
+                            <Tab.Container defaultActiveKey="agendamentos">
+                                <Nav variant="pills">
+                                    <Nav.Item>
+                                        <Nav.Link eventKey="agendamentos">
+                                            Agendamentos
+                                        </Nav.Link>
+                                    </Nav.Item>
+                                </Nav>
 
-                                <tr key={r.id}>
-                                    <td>{r.id}</td>
-                                    <td>{r.processo.nro_processo }</td>
-                                    <td>{r.agendamento_horario_inicio}</td>
-                                    <td>{r.agendamento_horario_fim}</td>
-                                    <td>
-                                        <div className="btn-group" role="group">
+                                <Tab.Content>
 
-                                            <span id="btnGroupDrop1" type="button" className="btn btn-custom dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i className='fa fa-cog'></i> opções
-                                            </span>
-                                            <ul className="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                <li> <NavLink className="dropdown-item" id="edit" to={`/agendamentos/edit/${r.id}`}> <i className='fa fa-edit'></i> Editar</NavLink></li>
-                                                <li> <a className="dropdown-item" onClick={() => { DeleteAgendamento(r.id) }} to="#"><i className="fa-solid fa-trash"></i> Excluir</a></li>
-                                               
-                                            </ul>
+                                    <Tab.Pane eventKey="agendamentos">
+
+                                        <Title title={"Agendamentos Cadastrados"} />
+                                        <div className="row">
+                                            <div className="col-md-12 no-padding">
+                                                <Table
+                                                    columns={columnsAgendamento}
+                                                    data={agendamentos}
+                                                    onEdit={EditAgendamento}
+                                                    onDelete={DeleteAgendamento}
+                                                />
+                                            </div>
                                         </div>
-                                    </td>
-                                </tr>
-                            )): "Nenhum Agendamento encontrado"}
-                        </tbody>
-                    </table>
+                                    </Tab.Pane>
+                                </Tab.Content>
+                            </Tab.Container>
+                        </div>
+                        : "Agendamentos não encontrados"}
+
                 </div>
             </div>
+
 
         </>
 

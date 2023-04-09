@@ -59,7 +59,7 @@ const ModalTarefa = ({ Model, show, onHide, onAdd, onEdit }) => {
         <>
             <Modal ref={modalRef} show={show} onHide={handleHide}>
                 <Modal.Header closeButton>
-                    <Modal.Title><i className="fa-solid fa-users"></i> <small> Adicionar Tarefa</small></Modal.Title>
+                    <Modal.Title><i className="fa-solid fa-clipboard-list"></i> <small> Adicionar Tarefa</small></Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
 

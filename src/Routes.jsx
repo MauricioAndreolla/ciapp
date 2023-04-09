@@ -15,14 +15,11 @@ import ProcessosCreate from './components/processos/Create';
 
 import Usuarios from "./components/usuarios/Index";
 
-
 import Entidades from './components/entidades/Index';
 import EntidadesCreate from './components/entidades/Create';
 
-import AgendamentosEntidade from './components/agendamentos/AgendamentosEntidade';
-import AgendamentosCreate from './components/agendamentos/Create';
-import AgendamentosEdit from './components/agendamentos/Edit';
 import Agendamentos from './components/agendamentos/Index';
+import AgendamentosCreate from './components/agendamentos/Create';
 
 const Main = () => {
 
@@ -58,14 +55,13 @@ const Main = () => {
                         <Route path="usuarios" element={<Private><Usuarios /></Private>} />
   
                         <Route path="entidades" element={<Private><Entidades /></Private>} />
-                        <Route path="entidades/Edit/:id" element={<Private><EntidadesCreate /></Private>} />
                         <Route path="entidades/Create" element={<Private><EntidadesCreate /></Private>} />
+                        <Route path="entidades/Edit/:id" element={<Private><EntidadesCreate /></Private>} />
                        
 
                         <Route path="agendamentos" element={<Private><Agendamentos /></Private>} />
                         <Route path="agendamentos/Create" element={<Private><AgendamentosCreate /></Private>} />
-                        <Route path="agendamentos/Edit/:id" element={<Private><AgendamentosEdit /></Private>} />
-                        <Route path="agendamentos/AgendamentoEntidade" element={<Private><AgendamentosEntidade /></Private>} />
+                        <Route path="agendamentos/Edit/:id" element={<Private><AgendamentosCreate /></Private>} />
                         
                     </Route>
                 </Routes>

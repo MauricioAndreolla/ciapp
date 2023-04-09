@@ -17,6 +17,8 @@ const FichaMedicaDrogas = require('./FichaMedicaDrogas');
 const Vara = require('./Vara');
 const Processo = require('./Processo');
 const Tarefa = require('./Tarefa');
+const Agendamento = require('./Agendamento');
+const AtestadoFrequencia = require('./AtestadoFrequencia');
 
 Endereco.belongsTo(Cidade);
 Cidade.belongsTo(UF);
@@ -59,11 +61,18 @@ Entidade.belongsTo(Endereco);
 
 Entidade.hasMany(Tarefa);
 
+Agendamento.hasOne(AtestadoFrequencia);
+AtestadoFrequencia.hasMany(Agendamento);
+
+Agendamento.belongsTo(Processo);
+Agendamento.belongsTo(Tarefa);
 
 FichaMedica.belongsToMany(Droga, {through: FichaMedicaDrogas});
 Droga.belongsToMany(FichaMedica, {through: FichaMedicaDrogas});
 
 module.exports = {
+    Agendamento,
+    AtestadoFrequencia,
     Tarefa,
     Usuario,
     Entidade,

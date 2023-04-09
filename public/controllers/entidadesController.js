@@ -17,7 +17,7 @@ module.exports = {
         if (!payload.entidade.cnpj)
             return { status: false, text: "Informe um CNPJ" };
 
-        if (!payload.entidade.telefone1 || !payload.entidade.telefone2)
+        if (!payload.entidade.telefone1)
             return { status: false, text: "Informe um telefone" };
 
         if (!payload.endereco)
@@ -40,7 +40,7 @@ module.exports = {
 
             let check = await db.models.Entidade.findAll({
                 where: {
-                    cnpj: parseInt(payload.entidade.cnpj)
+                    cnpj: payload.entidade.cnpj
                 }
             })
             if (check.length > 0)
@@ -56,10 +56,10 @@ module.exports = {
             }).then(async (endereco) => {
                 Entidade = await db.models.Entidade.create({
                     nome: payload.entidade.nome,
-                    cnpj: parseInt(payload.entidade.cnpj),
+                    cnpj: payload.entidade.cnpj,
                     email: payload.entidade.email,
-                    telefone1: parseInt(payload.entidade.telefone1),
-                    telefone2: parseInt(payload.entidade.telefone2),
+                    telefone1: payload.entidade.telefone1,
+                    telefone2: payload.entidade.telefone2,
                     tipo_instituicao: payload.entidade.tipoInstituicao,
                     EnderecoId: endereco.id
                 });
@@ -101,7 +101,7 @@ module.exports = {
         if (!payload.entidade.cnpj)
             return { status: false, text: "Informe um CNPJ" };
 
-        if (!payload.entidade.telefone1 || !payload.entidade.telefone2)
+        if (!payload.entidade.telefone1)
             return { status: false, text: "Informe um telefone" };
 
         if (!payload.endereco)
@@ -125,11 +125,11 @@ module.exports = {
 
             let Entidade = await db.models.Entidade.findByPk(payload.entidade.id);
             Entidade.nome = payload.entidade.nome;
-            Entidade.cnpj = parseInt(payload.entidade.cnpj);
+            Entidade.cnpj = payload.entidade.cnpj;
             Entidade.email = payload.entidade.email;
             Entidade.telefone1 = payload.entidade.telefone1;
             Entidade.telefone2 = payload.entidade.telefone2;
-            Entidade.tipo_instituicao = payload.entidade.tipo_instituicao;
+            Entidade.tipo_instituicao = payload.entidade.tipoInstituicao;
             await Entidade.save();
 
             let Endereco = await db.models.Endereco.findByPk(payload.endereco.id);
@@ -190,7 +190,6 @@ module.exports = {
 
         let where = {};
         let someAttributes = {};
-        where.tipo_instituicao = 0;
 
 
         if (search) {
@@ -273,7 +272,7 @@ module.exports = {
             email: data.dataValues.email,
             telefone1: data.dataValues.telefone1,
             telefone2: data.dataValues.telefone2,
-            tipo_instituicao: data.dataValues.tipo_instituicao,
+            tipoInstituicao: data.dataValues.tipo_instituicao,
             dt_descredenciamento: data.dataValues.dt_descredenciamento,
             observacao: data.dataValues.observacao,
             endereco: {
