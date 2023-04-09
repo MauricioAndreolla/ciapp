@@ -7,17 +7,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
     const modalRef = useRef(null);
 
-    const [agendamento, setAgendamento] = useState(
-        [
-            // {
-            //     id: null,
-            //     agendamento_dia_inicial: '',
-            //     agendamento_horario_inicio: '08:00',
-            //     agendamento_horario_fim: '18:00',
-            //     agendamento_dias_semana: []
-            // }
-        ]
-    );
+    const [agendamento, setAgendamento] = useState([]);
 
     useEffect(() => {
         if (Model != null) {
@@ -26,7 +16,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                 agendamento_dia_inicial: Model.agendamento_dia_inicial,
                 agendamento_horario_inicio: Model.agendamento_horario_inicio,
                 agendamento_horario_fim: Model.agendamento_horario_fim,
-                agendamento_dias_semana: Model.agendamento_dias_semana
+                agendamento_dias_semana: Model.agendamento_dias_semana,
+                novo_registro: Model.novo_registro
             });
         }
     }, [Model]);
@@ -59,7 +50,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
             agendamento_dia_inicial: '',
             agendamento_horario_inicio: '',
             agendamento_horario_fim: '',
-            agendamento_dias_semana: []
+            agendamento_dias_semana: [],
+            novo_registro: true
         })
     }
 
@@ -98,12 +90,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
     // }
 
-
-
-
     return (
         <>
-
             <Modal ref={modalRef} show={show} onHide={handleHide}>
                 <Modal.Header closeButton>
                     <Modal.Title><i className="fa-solid fa-clipboard-user"></i> <small> Cadastrar Agendamento</small></Modal.Title>
@@ -155,8 +143,12 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                         <div className="form-group">
                             <div className="input-form">
                                 <label htmlFor="agendamento_dias_semana">Dias Semana</label>
-                                <InputDiasSemana id="agendamento_dias_semana" name="agendamento_dias_semana" handleChange={handleDiasSemana}
-                                    value={agendamento.agendamento_dias_semana} />
+                                <InputDiasSemana
+                                    id="agendamento_dias_semana"
+                                    name="agendamento_dias_semana"
+                                    handleChange={handleDiasSemana}
+                                    value={agendamento.agendamento_dias_semana}
+                                />
                             </div>
                         </div>
 

@@ -27,7 +27,8 @@ export default function Create() {
         agendamento_dia_inicial: '',
         agendamento_horario_inicio: '08:00',
         agendamento_horario_fim: '18:00',
-        agendamento_dias_semana: []
+        agendamento_dias_semana: [],
+        novo_registro: true
     });
 
     const [tempID, setempID] = useState(0);
@@ -101,15 +102,6 @@ export default function Create() {
 
     }
 
-    const handleAgendamento = (evt, prop_name = null) => {
-        let value = evt.value ?? evt.target.value;
-
-        setAgendamento({
-            ...agendamento,
-            [prop_name ? prop_name : evt.target.name]: value
-        })
-    }
-
 
     const handleSearchDropPrestador = async (evt) => {
         // const value = evt;
@@ -151,7 +143,7 @@ export default function Create() {
     }
 
     const columnsAgendamento = [
-        { id:  1, Header: 'Data inicial', accessor: e => formatDate(e) },
+        { id: e => e.agendamento_dia_inicial, Header: 'Data inicial', accessor: e => formatDate(e) },
         { Header: 'Horário inicial', accessor: 'agendamento_horario_inicio' },
         { Header: 'Horário fim', accessor: 'agendamento_horario_fim' },
 
@@ -164,17 +156,39 @@ export default function Create() {
         setShowModalAgendamento(show);
     }
 
-    const handleModalEditAgendamento = (object) => {
-        handleModalAgendamento(true, object);
-    }
-
-    const handleModelAddAgendamento = (object) => {
+    const modalEditAgendamento = (object) => {
         handleModalAgendamento(true, object);
     }
 
     const getTempID = async () => {
         setempID(tempID - 1);
         return tempID - 1;
+    }
+
+    const deleteAgendamento = (object) => {
+        if (object) {
+            confirmAlert({
+                title: 'Confirmação',
+                message: 'Tem certeza que deseja excluir este item?',
+                buttons: [
+                    {
+                        label: 'Sim',
+                        onClick: () => {
+                            let agendamentos = agendamento.filter(s => s.id !== object.id);
+                            setAgendamento([
+                                ...agendamentos,
+                            ]);
+                        }
+                    },
+                    {
+                        className: 'btn-blue',
+                        label: 'Não',
+                        onClick: () => {
+                        }
+                    }
+                ]
+            });
+        }
     }
 
     const createAgendamento = async (object) => {
@@ -194,9 +208,23 @@ export default function Create() {
             agendamentos.push(object);
 
             setAgendamento([
-                ...agendamento,
+                ...agendamentos,
             ]);
             console.log(agendamento)
+        }
+        handleModalAgendamento(false, null);
+    }
+
+    const editAgendamento = (object) => {
+        if (object) {
+            var agendamentos = agendamento;
+
+            const index = agendamentos.findIndex(s => s.id == object.id);
+            agendamentos.splice(index, 1, object);
+
+            setAgendamento([
+                ...agendamentos
+            ]);
         }
         handleModalAgendamento(false, null);
     }
@@ -301,7 +329,7 @@ export default function Create() {
                                                     <i className='fa-solid fa-plus'></i> Adicionar Agendamento
                                                 </button>
                                             </div>
-                                            <Table columns={columnsAgendamento} data={agendamento} onEdit={null} onDelete={null} />
+                                            <Table columns={columnsAgendamento} data={agendamento} onEdit={modalEditAgendamento} onDelete={deleteAgendamento} />
                                         </div>
                                     </div>
                                 </Tab.Pane>
@@ -311,7 +339,7 @@ export default function Create() {
                 </div>
             </div>
 
-            <ModalAgendamento Model={modelAgendamento} show={showModalAgendamento} onHide={() => { handleModalAgendamento(false) }} onAdd={createAgendamento} onEdit={handleSubmit} />
+            <ModalAgendamento Model={modelAgendamento} show={showModalAgendamento} onHide={() => { handleModalAgendamento(false) }} onAdd={createAgendamento} onEdit={editAgendamento} />
 
 
         </>
