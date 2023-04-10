@@ -71,8 +71,7 @@ const Create = () => {
             endereco
         }
 
-        console.log(entidade);
-
+    
         confirmAlert({
             title: 'Confirmação',
             message: `Confirma a criação da entidade ${entidade.nome}`,

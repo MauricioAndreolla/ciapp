@@ -29,7 +29,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
     const handleAgendamento = (evt, name = null) => {
         let value = evt.value ?? evt.target.value;
-
+       
         setAgendamento({
             ...agendamento,
             [name ? name : evt.target.name]: value
@@ -37,6 +37,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     }
 
     const handleDiasSemana = (value) => {
+        
         setAgendamento({
             ...agendamento,
             ["agendamento_dias_semana"]: value.sort((a, b) => (a.value > b.value) ? 1 : ((b.value > a.value) ? -1 : 0))
@@ -161,11 +162,23 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                     {
                         agendamento.id != null ?
 
-                            <Button className='btn btn-sm btn-blue' type="submit" variant="primary" onClick={handleEdit}>
+                            <Button
+                                className='btn btn-sm btn-blue'
+                                type="submit"
+                                variant="primary"
+                                onClick={handleEdit}
+                                disabled={!(agendamento.agendamento_dia_inicial)}
+                            >
                                 <i className="fa-solid fa-save"></i>  <small>Salvar</small>
                             </Button>
                             :
-                            <Button className='btn btn-sm btn-blue' type="submit" variant="primary" onClick={handleAdd}>
+                            <Button
+                                className='btn btn-sm btn-blue'
+                                type="submit"
+                                variant="primary"
+                                onClick={handleAdd}
+                                disabled={!(agendamento.agendamento_dia_inicial)}
+                            >
                                 <i className="fa-solid fa-plus"></i>  <small>Adicionar</small>
                             </Button>
 

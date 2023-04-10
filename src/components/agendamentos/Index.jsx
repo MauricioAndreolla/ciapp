@@ -18,6 +18,7 @@ export default function Index(props) {
     const fetchData = async () => {
         const data = await window.api.Action({ controller: "Agendamentos", action: "GetAgendamentos", params: null });
         setAgendamentos(data);
+        console.log(data);
     }
 
     useEffect(() => {
@@ -25,8 +26,6 @@ export default function Index(props) {
     }, []);
 
     const columnsAgendamento = [
-        { Header: 'Processo', accessor: 'processo' },
-        { Header: 'Prestador', accessor: 'prestador' },
         { Header: 'Data e hora inicial', accessor: 'inicial' },
         { Header: 'Data e hora final', accessor: 'final' },
         { Header: 'Tarefa', accessor: 'tarefa' },

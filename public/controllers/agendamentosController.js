@@ -126,20 +126,20 @@ module.exports = {
         }   
        
 
-        const data = await db.sequelize.models.Agendamentos.findAll({
+        const data = await db.models.Agendamento.findAll({
             where: {
                 //ProcessoId: where,
             },
             include: [
-                {
-                    model: db.sequelize.models.Processos,
-                    include: [
-                        { model: db.sequelize.models.Instituicoes },
-                        { model: db.sequelize.models.Prestadores },
-                        { model: db.sequelize.models.Vara },
-                        { model: db.sequelize.models.AtestadoFrequencia }]
-                },
-                { model: db.sequelize.models.Tarefa }
+                // {
+                //     model: db.models.Processo,
+                //     include: [
+                //         { model: db.models.Instituicoes },
+                //         { model: db.models.Prestadores },
+                //         { model: db.models.Vara },
+                //         { model: db.models.AtestadoFrequencia }]
+                // },
+                // { model: db.models.Tarefa }
             ],
         });
 
@@ -160,29 +160,29 @@ module.exports = {
                     sabado: s.sabado,
                 },
 
-                processo_id: s.ProcessoId,
-                tarefa_id: s.TarefaId,
-                tarefa: s.Tarefa,
-                processo: {
-                    nro_processo: s.Processo.nro_processo,
-                    nro_artigo_penal: s.Processo.nro_artigo_penal,
-                    pena_originaria: s.Processo.pena_originaria,
-                    pena_originaria_regime: s.Processo.pena_originaria_regime,
-                    inciso: s.Processo.inciso,
-                    detalhamento: s.Processo.detalhamento,
-                    prd: s.Processo.prd,
-                    prd_descricao: s.Processo.prd_descricao,
-                    horas_cumprir: s.Processo.horas_cumprir,
-                    possui_multa: s.Processo.possui_multa,
-                    valor_a_pagar: s.Processo.valor_a_pagar,
-                    qtd_penas_anteriores: s.Processo.qtd_penas_anteriores,
-                    vara: s.Processo.Vara ? s.Processo.Vara.nome : '',
-                    nome_prestador: s.Processo.Prestadore.nome,
-                    imagem_prestador: s.Processo.Prestadore.image,
-                    horas_cumpridas: s.Processo.AtestadoFrequencia.map(s => {
-                        return diff_hours(s.dt_entrada, s.dt_saida)
-                    }).reduce((a, b) => a + b, 0)
-                }
+                // processo_id: s.ProcessoId,
+                // tarefa_id: s.TarefaId,
+                // tarefa: s.Tarefa,
+                // processo: {
+                //     nro_processo: s.Processo.nro_processo,
+                //     nro_artigo_penal: s.Processo.nro_artigo_penal,
+                //     pena_originaria: s.Processo.pena_originaria,
+                //     pena_originaria_regime: s.Processo.pena_originaria_regime,
+                //     inciso: s.Processo.inciso,
+                //     detalhamento: s.Processo.detalhamento,
+                //     prd: s.Processo.prd,
+                //     prd_descricao: s.Processo.prd_descricao,
+                //     horas_cumprir: s.Processo.horas_cumprir,
+                //     possui_multa: s.Processo.possui_multa,
+                //     valor_a_pagar: s.Processo.valor_a_pagar,
+                //     qtd_penas_anteriores: s.Processo.qtd_penas_anteriores,
+                //     vara: s.Processo.Vara ? s.Processo.Vara.nome : '',
+                //     nome_prestador: s.Processo.Prestadore.nome,
+                //     imagem_prestador: s.Processo.Prestadore.image,
+                //     horas_cumpridas: s.Processo.AtestadoFrequencia.map(s => {
+                //         return diff_hours(s.dt_entrada, s.dt_saida)
+                //     }).reduce((a, b) => a + b, 0)
+                // }
             }
             return agendamentos;
         });

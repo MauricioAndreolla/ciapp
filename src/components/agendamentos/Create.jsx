@@ -8,19 +8,20 @@ import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-boot
 import Table from '../layout/Table';
 import { confirmAlert } from "react-confirm-alert";
 import { toast } from 'react-toastify';
+import makeAnimated from 'react-select/animated';
 
 
 
 export default function Create() {
+    const navigate = useNavigate();
+    const animatedComponents = makeAnimated();
 
+    const [tempID, setempID] = useState(0);
+    const [tarefas, setTarefas] = useState([]);
     const [entidades, setEntidades] = useState([]);
     const [processos, setProcessos] = useState([]);
     const [prestadores, setPrestadores] = useState([]);
-    const [tarefas, setTarefas] = useState([]);
-
-    const [agendamento, setAgendamento] = useState(
-        []
-    );
+    const [agendamento, setAgendamento] = useState([]);
 
     const [modelAgendamento, setModelAgendamento] = useState({
         id: null,
@@ -31,56 +32,97 @@ export default function Create() {
         novo_registro: true
     });
 
-    const [tempID, setempID] = useState(0);
-    const navigate = useNavigate();
 
     useEffect(() => {
-        // fetchDataPrestadores();
-        // fetchDataTarefas();
+        fetchDataPrestadores();
+        fetchDataEntidades();
     }, []);
 
-    // const fetchDataPrestadores = async () => {
-    //     let data = await window.api.Action({ controller: "Processos", action: "GetPrestadores" });
-    //     setPrestadores(data);
-    // }
+    const fetchDataPrestadores = async () => {
+        let data = await window.api.Action({ controller: "Prestador", action: "GetPrestadores" });
+        let prestador;
 
-    // const fetchDataTarefas = async () => {
-    //     let data = await window.api.Action({ controller: "Entidades", action: "GetTarefasLabel" });
-    //     setTarefas(data);
-    // }
+        let values = data.map((element) => {
+            return prestador = {
+                value: element.id,
+                label: `${element.nome} - ${element.cpf}`
+            }
+        });
 
-    // const fetchDataEntidades = async (value) => {
+        setPrestadores(values);
+    }
 
-    //     let data = tarefas.map((e) => {
+    const fetchDataEntidades = async () => {
+        let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades" });
+        let entidade;
 
-    //         if (value.instituicaoTarefaId == e.instituicoes.id && e.instituicoes.dt_descredenciamento == null) {
-    //             let entidadeLabel = {
-    //                 value: e.instituicoes.id,
-    //                 label: e.instituicoes.nome
-    //             }
-    //             return entidadeLabel;
-    //         }
-    //     })
-    //     data = data.filter((e) => { return e != undefined });
+        let values = data.map((element) => {
+            return entidade = {
+                value: element.id,
+                label: `${element.nome} - ${element.cnpj}`
+            }
+        });
 
-    //     var distinct = []
-    //     for (var i = 0; i < data.length; i++) {
-    //         if (distinct.filter(s => s.value == data[i].value).length == 0) {
-    //             distinct.push(data[i])
-    //         }
-    //     }
+        setEntidades(values);
 
-    //     setEntidades(distinct);
-    // }
+        // let data = tarefas.map((e) => {
 
-    // const fetchDataProcessos = async (value) => {
-    //     let data = await window.api.Action({ controller: "Processos", action: "GetProcessosLabel", params: value });
-    //     setProcessos(data);
-    // }
+        //     if (value.instituicaoTarefaId == e.instituicoes.id && e.instituicoes.dt_descredenciamento == null) {
+        //         let entidadeLabel = {
+        //             value: e.instituicoes.id,
+        //             label: e.instituicoes.nome
+        //         }
+        //         return entidadeLabel;
+        //     }
+        // })
+        // data = data.filter((e) => { return e != undefined });
 
-    const fetchDataAgendamento = async () => {
-        const data = await window.api.Action({ controller: "Agendamento", action: "GetAgendamentos", params: null });
-        setAgendamento(data);
+        // var distinct = []
+        // for (var i = 0; i < data.length; i++) {
+        //     if (distinct.filter(s => s.value == data[i].value).length == 0) {
+        //         distinct.push(data[i])
+        //     }
+        // }
+
+        // setEntidades(distinct);
+    }
+
+    const handleSearchDropPrestador = async (evt) => {
+        let search = {
+            id_prestador: {
+                value: evt.value
+            }
+        };
+
+        let data = await window.api.Action({ controller: "Processo", action: "GetProcessos", params: search });
+        let processos;
+
+        let value = data.map((element) => {
+            return processos = {
+                value: element.id,
+                label: element.nro_processo
+            }
+        });
+
+        setProcessos(value);
+    }
+
+
+    const handleSearchDropEntidades = async (evt) => {
+        let search = {
+            id: evt.value
+        }
+
+        let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: search });
+        const tarefa = data[0].tarefa;
+ 
+        let value = tarefa.map((element) => {
+            if (element.status == true) {
+                return { value: element.id, label: element.titulo }
+            }
+        });
+
+        setTarefas(value);
     }
 
     const handleSubmit = async (object) => {
@@ -100,41 +142,6 @@ export default function Create() {
         if (postResult.status)
             navigate("/agendamentos");
 
-    }
-
-
-    const handleSearchDropPrestador = async (evt) => {
-        // const value = evt;
-        // setSearch({
-        //     ...search,
-        //     ['id_prestador']: value
-        // });
-        // fetchDataProcessos(value);
-    }
-
-    const handleSearchDropTarefa = async (evt) => {
-        // const value = evt;
-        // setSearch({
-        //     ...search,
-        //     ['id_tarefa']: value
-        // });
-        // fetchDataEntidades(value);
-    }
-
-    const handleSearchDropProcesso = async (evt) => {
-        // const value = evt;
-        // setSearch({
-        //     ...search,
-        //     ['id_processo']: value
-        // });
-    }
-
-    const handleSearchDropEntidades = async (evt) => {
-        // const value = evt;
-        // setSearch({
-        //     ...search,
-        //     ['id_entidade']: value
-        // });
     }
 
     const formatDate = ({ agendamento_dia_inicial }) => {
@@ -210,7 +217,6 @@ export default function Create() {
             setAgendamento([
                 ...agendamentos,
             ]);
-            console.log(agendamento)
         }
         handleModalAgendamento(false, null);
     }
@@ -244,15 +250,15 @@ export default function Create() {
 
             <div className="row">
                 <Title title="Seleção do Agendamento" />
-                <div className="col-md-12 px-5 mb-3">
+                <div className="col-md-12 px-5 mb-5">
                     <div className="row">
                         <div className="col-md-4">
-                            <div className="input-form mb-3 mt-3">
+                            <div className="input-form">
+                                <label htmlFor="prestador">Prestadores</label>
                                 <Select
                                     options={prestadores}
-                                    id="id_prestador"
-                                    name="id_prestador"
-                                    // value={prestadores}
+                                    id="prestador"
+                                    name="prestador"
                                     placeholder="Prestador"
                                     onChange={handleSearchDropPrestador}
                                 />
@@ -260,15 +266,13 @@ export default function Create() {
                         </div>
 
                         <div className="col-md-4">
-                            <div className="input-form mb-3 mt-3">
+                            <div className="input-form">
+                                <label htmlFor="processo">Processo</label>
                                 <Select
-
                                     options={processos}
-                                    id="id_processo"
-                                    name="id_processo"
-                                    // value={processos}
+                                    id="processo"
+                                    name="processo"
                                     placeholder="Processo"
-                                    onChange={handleSearchDropProcesso}
                                 />
 
                             </div>
@@ -276,27 +280,26 @@ export default function Create() {
 
                         <div className="row">
                             <div className="col-md-4">
-                                <div className="input-form mb-3 mt-3">
+                                <div className="input-form">
+                                    <label htmlFor="entidade">Entidade</label>
                                     <Select
-                                        options={tarefas}
-                                        id="id_tarefa"
-                                        name="id_tarefa"
-                                        placeholder="Tarefa"
-                                        onChange={handleSearchDropTarefa}
+                                        options={entidades}
+                                        id="entidade"
+                                        name="entidade"
+                                        placeholder="Entidade"
+                                        onChange={handleSearchDropEntidades}
                                     />
-
                                 </div>
                             </div>
 
                             <div className="col-md-4">
-                                <div className="input-form mb-3 mt-3">
+                                <div className="input-form">
+                                    <label htmlFor="tarefa">Tarefa</label>
                                     <Select
-                                        options={entidades}
-                                        id="id_entidade"
-                                        name="id_entidade"
-                                        // value={search.id_entidade}
-                                        placeholder="Instituição"
-                                        onChange={handleSearchDropEntidades}
+                                        options={tarefas}
+                                        id="tarefa"
+                                        name="tarefa"
+                                        placeholder="Tarefa"
                                     />
                                 </div>
                             </div>
