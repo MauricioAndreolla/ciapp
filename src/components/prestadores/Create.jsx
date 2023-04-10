@@ -31,7 +31,7 @@ const Create = () => {
         estado_civil: 0,
         etnia: 0,
         escolaridade: 0,
-        renda_familiar: 0,
+        renda_familiar: "0,00",
         telefone1: '',
         telefone2: '',
         religiao: '',
@@ -789,13 +789,13 @@ const Create = () => {
                     <div className="form-group row">
 
                         <div className="col-md-6">
-                            <label htmlFor="nome">Nome</label>
+                            <label htmlFor="nome">Nome <small className="campo-obrigatorio"></small></label>
                             <input
                                 className="form-control shadow-none input-custom"
                                 id="nome"
                                 name="nome"
                                 type="text"
-                                placeholder="Nome do prestador"
+                                placeholder=""
                                 value={prestador.nome}
                                 required={true}
                                 onChange={handlePrestador} />
@@ -807,7 +807,7 @@ const Create = () => {
                                 id="nome_mae"
                                 name="nome_mae"
                                 type="text"
-                                placeholder="Nome da Mãe"
+                                placeholder=""
                                 value={prestador.nome_mae}
                                 required={true}
                                 onChange={handlePrestador} />
@@ -819,20 +819,20 @@ const Create = () => {
                     <div className="form-group row">
 
                         <div className="col-md-3">
-                            <label htmlFor="cpf">CPF</label>
+                            <label htmlFor="cpf">CPF <small className="campo-obrigatorio"></small></label>
                             <input
                                 className="form-control shadow-none input-custom"
                                 id="cpf"
                                 name="cpf"
                                 type="text"
-                                placeholder="CPF"
+                                placeholder="000.000.000-00"
                                 value={prestador.cpf}
                                 required={true}
                                 onChange={handlePrestador} />
                         </div>
 
                         <div className="col-md-3">
-                            <label htmlFor="dt_nascimento">Data de Nascimento</label>
+                            <label htmlFor="dt_nascimento">Data de Nascimento <small className="campo-obrigatorio"></small></label>
                             <input
                                 className="form-control shadow-none input-custom"
                                 id="dt_nascimento"
@@ -845,26 +845,26 @@ const Create = () => {
                         </div>
 
                         <div className="col-md-3">
-                            <label htmlFor="telefone1">Telefone</label>
+                            <label htmlFor="telefone1">Telefone <small className="campo-obrigatorio"></small></label>
                             <input
                                 className="form-control shadow-none input-custom"
                                 id="telefone1"
                                 name="telefone1"
                                 type="text"
-                                placeholder="Telefone"
+                                placeholder="(00) 00000-0000"
                                 value={prestador.telefone1}
                                 required={true}
                                 onChange={handlePrestador} />
                         </div>
 
                         <div className="col-md-3">
-                            <label htmlFor="telefone2">Telefone 2 (opcional)</label>
+                            <label htmlFor="telefone2">Telefone 2</label>
                             <input
                                 className="form-control shadow-none input-custom"
                                 id="telefone2"
                                 name="telefone2"
                                 type="text"
-                                placeholder="Telefone 2 (opcional)"
+                                placeholder="(00) 00000-0000"
                                 value={prestador.telefone2}
                                 required={true}
                                 onChange={handlePrestador} />
@@ -878,7 +878,7 @@ const Create = () => {
                     <div className="form-group row">
 
                         <div className="col-md-3">
-                            <label htmlFor="estado_civil">Estado Civil</label>
+                            <label htmlFor="estado_civil">Estado Civil <small className="campo-obrigatorio"></small></label>
                             <select className="select-custom w-10 form-select form-select-md" id="estado_civil" name="estado_civil"
                                 value={prestador.estado_civil}
                                 required={true}
@@ -892,7 +892,7 @@ const Create = () => {
                         </div>
 
                         <div className="col-md-3">
-                            <label htmlFor="nome">Etnia</label>
+                            <label htmlFor="nome">Etnia <small className="campo-obrigatorio"></small></label>
                             <select className="select-custom w-10 form-select form-select-md" id="etnia" name="etnia"
                                 value={prestador.etnia}
                                 required={true}
@@ -907,7 +907,7 @@ const Create = () => {
                         </div>
 
                         <div className="col-md-3">
-                            <label htmlFor="nome">Escolaridade</label>
+                            <label htmlFor="nome">Escolaridade <small className="campo-obrigatorio"></small></label>
                             <select className="select-custom w-10 form-select form-select-md" id="escolaridade" name="escolaridade"
                                 value={prestador.escolaridade}
                                 required={true}
@@ -930,7 +930,7 @@ const Create = () => {
                                 name='religiao'
                                 className="form-control shadow-none input-custom"
                                 type="text"
-                                placeholder="Religião"
+                                placeholder=""
                                 value={prestador.religiao}
                                 onChange={handlePrestador}
                             />
@@ -943,7 +943,6 @@ const Create = () => {
                                 name='renda_familiar'
                                 className="form-control shadow-none input-custom"
                                 type="text"
-                                placeholder="Renda Familiar"
                                 value={prestador.renda_familiar}
                                 onInput={handleInputChange}
                                 onChange={handleInputChange}
@@ -1010,7 +1009,7 @@ const Create = () => {
                         <Tab.Pane eventKey="endereco">
                             <div className="row">
                                 <div className="col-md-12 no-padding">
-                                    <Endereco endereco={endereco} handleChange={handleEndereco} />
+                                    <Endereco endereco={endereco} handleChange={handleEndereco} camposObrigatorios={true} />
                                 </div>
                             </div>
                         </Tab.Pane>

@@ -328,4 +328,21 @@ module.exports = {
 
     },
 
+    async GetCentraisSelect() {
+
+        const data = await db.models.Entidade.findAll({
+
+            where: {
+                tipo_instituicao: TipoInstituicao.Central
+            },
+        });
+
+        return data.map(s => {
+            return {
+                value: s.id,
+                label: `${s.id} - ${s.nome}`
+            }
+        });
+    }
+
 }
