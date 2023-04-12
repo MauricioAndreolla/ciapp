@@ -1,29 +1,49 @@
 import { useNavigate, NavLink } from 'react-router-dom'
-import { useState, useEffect } from "react";
-
+import React, { useState, useEffect, useRef } from "react";
+import InputDiasSemana from '../layout/InputDiasSemana';
+import { Button, Modal } from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import Title from "../layout/Title";
 import { toast } from 'react-toastify';
 import { Alert, Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
 import Table from '../layout/Table';
+import ModalAgendamento from './ModalAgendamento';
 
 
 export default function Index(props) {
-
     const navigate = useNavigate();
-    const [agendamentos, setAgendamentos] = useState({});
+    const [showModalAgendamento, setShowModalAgendamento] = useState(false);
+    const [tempID, setempID] = useState(0);
+    
+
+    const [agendamento, setAgendamento] = useState([]);
+    const [agendamentos, setAgendamentos] = useState({
+        entidade: '',
+        processo: '',
+        prestador: '',
+        agendamento: []
+    });
+
+    const [modelAgendamento, setModelAgendamento] = useState({
+        id: null,
+        agendamento_dia_inicial: '',
+        agendamento_horario_inicio: '08:00',
+        agendamento_horario_fim: '18:00',
+        agendamento_dias_semana: [],
+        novo_registro: true
+    });
 
 
     const fetchData = async () => {
         const data = await window.api.Action({ controller: "Agendamentos", action: "GetAgendamentos", params: null });
         setAgendamentos(data);
-        console.log(data);
     }
 
     useEffect(() => {
         fetchData();
     }, []);
+
 
     const columnsAgendamento = [
         { Header: 'Data e hora inicial', accessor: 'inicial' },
@@ -32,7 +52,9 @@ export default function Index(props) {
     ]
 
     const CreateAgendamento = () => {
-        navigate('create');
+        handleModalAgendamento(true);
+        // navigate(`/Create`);
+
     }
 
     const EditAgendamento = (evt) => {
@@ -71,6 +93,53 @@ export default function Index(props) {
                 );
             }
         });
+    }
+
+    const getTempID = async () => {
+        setempID(tempID - 1);
+        return tempID - 1;
+    }
+
+    const handleModalAgendamento = (show = true, model = null) => {
+        setModelAgendamento(model);
+        setShowModalAgendamento(show);
+    }
+
+    const createAgendamento = async (object) => {
+        if (object) {
+            var agendamentos = agendamento;
+
+            var exist = agendamentos.find(s => s.agendamento_dia_inicial == object.agendamento_dia_inicial);
+            if (exist) {
+                toast.error(`Agendamento já informado`, { autoClose: false });
+                handleModalAgendamento(false);
+                return;
+            }
+            if (object.novo_registro) {
+                object.id = await getTempID();
+            }
+
+            agendamentos.push(object);
+
+            setAgendamento([
+                ...agendamentos,
+            ]);
+        }
+        handleModalAgendamento(false, null);
+    }
+
+    const editAgendamento = (object) => {
+        if (object) {
+            var agendamentos = agendamento;
+
+            const index = agendamentos.findIndex(s => s.id == object.id);
+            agendamentos.splice(index, 1, object);
+
+            setAgendamento([
+                ...agendamentos
+            ]);
+        }
+        handleModalAgendamento(false, null);
     }
 
     return (
@@ -123,7 +192,7 @@ export default function Index(props) {
                 </div>
             </div>
 
-
+            <ModalAgendamento Model={modelAgendamento} show={showModalAgendamento} onHide={() => { handleModalAgendamento(false) }} onAdd={createAgendamento} onEdit={editAgendamento} />
         </>
 
 

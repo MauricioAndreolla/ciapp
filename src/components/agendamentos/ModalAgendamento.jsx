@@ -1,6 +1,11 @@
+import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
+import Table from '../layout/Table';
+import Title from "../layout/Title";
 import React, { useState, useEffect, useRef } from "react";
 import InputDiasSemana from '../layout/InputDiasSemana';
 import { Button, Modal } from 'react-bootstrap';
+import Select from 'react-select';
+import { confirmAlert } from "react-confirm-alert";
 
 
 const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
@@ -8,6 +13,10 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     const modalRef = useRef(null);
 
     const [agendamento, setAgendamento] = useState([]);
+    const [agendamentos, setAgendamentos] = useState([]);
+    const [tarefas, setTarefas] = useState([]);
+    const [entidades, setEntidades] = useState([]);
+    const [processos, setProcessos] = useState([]);
 
     useEffect(() => {
         if (Model != null) {
@@ -20,16 +29,72 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                 novo_registro: Model.novo_registro
             });
         }
+
+        fetchProcessos();
+        fetchEntidades();
+
     }, [Model]);
+
+    const fetchProcessos = async () => {
+        let data = await window.api.Action({ controller: "Processo", action: "GetProcessos" });
+        let processo;
+
+        let values = data.map((element) => {
+            return processo = {
+                value: element.id,
+                label: `${element.nro_processo} - ${element.prestador}`
+            }
+        });
+
+        setProcessos(values);
+    }
+
+    const fetchEntidades = async () => {
+        let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades" });
+        let entidade;
+
+        let values = data.map((element) => {
+            return entidade = {
+                value: element.id,
+                label: `${element.nome} - ${element.cnpj}`
+            }
+        });
+
+        setEntidades(values);
+    }
+
+    const searchTarefa = async (evt) => {
+        let search = {
+            id: evt.value
+        }
+
+        console.log(evt);
+        let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: search });
+        const tarefa = data[0].tarefa;
+
+        if (!tarefa) {
+            value = { value: null, label: "Sem tarefa cadastrada" };
+            return;
+        }
+
+        let value = tarefa.map((element) => {
+            if (element.status == true) {
+                return { value: element.id, label: element.titulo }
+            }
+        });
+
+        setTarefas(value);
+    }
 
 
     const handleHide = () => {
         onHide();
     };
 
+
     const handleAgendamento = (evt, name = null) => {
         let value = evt.value ?? evt.target.value;
-       
+
         setAgendamento({
             ...agendamento,
             [name ? name : evt.target.name]: value
@@ -37,7 +102,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     }
 
     const handleDiasSemana = (value) => {
-        
+
         setAgendamento({
             ...agendamento,
             ["agendamento_dias_semana"]: value.sort((a, b) => (a.value > b.value) ? 1 : ((b.value > a.value) ? -1 : 0))
@@ -91,67 +156,209 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
     // }
 
+    const columnsAgendamento = [
+        { id: e => e.agendamento_dia_inicial, Header: 'Data inicial', accessor: e => formatDate(e) },
+        { Header: 'Horário inicial', accessor: 'agendamento_horario_inicio' },
+        { Header: 'Horário fim', accessor: 'agendamento_horario_fim' },
+
+    ];
+
+    const formatDate = ({ agendamento_dia_inicial }) => {
+        const [year, month, day] = agendamento_dia_inicial.split('-');
+        return `${day}/${month}/${year}`;
+    }
+
+    const deleteAgendamento = (object) => {
+        if (object) {
+            confirmAlert({
+                title: 'Confirmação',
+                message: 'Tem certeza que deseja excluir este item?',
+                buttons: [
+                    {
+                        label: 'Sim',
+                        onClick: () => {
+                            let agendamentos = agendamento.filter(s => s.id !== object.id);
+                            setAgendamento([
+                                ...agendamentos,
+                            ]);
+                        }
+                    },
+                    {
+                        className: 'btn-blue',
+                        label: 'Não',
+                        onClick: () => {
+                        }
+                    }
+                ]
+            });
+        }
+    }
+
+    const handleAddTable = (evt) => {
+        setAgendamentos([...agendamentos,agendamento]);
+    }
+
     return (
         <>
-            <Modal ref={modalRef} show={show} onHide={handleHide}>
+            <Modal ref={modalRef} show={show} onHide={handleHide} size={'xl'}>
                 <Modal.Header closeButton>
-                    <Modal.Title><i className="fa-solid fa-clipboard-user"></i> <small> Cadastrar Agendamento</small></Modal.Title>
+                    <Modal.Title><i className="fa-solid fa-clipboard-user"></i> <small> Novo Agendamento</small></Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
 
                     <form className="form-control">
+                        <div className="row">
+                            <div className="col-md-4">
 
-                        <div className="form-group">
-                            <label htmlFor="trabalho_horario_inicio">Horário de Entrada</label>
-                            <input
-                                required={true}
-                                id="agendamento_horario_inicio"
-                                name="agendamento_horario_inicio"
-                                className="form-control input rounded-2"
-                                type="time"
-                                value={agendamento.agendamento_horario_inicio}
-                                onChange={handleAgendamento}
-                            />
+                                <div className="form-group">
+                                    <div className="input-form">
+                                        <label htmlFor="processo">Processo</label>
+                                        <Select
+                                            options={processos}
+                                            id="processo"
+                                            name="processo"
+                                            placeholder="Processo"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <div className="input-form">
+                                        <label htmlFor="entidade">Entidade</label>
+                                        <Select
+                                            options={entidades}
+                                            id="entidade"
+                                            name="entidade"
+                                            placeholder="Entidade"
+                                            onChange={searchTarefa}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <div className="input-form">
+                                        <label htmlFor="tarefa">Tarefa</label>
+                                        <Select
+                                            options={tarefas}
+                                            id="tarefa"
+                                            name="tarefa"
+                                            placeholder="Tarefa"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="col-md-7">
+                                <div className="row">
+
+                                    <span>Tarefa: xxxxx</span>
+
+                                    <div className="form-group">
+                                        <label htmlFor="trabalho_horario_inicio">Horário de Entrada</label>
+                                        <input
+                                            required={true}
+                                            id="agendamento_horario_inicio"
+                                            name="agendamento_horario_inicio"
+                                            className="form-control input rounded-2"
+                                            type="time"
+                                            value={agendamento.agendamento_horario_inicio}
+                                            onChange={handleAgendamento}
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="agendamento_horario_fim">Horário de Saída</label>
+                                        <input
+                                            required={true}
+                                            id="agendamento_horario_fim"
+                                            name="agendamento_horario_fim"
+                                            className="form-control input rounded-2"
+                                            type="time"
+                                            value={agendamento.agendamento_horario_fim}
+                                            onChange={handleAgendamento}
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="agendamento_dia_inicial">Data inicial</label>
+                                        <input
+                                            required={true}
+                                            id="agendamento_dia_inicial"
+                                            name="agendamento_dia_inicial"
+                                            className="form-control input rounded-2"
+                                            type="date"
+                                            min={new Date().toISOString().split('T')[0]}
+                                            value={agendamento.agendamento_dia_inicial}
+                                            onChange={handleAgendamento}
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <div className="input-form">
+                                            <label htmlFor="agendamento_dias_semana">Dias Semana</label>
+                                            <InputDiasSemana
+                                                id="agendamento_dias_semana"
+                                                name="agendamento_dias_semana"
+                                                handleChange={handleDiasSemana}
+                                                value={agendamento.agendamento_dias_semana}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-1 align-self-center">
+                                        <Button
+                                            className='btn btn-sm btn-blue mt-2'
+                                            type="button"
+                                            onClick={handleAddTable}
+                                            disabled={!(agendamento.agendamento_dia_inicial)}
+                                        >
+                                            Agendar
+                                        </Button>
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
                         </div>
 
-                        <div className="form-group">
-                            <label htmlFor="agendamento_horario_fim">Horário de Saída</label>
-                            <input
-                                required={true}
-                                id="agendamento_horario_fim"
-                                name="agendamento_horario_fim"
-                                className="form-control input rounded-2"
-                                type="time"
-                                value={agendamento.agendamento_horario_fim}
-                                onChange={handleAgendamento}
-                            />
-                        </div>
 
-                        <div className="form-group">
-                            <label htmlFor="agendamento_dia_inicial">Data inicial</label>
-                            <input
-                                required={true}
-                                id="agendamento_dia_inicial"
-                                name="agendamento_dia_inicial"
-                                className="form-control input rounded-2"
-                                type="date"
-                                min={new Date().toISOString().split('T')[0]}
-                                value={agendamento.agendamento_dia_inicial}
-                                onChange={handleAgendamento}
-                            />
-                        </div>
+                        <div className='row table-container'>
+                            <div className='col-md-12'>
 
-                        <div className="form-group">
-                            <div className="input-form">
-                                <label htmlFor="agendamento_dias_semana">Dias Semana</label>
-                                <InputDiasSemana
-                                    id="agendamento_dias_semana"
-                                    name="agendamento_dias_semana"
-                                    handleChange={handleDiasSemana}
-                                    value={agendamento.agendamento_dias_semana}
-                                />
+                                <div className="tabs-agendamento">
+                                    <Tab.Container defaultActiveKey="agendamento">
+                                        <Nav variant="pills">
+                                            <Nav.Item>
+                                                <Nav.Link eventKey="agendamento">
+                                                    <i className="fas fa-address-card"></i>  Agendamento
+                                                </Nav.Link>
+                                            </Nav.Item>
+                                        </Nav>
+
+                                        <Tab.Content>
+                                            <Tab.Pane eventKey="agendamento">
+                                                <Title title={"Dados do agendamento"} />
+                                                {agendamentos.length > 0 ?
+                                                    <div className="row">
+                                                        <div className="col-md-12 no-padding">
+                                                            <div className='menu'>
+                                                                {/* <button className='menu-button button-blue'
+                                                                onClick={() => { handleModalAgendamento(true) }}>
+                                                                <i className='fa-solid fa-plus'></i> Adicionar Agendamento
+                                                            </button> */}
+                                                            </div>
+                                                            <Table columns={columnsAgendamento} data={agendamentos} onEdit={null}
+                                                                onDelete={null} />
+                                                        </div>
+                                                    </div>
+                                                    : 'Sem dados'}
+                                            </Tab.Pane>
+                                        </Tab.Content>
+                                    </Tab.Container>
+                                </div>
                             </div>
                         </div>
+
 
                     </form>
                 </Modal.Body>

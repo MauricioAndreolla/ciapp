@@ -22,6 +22,12 @@ export default function Create() {
     const [processos, setProcessos] = useState([]);
     const [prestadores, setPrestadores] = useState([]);
     const [agendamento, setAgendamento] = useState([]);
+    const [agendamentos, setAgendamentos] = useState({
+        entidade: '',
+        processo: '',
+        prestador: '',
+        agendamento: []
+    });
 
     const [modelAgendamento, setModelAgendamento] = useState({
         id: null,
@@ -94,8 +100,10 @@ export default function Create() {
             }
         };
 
+        
         let data = await window.api.Action({ controller: "Processo", action: "GetProcessos", params: search });
         let processos;
+        let prestador = evt.value;
 
         let value = data.map((element) => {
             return processos = {
@@ -104,7 +112,9 @@ export default function Create() {
             }
         });
 
+        setAgendamento([...agendamento], {prestador});
         setProcessos(value);
+        console.log(agendamento);
     }
 
 
@@ -252,7 +262,7 @@ export default function Create() {
                 <Title title="Seleção do Agendamento" />
                 <div className="col-md-12 px-5 mb-5">
                     <div className="row">
-                        <div className="col-md-4">
+                        {/* <div className="col-md-4">
                             <div className="input-form">
                                 <label htmlFor="prestador">Prestadores</label>
                                 <Select
@@ -263,7 +273,7 @@ export default function Create() {
                                     onChange={handleSearchDropPrestador}
                                 />
                             </div>
-                        </div>
+                        </div> */}
 
                         <div className="col-md-4">
                             <div className="input-form">
