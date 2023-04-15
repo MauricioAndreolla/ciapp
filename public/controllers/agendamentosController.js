@@ -136,16 +136,6 @@ module.exports = {
                 agendamento_horario_inicio: s.horario_inicio,
                 agendamento_horario_fim: s.horario_fim,
                 agendamento_dia_inicial: s.data_inicial,
-                // agendamento_dias_semana: {
-                //     domingo: s.domingo,
-                //     segunda: s.segunda,
-                //     terca: s.terca,
-                //     quarta: s.quarta,
-                //     quinta: s.quinta,
-                //     sexta: s.sexta,
-                //     sabado: s.sabado,
-                // },
-
                 agendamento_dias_semana: [
                     s.segunda ? { value: 0, label: "Segunda-feira" } : null,
                     s.terca ? { value: 1, label: "Terça-feira" } : null,
