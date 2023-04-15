@@ -73,7 +73,6 @@ export default function Index(props) {
         const payload = {
             agendamento: object
         }
-        console.log(payload)
         if (action == 'Create') {
             postResult = await window.api.Action({ controller: "Agendamentos", action: "Create", params: payload });
         } else {

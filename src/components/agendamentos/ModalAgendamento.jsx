@@ -19,8 +19,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     const [processos, setProcessos] = useState([]);
 
     useEffect(() => {
-        if (Model != null) {
-
+        console.log(Model)
+        if (Model != null && Model.id != null) {
 
             setAgendamento({
                 id: Model.id,
@@ -34,33 +34,58 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                 novo_registro: Model.novo_registro
             });
 
-            setAgendamentos([agendamento]);
+            setAgendamentos([Model]);
+        } else {
+            setAgendamento(
+                {
+                    id: null,
+                    agendamento_dia_inicial: '',
+                    agendamento_horario_inicio: '08:00',
+                    agendamento_horario_fim: '18:00',
+                    agendamento_dias_semana: [],
+                    processo: '',
+                    entidade: '',
+                    tarefa: '',
+                    novo_registro: true
+                }
+            );
+            setAgendamentos([]);
         }
 
         fetchProcessos();
         fetchEntidades();
-
-        console.log(Model);
     }, [Model]);
 
 
     const defaultProcesso = () => {
-        return { label: agendamento.processo.nro_processo, value: agendamento.processo.id }
+        if (Model != null) {
+            return { label: Model.processo.nro_processo, value: Model.processo.id }
+        } else {
+            return false;
+        }
     }
 
     const defaultEntidade = () => {
-        let value = `${agendamento.entidade.nome} - ${agendamento.entidade.cnpj}`
-        return { label: value, value: agendamento.entidade.id }
+        if (Model != null) {
+            let value = `${Model.entidade.nome} - ${Model.entidade.cnpj}`
+            return { label: value, value: Model.entidade.id }
+        } else {
+            return false;
+        }
     }
 
     const defaultTarefa = () => {
-        return { label: agendamento.tarefa.titulo, value: agendamento.tarefa.id }
+        if (Model != null) {
+            return { label: Model.tarefa.titulo, value: Model.tarefa.id }
+        } else {
+            return false;
+        }
     }
 
     const fetchProcessos = async () => {
         let data = await window.api.Action({ controller: "Processo", action: "GetProcessos" });
         let processo;
-       
+
         let values = data.map((element) => {
             return processo = {
                 value: element.id,
@@ -75,7 +100,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     const fetchEntidades = async () => {
         let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades" });
         let entidade;
-        
+
         let values = data.map((element) => {
             return entidade = {
                 value: element.id,
@@ -131,7 +156,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
 
     const handleDiasSemana = (value) => {
-        console.log(value);
+
         setAgendamento({
             ...agendamento,
             ["agendamento_dias_semana"]: value.sort((a, b) => (a.value > b.value) ? 1 : ((b.value > a.value) ? -1 : 0))
@@ -253,7 +278,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                             name="processo"
                                             placeholder="Processo"
                                             onChange={handleAgendamento}
-                                            defaultValue={agendamento.id != null ? defaultProcesso : null}
+                                            defaultValue={defaultProcesso}
                                         />
                                     </div>
                                 </div>
@@ -266,7 +291,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                             name="entidade"
                                             placeholder="Entidade"
                                             onChange={handleAgendamento}
-                                            defaultValue={agendamento.id != null ? defaultEntidade : null}
+                                            defaultValue={defaultEntidade}
+
                                         />
                                     </div>
                                 </div>
@@ -279,7 +305,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                             name="tarefa"
                                             placeholder="Tarefa"
                                             onChange={handleAgendamento}
-                                            defaultValue={agendamento.id != null ? defaultTarefa : null}
+                                            defaultValue={defaultTarefa}
                                         />
                                     </div>
                                 </div>
