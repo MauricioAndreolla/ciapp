@@ -20,20 +20,42 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
     useEffect(() => {
         if (Model != null) {
+
+
             setAgendamento({
                 id: Model.id,
                 agendamento_dia_inicial: Model.agendamento_dia_inicial,
                 agendamento_horario_inicio: Model.agendamento_horario_inicio,
                 agendamento_horario_fim: Model.agendamento_horario_fim,
                 agendamento_dias_semana: Model.agendamento_dias_semana,
+                processo: Model.processo,
+                entidade: Model.entidade,
+                tarefa: Model.tarefa,
                 novo_registro: Model.novo_registro
             });
+
+            setAgendamentos([agendamento]);
         }
 
         fetchProcessos();
         fetchEntidades();
 
+        console.log(Model);
     }, [Model]);
+
+
+    const defaultProcesso = () => {
+        return { label: agendamento.processo.nro_processo, value: agendamento.processo.id }
+    }
+
+    const defaultEntidade = () => {
+        let value = `${agendamento.entidade.nome} - ${agendamento.entidade.cnpj}`
+        return { label: value, value: agendamento.entidade.id }
+    }
+
+    const defaultTarefa = () => {
+        return { label: agendamento.tarefa.titulo, value: agendamento.tarefa.id }
+    }
 
     const fetchProcessos = async () => {
         let data = await window.api.Action({ controller: "Processo", action: "GetProcessos" });
@@ -42,7 +64,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         let values = data.map((element) => {
             return processo = {
                 value: element.id,
-                label: `${element.nro_processo} - ${element.prestador}`
+                label: `${element.nro_processo} - ${element.prestador}`,
+                name: 'processo'
             }
         });
 
@@ -56,7 +79,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         let values = data.map((element) => {
             return entidade = {
                 value: element.id,
-                label: `${element.nome} - ${element.cnpj}`
+                label: `${element.nome} - ${element.cnpj}`,
+                name: 'entidade'
             }
         });
 
@@ -68,7 +92,6 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
             id: evt.value
         }
 
-        console.log(evt);
         let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: search });
         const tarefa = data[0].tarefa;
 
@@ -79,7 +102,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
         let value = tarefa.map((element) => {
             if (element.status == true) {
-                return { value: element.id, label: element.titulo }
+                return { value: element.id, label: element.titulo, name: 'tarefa' }
             }
         });
 
@@ -88,6 +111,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
 
     const handleHide = () => {
+        // resetAgendamento();
         onHide();
     };
 
@@ -95,14 +119,19 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     const handleAgendamento = (evt, name = null) => {
         let value = evt.value ?? evt.target.value;
 
+        if (evt.name == 'entidade') {
+            searchTarefa(evt);
+        }
+
         setAgendamento({
             ...agendamento,
-            [name ? name : evt.target.name]: value
+            [name ? evt.name : evt.target.name]: value
         })
     }
 
-    const handleDiasSemana = (value) => {
 
+    const handleDiasSemana = (value) => {
+        console.log(value);
         setAgendamento({
             ...agendamento,
             ["agendamento_dias_semana"]: value.sort((a, b) => (a.value > b.value) ? 1 : ((b.value > a.value) ? -1 : 0))
@@ -114,21 +143,25 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         setAgendamento({
             id: null,
             agendamento_dia_inicial: '',
-            agendamento_horario_inicio: '',
-            agendamento_horario_fim: '',
+            agendamento_horario_inicio: '08:00',
+            agendamento_horario_fim: '18:00',
             agendamento_dias_semana: [],
+            processo: '',
+            entidade: '',
+            tarefa: '',
             novo_registro: true
-        })
+        });
+
+        setAgendamentos([]);
     }
 
-
     const handleAdd = async () => {
-        onAdd(agendamento);
+        onAdd(agendamentos);
         await resetAgendamento();
     }
 
     const handleEdit = async () => {
-        onEdit(agendamento);
+        onEdit(agendamentos);
         await resetAgendamento();
     }
 
@@ -157,45 +190,46 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     // }
 
     const columnsAgendamento = [
-        { id: e => e.agendamento_dia_inicial, Header: 'Data inicial', accessor: e => formatDate(e) },
+        // { id: e => e.agendamento_dia_inicial, Header: 'Data inicial', accessor: e => formatDate(e) },
         { Header: 'Horário inicial', accessor: 'agendamento_horario_inicio' },
         { Header: 'Horário fim', accessor: 'agendamento_horario_fim' },
 
     ];
 
-    const formatDate = ({ agendamento_dia_inicial }) => {
-        const [year, month, day] = agendamento_dia_inicial.split('-');
-        return `${day}/${month}/${year}`;
+    // const formatDate = ({ agendamento_dia_inicial }) => {
+    //     const [year, month, day] = agendamento_dia_inicial.split('-');
+    //     return `${day}/${month}/${year}`;
+    // }
+
+    const deleteAgendamentoModal = (object) => {
+        console.log(object)
+        // if (object) {
+        //     confirmAlert({
+        //         title: 'Confirmação',
+        //         message: 'Tem certeza que deseja excluir este item?',
+        //         buttons: [
+        //             {
+        //                 label: 'Sim',
+        //                 onClick: () => {
+        //                     let agendamentos = agendamento.filter(s => s.id !== object.id);
+        //                     setAgendamento([
+        //                         ...agendamentos,
+        //                     ]);
+        //                 }
+        //             },
+        //             {
+        //                 className: 'btn-blue',
+        //                 label: 'Não',
+        //                 onClick: () => {
+        //                 }
+        //             }
+        //         ]
+        //     });
+        // }
     }
 
-    const deleteAgendamento = (object) => {
-        if (object) {
-            confirmAlert({
-                title: 'Confirmação',
-                message: 'Tem certeza que deseja excluir este item?',
-                buttons: [
-                    {
-                        label: 'Sim',
-                        onClick: () => {
-                            let agendamentos = agendamento.filter(s => s.id !== object.id);
-                            setAgendamento([
-                                ...agendamentos,
-                            ]);
-                        }
-                    },
-                    {
-                        className: 'btn-blue',
-                        label: 'Não',
-                        onClick: () => {
-                        }
-                    }
-                ]
-            });
-        }
-    }
-
-    const handleAddTable = (evt) => {
-        setAgendamentos([...agendamentos,agendamento]);
+    const handleAddTable = () => {
+        setAgendamentos([...agendamentos, agendamento]);
     }
 
     return (
@@ -218,6 +252,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                             id="processo"
                                             name="processo"
                                             placeholder="Processo"
+                                            onChange={handleAgendamento}
+                                            defaultValue={agendamento.id != null ? defaultProcesso : null}
                                         />
                                     </div>
                                 </div>
@@ -229,7 +265,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                             id="entidade"
                                             name="entidade"
                                             placeholder="Entidade"
-                                            onChange={searchTarefa}
+                                            onChange={handleAgendamento}
+                                            defaultValue={agendamento.id != null ? defaultEntidade : null}
                                         />
                                     </div>
                                 </div>
@@ -241,6 +278,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                             id="tarefa"
                                             name="tarefa"
                                             placeholder="Tarefa"
+                                            onChange={handleAgendamento}
+                                            defaultValue={agendamento.id != null ? defaultTarefa : null}
                                         />
                                     </div>
                                 </div>
@@ -310,7 +349,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                             onClick={handleAddTable}
                                             disabled={!(agendamento.agendamento_dia_inicial)}
                                         >
-                                            Agendar
+                                            Adicionar
                                         </Button>
 
                                     </div>
@@ -347,8 +386,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                                                 <i className='fa-solid fa-plus'></i> Adicionar Agendamento
                                                             </button> */}
                                                             </div>
-                                                            <Table columns={columnsAgendamento} data={agendamentos} onEdit={null}
-                                                                onDelete={null} />
+                                                            <Table columns={columnsAgendamento} data={agendamentos} onEdit={deleteAgendamentoModal}
+                                                                onDelete={deleteAgendamentoModal} />
                                                         </div>
                                                     </div>
                                                     : 'Sem dados'}
@@ -367,8 +406,17 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                         <i className="fa-solid fa-times"></i> <small>Fechar</small>
                     </Button>
                     {
-                        agendamento.id != null ?
-
+                        agendamento.id == null ?
+                            <Button
+                                className='btn btn-sm btn-blue'
+                                type="submit"
+                                variant="primary"
+                                onClick={handleAdd}
+                                disabled={!(agendamento.agendamento_dia_inicial)}
+                            >
+                                <i className="fa-solid fa-plus"></i>  <small>Agendar</small>
+                            </Button>
+                            :
                             <Button
                                 className='btn btn-sm btn-blue'
                                 type="submit"
@@ -378,16 +426,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                             >
                                 <i className="fa-solid fa-save"></i>  <small>Salvar</small>
                             </Button>
-                            :
-                            <Button
-                                className='btn btn-sm btn-blue'
-                                type="submit"
-                                variant="primary"
-                                onClick={handleAdd}
-                                disabled={!(agendamento.agendamento_dia_inicial)}
-                            >
-                                <i className="fa-solid fa-plus"></i>  <small>Adicionar</small>
-                            </Button>
+
 
 
                     }

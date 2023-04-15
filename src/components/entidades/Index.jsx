@@ -61,7 +61,7 @@ const Index = () => {
         const postResult = await window.api.Action({ controller: "Entidades", action: "Credenciar", params: object.id });
 
         if (!postResult.status) {
-            toast.error(postResult.text, { autoClose: 3000 });
+            toast.error(postResult.text, { autoClose: false });
         } else {
             toast.success(postResult.text, { autoClose: 3000 });
         }
@@ -79,7 +79,7 @@ const Index = () => {
         const postResult = await window.api.Action({ controller: "Entidades", action: "Descredenciar", params: payload });
 
         if (!postResult.status) {
-            toast.error(postResult.text, { autoClose: 3000 });
+            toast.error(postResult.text, { autoClose: false });
         } else {
             toast.success(postResult.text, { autoClose: 3000 });
         }

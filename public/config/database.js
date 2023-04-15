@@ -36,9 +36,9 @@ class Database {
                 dialect: 'mysql',
                 createDatabase: true,
                 pool: {
-                    //max: Infinity // remove o limite de conexões simultâneas
-                    max: 10,
+                    max: Infinity, // remove o limite de conexões simultâneas
                     min: 0,
+                    acquire: 30000,
                     idle: 10000
                 }
             });
@@ -94,7 +94,7 @@ class Database {
         try {
             var models = require('../models/index');
             this.sequelize.models = models;
-            this.models =  this.sequelize.models;
+            this.models = this.sequelize.models;
             return { status: true, text: "Models associadas" };
         } catch (error) {
             return { status: false, text: "Erro ao associar models: " + error };

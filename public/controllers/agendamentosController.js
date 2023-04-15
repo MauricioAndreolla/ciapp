@@ -15,37 +15,29 @@ module.exports = {
 
         try {
 
-            if (payload.search.id_prestador.value == null || payload.search.id_prestador == '') {
-                return { status: false, text: `Selecione o prestador` };
-            } else if (payload.search.id_processo.value == null || payload.search.id_processo == '') {
-                return { status: false, text: `Selecione o processo` };
-            } else if (payload.search.id_processo.value == null || payload.search.id_tarefa == '') {
-                return { status: false, text: `Selecione a tarefa` };
-            } else if (payload.search.id_processo.value == null || payload.search.id_entidade == '') {
-                return { status: false, text: `Selecione a instituição` };
-            } else if (payload.agendamentos.agendamento_dias_semana.length <= 0) {
-                return { status: false, text: `Selecione os dias da semana das tarefas` };
-            }
 
-
-            await db.sequelize.models.Agendamentos.create({
-
-                data_inicial: payload.agendamentos.agendamento_dia_inicial,
-                horario_inicio: payload.agendamentos.agendamento_horario_inicio,
-                horario_fim: payload.agendamentos.agendamento_horario_fim,
-                segunda: payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 0).length > 0,
-                terca: payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 1).length > 0,
-                quarta: payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 2).length > 0,
-                quinta: payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 3).length > 0,
-                sexta: payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 4).length > 0,
-                sabado: payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 5).length > 0,
-                domingo: payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 6).length > 0,
-                ProcessoId: payload.search.id_processo.value,
-                TarefaId: payload.search.id_tarefa.value
+            const agendamentos = payload.agendamento.map(agendamento => {
+                return ({
+                    data_inicial: agendamento.agendamento_dia_inicial,
+                    horario_inicio: agendamento.agendamento_horario_inicio,
+                    horario_fim: agendamento.agendamento_horario_fim,
+                    segunda: agendamento.agendamento_dias_semana.filter(s => s.value === 0).length > 0,
+                    terca: agendamento.agendamento_dias_semana.filter(s => s.value === 1).length > 0,
+                    quarta: agendamento.agendamento_dias_semana.filter(s => s.value === 2).length > 0,
+                    quinta: agendamento.agendamento_dias_semana.filter(s => s.value === 3).length > 0,
+                    sexta: agendamento.agendamento_dias_semana.filter(s => s.value === 4).length > 0,
+                    sabado: agendamento.agendamento_dias_semana.filter(s => s.value === 5).length > 0,
+                    domingo: agendamento.agendamento_dias_semana.filter(s => s.value === 6).length > 0,
+                    ProcessoId: agendamento.processo,
+                    TarefaId: agendamento.tarefa
+                })
             })
 
+
+            await db.models.Agendamento.bulkCreate(agendamentos)
+
         } catch (error) {
-            return { status: false, text: `Erro interno no servidor.` };
+            return { status: false, text: `Erro interno no servidor. ${error}` };
         }
 
         return { status: true, text: `Agendamento criado` };
@@ -59,35 +51,33 @@ module.exports = {
 
         try {
 
-            if (payload.search.id_prestador.value == null || payload.search.id_prestador == '') {
-                return { status: false, text: `Selecione o prestador` };
-            } else if (payload.search.id_processo.value == null || payload.search.id_processo == '') {
+            if (payload.agendamento.processo == null || payload.agendamento.processo == '') {
                 return { status: false, text: `Selecione o processo` };
-            } else if (payload.search.id_processo.value == null || payload.search.id_tarefa == '') {
+            } else if (payload.agendamento.tarefa == null || payload.agendamento.tarefa == '') {
                 return { status: false, text: `Selecione a tarefa` };
-            } else if (payload.search.id_processo.value == null || payload.search.id_entidade == '') {
+            } else if (payload.agendamento.entidade == null || payload.agendamento.entidade == '') {
                 return { status: false, text: `Selecione a instituição` };
-            } else if (payload.agendamentos.agendamento_dias_semana.length <= 0) {
+            } else if (payload.agendamento.agendamento_dias_semana.length <= 0) {
                 return { status: false, text: `Selecione os dias da semana das tarefas` };
             }
 
 
-            let Agendamento = await db.sequelize.models.Agendamentos.findByPk(payload.agendamentos.id);
+            let Agendamento = await db.models.Agendamento.findByPk(payload.agendamentos.id);
 
 
 
-            Agendamento.data_inicial = payload.agendamentos.agendamento_dia_inicial,
-                Agendamento.horario_inicio = payload.agendamentos.agendamento_horario_inicio,
-                Agendamento.horario_fim = payload.agendamentos.agendamento_horario_fim,
-                Agendamento.segunda = payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 0).length > 0,
-                Agendamento.terca = payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 1).length > 0,
-                Agendamento.quarta = payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 2).length > 0,
-                Agendamento.quinta = payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 3).length > 0,
-                Agendamento.sexta = payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 4).length > 0,
-                Agendamento.sabado = payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 5).length > 0,
-                Agendamento.domingo = payload.agendamentos.agendamento_dias_semana.filter(s => s.value === 6).length > 0,
-                Agendamento.ProcessoId = payload.search.id_processo.value,
-                Agendamento.TarefaId = payload.search.id_tarefa.value
+            Agendamento.data_inicial = payload.agendamento.agendamento_dia_inicial,
+                Agendamento.horario_inicio = payload.agendamento.agendamento_horario_inicio,
+                Agendamento.horario_fim = payload.agendamento.agendamento_horario_fim,
+                Agendamento.segunda = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 0).length > 0,
+                Agendamento.terca = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 1).length > 0,
+                Agendamento.quarta = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 2).length > 0,
+                Agendamento.quinta = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 3).length > 0,
+                Agendamento.sexta = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 4).length > 0,
+                Agendamento.sabado = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 5).length > 0,
+                Agendamento.domingo = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 6).length > 0,
+                Agendamento.ProcessoId = payload.agendamento.processo,
+                Agendamento.TarefaId = payload.agendamento.tarefa
             await Agendamento.save();
 
 
@@ -102,9 +92,8 @@ module.exports = {
     },
 
     async Delete(id) {
-        let Agenda = {};
         try {
-            Agendamento = await db.sequelize.models.Agendamentos.findByPk(id);
+            Agendamento = await db.models.Agendamento.findByPk(id);
             await Agendamento.destroy();
         } catch (error) {
             return { status: false, text: "Erro interno no servidor." };
@@ -123,129 +112,107 @@ module.exports = {
                 where.id = search.processo;
             }
 
-        }   
-       
+        }
+
 
         const data = await db.models.Agendamento.findAll({
-            where: {
-                //ProcessoId: where,
-            },
+            // where: {
+            //     ProcessoId: where,
+            // },
             include: [
-                // {
-                //     model: db.models.Processo,
-                //     include: [
-                //         { model: db.models.Instituicoes },
-                //         { model: db.models.Prestadores },
-                //         { model: db.models.Vara },
-                //         { model: db.models.AtestadoFrequencia }]
-                // },
-                // { model: db.models.Tarefa }
+                {
+                    model: db.models.Processo,
+                    include: {
+                        model: db.models.Entidade,
+                    }
+                },
+                { model: db.models.Tarefa }
             ],
         });
 
         return data.map(s => {
             let agendamentos = {
                 id: s.id,
-                agendamento_data_inicial: s.data_inicial,
                 agendamento_horario_inicio: s.horario_inicio,
                 agendamento_horario_fim: s.horario_fim,
                 agendamento_dia_inicial: s.data_inicial,
-                agendamento_dias_semana: {
-                    domingo: s.domingo,
-                    segunda: s.segunda,
-                    terca: s.terca,
-                    quarta: s.quarta,
-                    quinta: s.quinta,
-                    sexta: s.sexta,
-                    sabado: s.sabado,
-                },
+                // agendamento_dias_semana: {
+                //     domingo: s.domingo,
+                //     segunda: s.segunda,
+                //     terca: s.terca,
+                //     quarta: s.quarta,
+                //     quinta: s.quinta,
+                //     sexta: s.sexta,
+                //     sabado: s.sabado,
+                // },
 
-                // processo_id: s.ProcessoId,
-                // tarefa_id: s.TarefaId,
-                // tarefa: s.Tarefa,
-                // processo: {
-                //     nro_processo: s.Processo.nro_processo,
-                //     nro_artigo_penal: s.Processo.nro_artigo_penal,
-                //     pena_originaria: s.Processo.pena_originaria,
-                //     pena_originaria_regime: s.Processo.pena_originaria_regime,
-                //     inciso: s.Processo.inciso,
-                //     detalhamento: s.Processo.detalhamento,
-                //     prd: s.Processo.prd,
-                //     prd_descricao: s.Processo.prd_descricao,
-                //     horas_cumprir: s.Processo.horas_cumprir,
-                //     possui_multa: s.Processo.possui_multa,
-                //     valor_a_pagar: s.Processo.valor_a_pagar,
-                //     qtd_penas_anteriores: s.Processo.qtd_penas_anteriores,
-                //     vara: s.Processo.Vara ? s.Processo.Vara.nome : '',
-                //     nome_prestador: s.Processo.Prestadore.nome,
-                //     imagem_prestador: s.Processo.Prestadore.image,
-                //     horas_cumpridas: s.Processo.AtestadoFrequencia.map(s => {
-                //         return diff_hours(s.dt_entrada, s.dt_saida)
-                //     }).reduce((a, b) => a + b, 0)
-                // }
+                agendamento_dias_semana: [
+                    s.segunda ? { value: 0, label: "Segunda-feira" } : null,
+                    s.terca ? { value: 1, label: "Terça-feira" } : null,
+                    s.quarta ? { value: 2, label: "Quarta-feira" } : null,
+                    s.quinta ? { value: 3, label: "Quinta-feira" } : null,
+                    s.sexta ? { value: 4, label: "Sexta-feira" } : null,
+                    s.sabado ? { value: 5, label: "Sábado" } : null,
+                    s.domingo ? { value: 6, label: "Domingo" } : null,
+                ].filter(s => s !== null),
+
+                tarefa: {
+                    id: s.Tarefa.id,
+                    titulo: s.Tarefa.titulo,
+                    descricao: s.Tarefa.descricao,
+                    status: s.Tarefa.status
+                },
+                processo: {
+                    id: s.Processo.id,
+                    nro_processo: s.Processo.nro_processo,
+                    nro_artigo_penal: s.Processo.nro_artigo_penal,
+                    pena_originaria: s.Processo.pena_originaria,
+                    pena_originaria_regime: s.Processo.pena_originaria_regime,
+                    inciso: s.Processo.inciso,
+                    detalhamento: s.Processo.detalhamento,
+                    prd: s.Processo.prd,
+                    prd_descricao: s.Processo.prd_descricao,
+                    horas_cumprir: s.Processo.horas_cumprir,
+                    possui_multa: s.Processo.possui_multa,
+                    valor_a_pagar: s.Processo.valor_a_pagar,
+                    qtd_penas_anteriores: s.Processo.qtd_penas_anteriores,
+                    // nome_prestador: s.Processo.Prestadore.nome,
+                    // vara: s.Processo.Vara ? s.Processo.Vara.descricao : '',
+                    // imagem_prestador: s.Processo.Prestadore.image,
+                    // horas_cumpridas: s.Processo.AtestadoFrequencia.map(s => {
+                    //     return diff_hours(s.dt_entrada, s.dt_saida)
+                    // }).reduce((a, b) => a + b, 0)
+                },
+                entidade: {
+                    id: s.Processo.Entidade.id,
+                    nome: s.Processo.Entidade.nome,
+                    cnpj: s.Processo.Entidade.cnpj,
+                    email: s.Processo.Entidade.email,
+                    telefone1: s.Processo.Entidade.telefone1,
+                    telefone2: s.Processo.Entidade.telefone2
+                }
             }
             return agendamentos;
         });
     },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     async Registrar(payload) {
         try {
 
-            var Agendamento = await db.sequelize.models.Agendamentos.findOne({
+            var Agendamento = await db.models.Agendamento.findOne({
                 where: {
                     id: payload.id_agendamento
                 }
             });
 
-            let processo = await db.sequelize.models.Processos.findByPk(Agendamento.ProcessoId);
+            let processo = await db.models.Processo.findByPk(Agendamento.ProcessoId);
 
-            let total = diff_hours(new Date(payload.registro.data + " " + payload.registro.horario_entrada),new Date(payload.registro.data + " " + payload.registro.horario_saida) );
+            let total = diff_hours(new Date(payload.registro.data + " " + payload.registro.horario_entrada), new Date(payload.registro.data + " " + payload.registro.horario_saida));
 
-            if(total > (processo.horas_cumprir - total))
+            if (total > (processo.horas_cumprir - total))
                 return { status: false, text: `Quantidade de horas maior que o necessário` };
 
-            let addRESULT = await db.sequelize.models.AtestadoFrequencia.create({
+            let addRESULT = await db.models.AtestadoFrequencia.create({
                 dt_entrada: new Date(payload.registro.data + " " + payload.registro.horario_entrada),
                 dt_saida: new Date(payload.registro.data + " " + payload.registro.horario_saida),
                 observacao: payload.registro.observacao,
