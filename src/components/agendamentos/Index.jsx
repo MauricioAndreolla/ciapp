@@ -73,12 +73,12 @@ export default function Index(props) {
         const payload = {
             agendamento: object
         }
-        // console.log(payload)
-        // if (action == 'Create') {
+        console.log(payload)
+        if (action == 'Create') {
             postResult = await window.api.Action({ controller: "Agendamentos", action: "Create", params: payload });
-        // } else {
-        //     postResult = await window.api.Action({ controller: "Agendamentos", action: "Edit", params: payload });
-        // }
+        } else {
+            postResult = await window.api.Action({ controller: "Agendamentos", action: "Edit", params: payload });
+        }
 
         if (!postResult.status) {
             toast.error(postResult.text, { autoClose: false });

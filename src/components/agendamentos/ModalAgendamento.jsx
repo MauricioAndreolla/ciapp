@@ -60,7 +60,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     const fetchProcessos = async () => {
         let data = await window.api.Action({ controller: "Processo", action: "GetProcessos" });
         let processo;
-        debugger;
+       
         let values = data.map((element) => {
             return processo = {
                 value: element.id,
@@ -75,7 +75,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     const fetchEntidades = async () => {
         let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades" });
         let entidade;
-        debugger;
+        
         let values = data.map((element) => {
             return entidade = {
                 value: element.id,

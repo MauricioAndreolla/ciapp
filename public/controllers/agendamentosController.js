@@ -11,9 +11,22 @@ function diff_hours(dt2, dt1) {
 
 module.exports = {
 
+
     async Create(payload) {
 
         try {
+         
+            agendamentos.map(element => {
+                if (element.processo == null || element.processo == '') {
+                    return { status: false, text: `Selecione o processo` };
+                } else if (element.tarefa == null || element.tarefa == '') {
+                    return { status: false, text: `Selecione a tarefa` };
+                } else if (element.entidade == null || element.entidade == '') {
+                    return { status: false, text: `Selecione a instituição` };
+                } else if (element.agendamento_dias_semana.length <= 0) {
+                    return { status: false, text: `Selecione os dias da semana das tarefas` };
+                }
+            });
 
 
             const agendamentos = payload.agendamento.map(agendamento => {
@@ -47,17 +60,18 @@ module.exports = {
 
     async Edit(payload) {
 
-
+        console.log(payload)
 
         try {
 
-            if (payload.agendamento.processo == null || payload.agendamento.processo == '') {
+
+            if (payload.processo == null || payload.processo == '') {
                 return { status: false, text: `Selecione o processo` };
-            } else if (payload.agendamento.tarefa == null || payload.agendamento.tarefa == '') {
+            } else if (payload.tarefa == null || payload.tarefa == '') {
                 return { status: false, text: `Selecione a tarefa` };
-            } else if (payload.agendamento.entidade == null || payload.agendamento.entidade == '') {
+            } else if (payload.entidade == null || payload.entidade == '') {
                 return { status: false, text: `Selecione a instituição` };
-            } else if (payload.agendamento.agendamento_dias_semana.length <= 0) {
+            } else if (payload.agendamento_dias_semana.length <= 0) {
                 return { status: false, text: `Selecione os dias da semana das tarefas` };
             }
 
@@ -76,14 +90,14 @@ module.exports = {
                 Agendamento.sexta = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 4).length > 0,
                 Agendamento.sabado = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 5).length > 0,
                 Agendamento.domingo = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 6).length > 0,
-                Agendamento.ProcessoId = payload.agendamento.processo,
-                Agendamento.TarefaId = payload.agendamento.tarefa
+                Agendamento.ProcessoId = payload.agendamento.processo.id,
+                Agendamento.TarefaId = payload.agendamento.tarefa.id
             await Agendamento.save();
 
 
 
         } catch (error) {
-            return { status: false, text: "Erro interno no servidor." };
+            return { status: false, text: `Erro interno no servidor. ${error}` };
         }
 
         return { status: true, text: `Agendamento Editado` };
