@@ -52,7 +52,7 @@ Prestador.init({
   
           let imgBase64 = "";
   
-          if(ModoAplicacao.modo ===  ModoAplicacao.MODO_APLICACAO.central){
+          if(Database.dialet === 0){
             imgBase64 = Buffer.from(buffer).toString('base64');
             if(imgBase64) imgBase64 = `data:image/jpeg;base64,${imgBase64}`;
           }

@@ -56,6 +56,7 @@ const Endereco = (props) => {
                         type="text"
                         placeholder=""
                         required={true}
+                        disabled={props.disabled}
                         value={props.endereco.rua}
                         onChange={props.handleChange}
                     />
@@ -73,6 +74,7 @@ const Endereco = (props) => {
                         type="number"
                         placeholder=""
                         required={true}
+                        disabled={props.disabled}
                         value={props.endereco.numero}
                         onChange={props.handleChange}
                     />
@@ -89,6 +91,7 @@ const Endereco = (props) => {
                         type="text"
                         placeholder=""
                         required={true}
+                        disabled={props.disabled}
                         value={props.endereco.bairro}
                         onChange={props.handleChange}
                     />
@@ -105,6 +108,7 @@ const Endereco = (props) => {
                         type="text"
                         placeholder="00000-000"
                         required={true}
+                        disabled={props.disabled}
                         value={props.endereco.cep}
                         onChange={handleCepChange}
                     />
@@ -119,6 +123,7 @@ const Endereco = (props) => {
                         options={cidades}
                         id="id_cidade"
                         name="id_cidade"
+                        isDisabled={props.disabled}
                         onChange={(evt) => { props.handleChange(evt, "id_cidade") }}
                         onInputChange={(evt) => { handleInputChange(evt) }}
                         value={cidades.find(s => s.value === props.endereco.id_cidade)}
@@ -133,6 +138,7 @@ const Endereco = (props) => {
                         className="form-control shadow-none input-custom"
                         rows={7}
                         placeholder=""
+                        disabled={props.disabled}
                         value={props.endereco.complemento}
                         onChange={props.handleChange}
                     />

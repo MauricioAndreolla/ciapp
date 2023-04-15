@@ -58,7 +58,8 @@ module.exports = {
         }
 
         let Prestadores = await db.models.Prestador.findAll({
-            where: where
+            where: where,
+            include: db.models.Processo
         });
 
         return Prestadores.map(s => {
@@ -66,8 +67,8 @@ module.exports = {
                 id: s.id,
                 cpf: s.cpf,
                 nome: s.nome,
-
-                image: s.image,
+                nro_processo: s.Processos.length > 0 ? s.Processos[ s.Processos.length - 1].nro_processo : null,
+                horas_cumprir: s.Processos.length > 0 ? s.Processos[ s.Processos.length - 1].horas_cumprir : 0
             }
         });
     },

@@ -1,9 +1,10 @@
 import { useNavigate, NavLink } from 'react-router-dom'
 import { useState, useEffect, useContext } from "react";
 import Title from "../layout/Title";
+import { AuthenticationContext } from "../context/Authentication";
 
 const Index = () => {
-
+    const { user } = useContext(AuthenticationContext);
     const [processos, setProcessos] = useState([]);
     const [search, setSearch] = useState({
         id: '',
@@ -134,7 +135,18 @@ const Index = () => {
                                                         <i className='fa fa-cog'></i> opções
                                                     </span>
                                                     <ul className="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                        <li> <NavLink className="dropdown-item" id="edit" to={`/processos/edit/${r.id}`}> <i className='fa fa-edit'></i> Editar</NavLink></li>
+                                                        {
+                                                            user.MODO_APLICACAO === 0 ?
+
+                                                            <>
+                                                                 <li> <NavLink className="dropdown-item" id="edit" to={`/processos/edit/${r.id}`}> <i className='fa fa-edit'></i> Editar</NavLink></li>
+                                                            </>
+
+                                                            :
+
+                                                            <li> <NavLink className="dropdown-item" id="edit" to={`/processos/edit/${r.id}`}> <i className='fa fa-eye'></i> Visualizar</NavLink></li>
+                                                        }
+                                                   
                                                         {/* <li> <a className="dropdown-item" onClick={() => { showRegistros(r.id) }} to="#"><i className="fa-solid fa-list-check"></i> Ver registros</a></li>
                                                         <li> <a className="dropdown-item" onClick={() => { DeleteProcesso(r.id, r.nro_processo) }} to="#"><i className="fa-solid fa-trash"></i> Excluir </a></li> */}
                                                     </ul>

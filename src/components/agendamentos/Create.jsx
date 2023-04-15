@@ -250,10 +250,10 @@ export default function Create() {
             <Title title="Novo Agendamento" />
 
             <div className='menu'>
-                <button className='menu-button button-green' onClick={Create}>
+                <button className='menu-button button-dark-blue' onClick={Create}>
                     <i className='fa-solid fa-save'></i> Salvar
                 </button>
-                <button className='menu-button button-red' onClick={() => { navigate('/agendamentos') }}>
+                <button className='menu-button button-grey' onClick={() => { navigate('/agendamentos') }}>
                     <i className='fa-solid fa-times'></i> Cancelar
                 </button>
             </div>

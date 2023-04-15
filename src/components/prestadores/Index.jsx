@@ -1,9 +1,9 @@
 import { useNavigate, NavLink } from 'react-router-dom'
 import { useState, useEffect, useContext } from "react";
 import Title from "../layout/Title";
-
+import { AuthenticationContext } from "../context/Authentication";
 const Index = () => {
-
+    const { user } = useContext(AuthenticationContext);
     const [prestadores, setPrestadores] = useState([]);
     const [search, setSearch] = useState({
         id: '',
@@ -62,13 +62,18 @@ const Index = () => {
     return (
         <>
             <Title title={"Cadastro de Prestadores"} />
+            {
+                user.MODO_APLICACAO === 0 ?
 
-            <div className='menu'>
+                    <div className='menu'>
 
-                <button className='menu-button button-green' onClick={() => { novoPrestador() }}>
-                    <i className='fa-solid fa-plus'></i> Novo
-                </button>
-            </div>
+                        <button className='menu-button button-dark-blue ' onClick={() => { novoPrestador() }}>
+                            <i className='fa-solid fa-plus'></i> Novo
+                        </button>
+                    </div>
+
+                    : null
+            }
 
             <div className="row search-container form-group">
                 <div className='search-title'>
@@ -146,8 +151,8 @@ const Index = () => {
                                             <td>{r.id}</td>
                                             <td>{r.nome}</td>
                                             <td>{r.cpf}</td>
-                                            <td>ULTIMO PROCESSO</td>
-                                            <td>HORAS CUMPRIR</td>
+                                            <td>{r.nro_processo ?? "--"}</td>
+                                            <td>{r.horas_cumprir > 0 ? r.horas_cumprir : "--"}</td>
 
                                             <td>HORAS CUMPRIDAS</td>
                                             <td>
@@ -157,9 +162,18 @@ const Index = () => {
                                                         <i className='fa fa-cog'></i> opções
                                                     </span>
                                                     <ul className="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                        {
+                                                            user.MODO_APLICACAO === 0 ?
+                                                                <>
+                                                                    <li> <NavLink className="dropdown-item" id="edit" to={`/prestadores/edit/${r.id}`}> <i className='fa fa-edit'></i> Editar</NavLink></li>
+                                                                    <li> <NavLink className="dropdown-item" id="novoProcesso" to={`/processos/create/${r.id}`}> <i className='fa fa-plus'></i> Novo Processo</NavLink></li>
+                                                                </>
+                                                                :
+                                                                <>
+                                                                    <li> <NavLink className="dropdown-item" id="edit" to={`/prestadores/edit/${r.id}`}> <i className='fa fa-eye'></i> Visualizar</NavLink></li>
+                                                                </>
+                                                        }
 
-                                                        <li> <NavLink className="dropdown-item" id="edit" to={`/prestadores/edit/${r.id}`}> <i className='fa fa-edit'></i> Editar</NavLink></li>
-                                                        <li> <NavLink className="dropdown-item" id="novoProcesso" to={`/processos/create/${r.id}`}> <i className='fa fa-plus'></i> Novo Processo</NavLink></li>
                                                         {/* <li> <a className="dropdown-item" onClick={() => { GerarListagem(r.id, r.ultimo_processo, r.nome) }} to="#"><i className="fa-solid fa-file"></i> Gerar Relatório</a></li>
                                                 <li> <a className="dropdown-item" onClick={() => { DeletePrestador(r.id, r.nome) }} to="#"><i className="fa-solid fa-trash"></i> Excluir</a></li> */}
                                                     </ul>

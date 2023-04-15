@@ -1,21 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from 'react-router-dom'
 import Select from 'react-select';
 import Title from "../layout/Title";
-import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
-import { NavLink } from "react-router-dom";
 import ModalCreateHabilidade from '../vara/ModalCreateVara';
 
 import { toast } from "react-toastify";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import InputDiasSemana from '../layout/InputDiasSemana';
-import Endereco from "../layout/Endereco";
 import Load from "../layout/Load";
+import { AuthenticationContext } from "../context/Authentication";
 
 const Create = () => {
     const navigate = useNavigate();
     const [load, setLoad] = useState(false);
+    const { user } = useContext(AuthenticationContext);
     const { id, id_prestador } = useParams();
 
     const [prestador, setPrestador] = useState('');
@@ -188,58 +186,55 @@ const Create = () => {
         setVaras(data.map(s => { return { value: s.id, label: s.descricao } }))
     }
 
+    const getCentrais = async () => {
+        let data = await window.api.Action({ controller: "Entidades", action: "GetCentraisSelect" });
+        setCentrais(data);
+        setProcesso({
+            ...processo,
+            ["id_central"]: data[0]
+        })
+    }
+
+    const getPrestador = async () => {
+
+        let data = await window.api.Action({ controller: "Prestador", action: "GetPrestadorSimple", params: id_prestador });
+
+        setPrestador(data.nome);
+    }
+
+    const getProcesso = async () => {
+
+        let data = await window.api.Action({ controller: "Processo", action: "GetProcesso", params: id });
+        setProcesso(data);
+        setPrestador(data.nome_prestador);
+    }
+
+
+
+
     useEffect(() => {
 
+        const fetchAllData = async () => {
+            setLoad(true);
 
-        const fetchData = async () => {
-            let data = await window.api.Action({ controller: "Entidades", action: "GetCentraisSelect" });
+            await getVaras();
+            await getCentrais();
 
-            setCentrais(data);
-            setProcesso({
-                ...processo,
-                ["id_central"]: data[0]
-            })
+            if (id)
+                await getProcesso();
+            else
+                await getPrestador();
+
+            setLoad(false);
         }
 
-        fetchData();
-
-    }, []);
-
-    useEffect(() => {
+        fetchAllData();
 
 
-        const fetchData = async () => {
 
 
-            let data = await window.api.Action({ controller: "Prestador", action: "GetPrestadorSimple", params: id_prestador });
 
-            setPrestador(data.nome);
-
-        }
-
-        fetchData();
-
-    }, []);
-
-    useEffect(() => {
-        getVaras();
-        if (id) {
-
-            const fetchData = async () => {
-                setLoad(true);
-                let data = await window.api.Action({ controller: "Processo", action: "GetProcesso", params: id });
-                debugger;
-                setProcesso(data);
-                setPrestador(data.nome_prestador);
-                setLoad(false);
-
-            }
-
-            fetchData();
-        }
-
-
-    }, []);
+    },[]);
 
     return (
         <>
@@ -249,23 +244,38 @@ const Create = () => {
                     id ? <Title title={"Editar Processo"} /> : <Title title={"Novo Processo"} />
                 }
 
+                {
+                    user.MODO_APLICACAO === 0 ?
 
-                <div className='menu'>
+                        <div className='menu'>
 
-                    {
-                        id ?
-                            <button className='menu-button button-green' onClick={() => { handleEdit() }}>
-                                <i className='fa-solid fa-save'></i> Salvar
+                            {
+                                id ?
+                                    <button className='menu-button button-dark-blue ' onClick={() => { handleEdit() }}>
+                                        <i className='fa-solid fa-save'></i> Salvar
+                                    </button>
+                                    :
+                                    <button className='menu-button button-dark-blue ' onClick={() => { handleCreate() }}>
+                                        <i className='fa-solid fa-save'></i> Salvar
+                                    </button>
+                            }
+                            <button className='menu-button button-grey' onClick={() => { navigate('/processos') }}>
+                                <i className='fa-solid fa-times'></i> Cancelar
                             </button>
-                            :
-                            <button className='menu-button button-green' onClick={() => { handleCreate() }}>
-                                <i className='fa-solid fa-save'></i> Salvar
+                        </div>
+
+                        :
+
+                        <div className='menu'>
+
+
+                            <button className='menu-button button-blue' onClick={() => { navigate('/processos') }}>
+                                <i className='fa-solid fa-arrow-left'></i> voltar
                             </button>
-                    }
-                    <button className='menu-button button-red' onClick={() => { navigate('/prestadores') }}>
-                        <i className='fa-solid fa-times'></i> Cancelar
-                    </button>
-                </div>
+                        </div>
+
+                }
+
             </div>
 
             <div className="content-page">
@@ -285,12 +295,13 @@ const Create = () => {
                             <div className="input-form">
 
                                 <label htmlFor="id_central">Central responsável
-                                <small className="campo-obrigatorio"></small>
+                                    <small className="campo-obrigatorio"></small>
                                 </label>
                                 <Select
                                     options={centrais}
                                     id="id_central"
                                     name="id_central"
+                                    isDisabled={user.MODO_APLICACAO === 1}
                                     value={processo.id_central}
                                     onChange={handleCentral}
                                 />
@@ -300,7 +311,7 @@ const Create = () => {
                             <div className="input-form">
 
                                 <label htmlFor="nro_processo">Número do processo
-                                <small className="campo-obrigatorio"></small>
+                                    <small className="campo-obrigatorio"></small>
                                 </label>
                                 <input
                                     id="nro_processo"
@@ -310,24 +321,35 @@ const Create = () => {
                                     placeholder=""
                                     value={processo.nro_processo}
                                     required={true}
+                                    disabled={user.MODO_APLICACAO === 1}
                                     onChange={handleProcesso}
                                 />
                             </div>
                             <div className="input-form">
 
-                                <label htmlFor="vara">Nome da Vara Judicial 
-                                <small className="campo-obrigatorio"></small>
-                                 </label>
+                                <label htmlFor="vara">Nome da Vara Judicial
+                                    <small className="campo-obrigatorio"></small>
+                                </label>
 
                                 <Select
                                     options={varas}
                                     id="id_vara"
                                     name="id_vara"
                                     value={processo.id_vara}
+                                    isDisabled={user.MODO_APLICACAO === 1}
                                     onChange={handleVara}
                                 />
 
-                                <button className="btn btn-sm btn-blue" onClick={() => { handleModaCreateVara(true) }}><i className="fas fa-plus"></i> Criar nova Vara Judicial</button>
+                                {
+                                    user.MODO_APLICACAO === 0
+
+                                        ?
+                                        <button className="btn btn-sm btn-blue" onClick={() => { handleModaCreateVara(true) }}><i className="fas fa-plus"></i> Criar nova Vara Judicial</button>
+
+                                        : null
+
+                                }
+
 
 
                             </div>
@@ -344,6 +366,7 @@ const Create = () => {
                                         placeholder=""
                                         value={processo.qtd_penas_anteriores}
                                         required={true}
+                                        disabled={user.MODO_APLICACAO === 1}
                                         onChange={handleProcesso}
                                     />
                                 </div>
@@ -351,7 +374,7 @@ const Create = () => {
                                 <div className="input-form col-md-6">
 
                                     <label htmlFor="horas_cumprir">Horas a cumprir
-                                    <small className="campo-obrigatorio"></small>
+                                        <small className="campo-obrigatorio"></small>
                                     </label>
                                     <input
                                         id="horas_cumprir"
@@ -361,6 +384,7 @@ const Create = () => {
                                         placeholder=""
                                         value={processo.horas_cumprir}
                                         required={true}
+                                        disabled={user.MODO_APLICACAO === 1}
                                         onChange={handleProcesso}
                                     />
                                 </div>
@@ -380,6 +404,7 @@ const Create = () => {
                                                 name="persecucao_penal"
                                                 value="false"
                                                 checked={!processo.persecucao_penal}
+                                                disabled={user.MODO_APLICACAO === 1}
                                                 onChange={handleRadio}
                                             />
                                         </label>
@@ -392,6 +417,7 @@ const Create = () => {
                                                 name="persecucao_penal"
                                                 value="true"
                                                 checked={processo.persecucao_penal}
+                                                disabled={user.MODO_APLICACAO === 1}
                                                 onChange={handleRadio}
                                             />
                                         </label>
@@ -415,6 +441,7 @@ const Create = () => {
                                     placeholder=""
                                     value={processo.nro_artigo_penal}
                                     required={true}
+                                    disabled={user.MODO_APLICACAO === 1}
                                     onChange={handleProcesso}
                                 />
                             </div>
@@ -428,6 +455,7 @@ const Create = () => {
                                     className="form-control shadow-none input-custom"
                                     type="text"
                                     placeholder=""
+                                    disabled={user.MODO_APLICACAO === 1}
                                     value={processo.pena_originaria}
                                     required={true}
                                     onChange={handleProcesso}
@@ -439,6 +467,7 @@ const Create = () => {
                                 <select className="select-custom w-10 form-select form-select-md" id="pena_originaria_regime" name="pena_originaria_regime"
                                     value={processo.pena_originaria_regime}
                                     required={true}
+                                    disabled={user.MODO_APLICACAO === 1}
                                     onChange={handleProcesso}>
                                     <option defaultValue={true} value={0}>Aberto</option>
                                     <option value={1}>Semi Aberto</option>
@@ -457,6 +486,7 @@ const Create = () => {
                                     <textarea
                                         id="detalhamento"
                                         name="detalhamento"
+                                        disabled={user.MODO_APLICACAO === 1}
                                         className="form-control shadow-none input-custom"
                                         type="text"
                                         value={processo.detalhamento}
@@ -478,6 +508,7 @@ const Create = () => {
                                         type="text"
                                         value={processo.inciso}
                                         rows={4}
+                                        disabled={user.MODO_APLICACAO === 1}
                                         onChange={handleProcesso}
                                     />
                                 </div>
@@ -498,6 +529,7 @@ const Create = () => {
                                                 type="radio"
                                                 name="prd"
                                                 value="false"
+                                                disabled={user.MODO_APLICACAO === 1}
                                                 checked={!processo.prd}
                                                 onChange={handleRadio}
                                             />
@@ -510,6 +542,7 @@ const Create = () => {
                                                 type="radio"
                                                 name="prd"
                                                 value="true"
+                                                disabled={user.MODO_APLICACAO === 1}
                                                 checked={processo.prd}
                                                 onChange={handleRadio}
                                             />
@@ -530,6 +563,7 @@ const Create = () => {
                                                     className="form-control shadow-none input-custom"
                                                     type="text"
                                                     value={processo.prd_descricao}
+                                                    disabled={user.MODO_APLICACAO === 1}
                                                     rows={4}
                                                     onChange={handleProcesso}
                                                 />
@@ -552,6 +586,7 @@ const Create = () => {
                                                             type="radio"
                                                             name="possui_multa"
                                                             value="false"
+                                                            disabled={user.MODO_APLICACAO === 1}
                                                             checked={!processo.possui_multa}
                                                             onChange={handleRadio}
                                                         />
@@ -564,6 +599,7 @@ const Create = () => {
                                                             type="radio"
                                                             name="possui_multa"
                                                             value="true"
+                                                            disabled={user.MODO_APLICACAO === 1}
                                                             checked={processo.possui_multa}
                                                             onChange={handleRadio}
                                                         />
@@ -582,6 +618,7 @@ const Create = () => {
                                                                 placeholder=""
                                                                 value={processo.valor_a_pagar}
                                                                 required={true}
+                                                                disabled={user.MODO_APLICACAO === 1}
                                                                 onInput={handleInputChange}
                                                                 onChange={handleInputChange}
                                                             />

@@ -1,7 +1,9 @@
 import React from "react";
 import { useState, useContext } from "react";
 import { NavLink } from "react-router-dom";
+import { AuthenticationContext } from "../context/Authentication";
 function Navbar() {
+    const { user } = useContext(AuthenticationContext);
     const [activeMenu, setActiveMenu] = useState('/');
 
     return (
@@ -50,6 +52,11 @@ function Navbar() {
                     </ul>
                 </li>
             </ul>
+            
+
+            <div className="modo-aplicacao">
+                modo apliação: <b>{user.MODO_APLICACAO === 0 ? "central" : user.MODO_APLICACAO === 1 ? "entidade" : "não definido" }</b>
+            </div>
 
         </nav>
     );

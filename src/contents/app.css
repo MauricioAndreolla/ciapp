@@ -316,7 +316,7 @@ input {
   border-right: 1px solid #8d8d8d;
 } */
 
-.button-green {
+.button-blue {
   border-bottom-color: var(--green) !important;
   color: var(--green) !important;
 }
@@ -331,6 +331,15 @@ input {
   color: var(--blue) !important;
 }
 
+.button-dark-blue {
+  border-bottom-color: var(--dark-blue) !important;
+  color: var(--dark-blue) !important;
+}
+
+.button-grey{
+  border-bottom-color: var(--dark-grey) !important;
+  color: var(--dark-grey) !important;
+}
 .tabs-prestador {
   margin-top: 2rem;
 }
@@ -551,4 +560,12 @@ table td {
 .campo-obrigatorio::after{
   content: "*";
   color: var(--light-red);
+}
+
+.modo-aplicacao{
+  position: absolute;
+  bottom: 0;
+  font-size: 8pt;
+  width: 250px;
+  text-align: center;
 }
