@@ -15,7 +15,7 @@ class Tarefa extends Model {
 Tarefa.init({
 
   titulo: { allowNull: false, type: DataTypes.STRING },
-  descricao: { allowNull: true, type: DataTypes.STRING },
+  descricao: { allowNull: true, type: DataTypes.TEXT },
   status: { allowNull: false, type: DataTypes.BOOLEAN },
   ref_integracao: { allowNull: true, type: DataTypes.INTEGER }
 }, {

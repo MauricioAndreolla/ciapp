@@ -6,7 +6,7 @@ class Curso extends Model { }
 
 Curso.init({
     descricao: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false
     },
 
@@ -15,7 +15,7 @@ Curso.init({
     // },
 
     observacao: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
     },
 
     ref_integracao: {

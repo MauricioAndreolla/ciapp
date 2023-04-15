@@ -114,15 +114,17 @@ ipcMain.handle('maximize', async () => {
 
     win.maximizable = true;
     win.resizable = true;
-    win.setSize(1366, 768);
     win.setMinimumSize(1090, 640)
+    win.setSize(1366, 768);
+  
     win.maximize();
 })
 
 ipcMain.handle('unmaximize', async () => {
     win.unmaximize();
-    win.setSize(350, 600);
     win.setMinimumSize(350, 600)
+    win.setSize(350, 600);
+
     win.maximizable = false;
     win.resizable = false;
 })

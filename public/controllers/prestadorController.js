@@ -347,7 +347,7 @@ module.exports = {
 
                 }
             }
-            return { status: true, text: `Prestador(a) ${Prestador.nome} cadastrado(a) com sucesso!` };
+            return { status: true, text: `Prestador(a) ${Prestador.nome} cadastrado(a) com sucesso!`, id: Prestador.id  };
 
         } catch (error) {
             return { status: false, text: `Erro interno no servidor \n` + error };

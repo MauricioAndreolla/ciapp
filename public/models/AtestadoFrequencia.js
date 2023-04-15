@@ -9,7 +9,7 @@ const Database = require("../config/database");
   AtestadoFrequencia.init({
     dt_entrada: { allowNull: false ,type: DataTypes.DATE},
     dt_saida: {allowNull: false, type: DataTypes.DATE},
-    observacao: {allowNull: true ,type: DataTypes.STRING},
+    observacao: {allowNull: true ,type: DataTypes.TEXT},
     ref_integracao: { allowNull: true, type: DataTypes.INTEGER}
 
   }, {

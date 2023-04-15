@@ -46,7 +46,7 @@ Entidade.init({
   observacao:
   {
     allowNull: true,
-    type: DataTypes.STRING
+    type: DataTypes.TEXT
   },
   ref_integracao:
   {
