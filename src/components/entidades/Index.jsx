@@ -96,7 +96,7 @@ const Index = () => {
 
                 <div className='menu'>
 
-                    <button className='menu-button button-green' onClick={() => { novaEntidade() }}>
+                    <button className='menu-button button-dark-blue ' onClick={() => { novaEntidade() }}>
                         <i className='fa-solid fa-plus'></i> Novo
                     </button>
                 </div>

@@ -305,10 +305,10 @@ const Create = () => {
 
             <div className='menu'>
 
-                <button className='menu-button button-green' onClick={handleEditOrNew}>
+                <button className='menu-button button-dark-blue ' onClick={handleEditOrNew}>
                     <i className='fa-solid fa-save'></i> Salvar
                 </button>
-                <button className='menu-button button-red' onClick={() => { navigate('/entidades') }}>
+                <button className='menu-button button-grey' onClick={() => { navigate('/entidades') }}>
                     <i className='fa-solid fa-times'></i> Cancelar
                 </button>
             </div>

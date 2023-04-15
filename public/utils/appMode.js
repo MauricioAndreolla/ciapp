@@ -1,9 +1,6 @@
-const MODO_APLICACAO = {
-    central: 0,
-    entidade: 1
-  };
+const MODO_APLICACAO = require('./enums').TipoInstituicao
   
 module.exports = {
-  modo: MODO_APLICACAO.central,
+  modo: MODO_APLICACAO.Central,
   MODO_APLICACAO
 };

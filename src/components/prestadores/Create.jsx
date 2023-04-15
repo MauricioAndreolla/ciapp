@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from 'react-router-dom'
 import Title from "../layout/Title";
 import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
@@ -17,8 +17,11 @@ import InputDiasSemana from '../layout/InputDiasSemana';
 import Endereco from "../layout/Endereco";
 import Load from "../layout/Load";
 
+import { AuthenticationContext } from "../context/Authentication";
+
 const Create = () => {
     const navigate = useNavigate();
+    const { user } = useContext(AuthenticationContext);
     const [load, setLoad] = useState(false);
     const { id } = useParams();
     const [tempID, setempID] = useState(0);
@@ -78,6 +81,7 @@ const Create = () => {
                     className: 'btn-blue',
                     label: 'Não',
                     onClick: () => {
+                        navigate(`/prestadores`);
                     }
                 }
             ]
@@ -686,11 +690,11 @@ const Create = () => {
     useEffect(() => {
 
         if (id) {
-           
+
             const fetchData = async () => {
                 setLoad(true);
                 let data = await window.api.Action({ controller: "Prestador", action: "GetPrestador", params: id });
-             ;
+                ;
                 data = data[0];
                 setImage(data.image);
                 setPrestador({
@@ -737,50 +741,93 @@ const Create = () => {
                 id ? <Title title={"Editar Prestador"} /> : <Title title={"Novo Prestador"} />
             }
 
+            {
+                user.MODO_APLICACAO === 0 ?
+                    <div className='menu'>
 
-            <div className='menu'>
+                        {
+                            id ?
+                                <button className='menu-button button-dark-blue ' onClick={() => { handleEdit() }}>
+                                    <i className='fa-solid fa-save'></i> Salvar
+                                </button>
+                                :
+                                <button className='menu-button button-dark-blue ' onClick={() => { handleCreate() }}>
+                                    <i className='fa-solid fa-save'></i> Salvar
+                                </button>
+                        }
+                        <button className='menu-button button-grey' onClick={() => { navigate('/prestadores') }}>
+                            <i className='fa-solid fa-times'></i> Cancelar
+                        </button>
+                    </div>
 
-                {
-                    id ?
-                        <button className='menu-button button-green' onClick={() => { handleEdit() }}>
-                            <i className='fa-solid fa-save'></i> Salvar
+                    :
+
+                    <div className='menu'>
+
+                        <button className='menu-button button-blue' onClick={() => { navigate('/prestadores') }}>
+                            <i className='fa-solid fa-arrow-left'></i> voltar
                         </button>
-                        :
-                        <button className='menu-button button-green' onClick={() => { handleCreate() }}>
-                            <i className='fa-solid fa-save'></i> Salvar
-                        </button>
-                }
-                <button className='menu-button button-red' onClick={() => { navigate('/prestadores') }}>
-                    <i className='fa-solid fa-times'></i> Cancelar
-                </button>
-            </div>
+                    </div>
+            }
+
 
             <div className="row" style={{ paddingTop: "1rem" }}>
 
                 <div className="col-md-2 col-sm-12" >
-                    <div className="input-group mb-2 mt-2">
-                        <label className="file-input-custom" htmlFor="inputGroupFile04" id="upload-file-layout">
 
-                            {
-                                image ?
-                                    <img src={image} alt="" srcSet="" />
-                                    :
-                                    <span id="empty-image">
-                                        <i className="fa fa-image"></i> <br />
-                                        Foto
-                                    </span>
-                            }
-                        </label>
-                        <input type="file" className="file-select-custom" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={handleImage} />
-                    </div>
                     {
-                        image ?
-                            <div style={{ display: "flex" }}>
-                                <button className="btn btn-danger btn-remove-img" onClick={removeImage}><i className="fa-solid fa-trash"></i> remover imagem</button>
+
+                        user.MODO_APLICACAO === 0 ?
+                            <>
+
+                                <div className="input-group mb-2 mt-2">
+                                    <label className="file-input-custom" htmlFor="inputGroupFile04" id="upload-file-layout">
+
+                                        {
+                                            image ?
+                                                <img src={image} alt="" srcSet="" />
+                                                :
+                                                <span id="empty-image">
+                                                    <i className="fa fa-image"></i> <br />
+                                                    Foto
+                                                </span>
+                                        }
+                                    </label>
+                                    <input type="file" className="file-select-custom" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={handleImage} />
+                                </div>
+                                {
+                                    image ?
+                                        <div style={{ display: "flex" }}>
+                                            <button className="btn btn-danger btn-remove-img" onClick={removeImage}><i className="fa-solid fa-trash"></i> remover imagem</button>
+                                        </div>
+
+                                        : null
+                                }
+
+
+                            </>
+
+
+                            :
+
+                            <div className="input-group mb-2 mt-2">
+                                <label className="file-input-custom" htmlFor="inputGroupFile04" id="upload-file-layout">
+
+                                    {
+                                        image ?
+                                            <img src={image} alt="" srcSet="" />
+                                            :
+                                            <span id="empty-image">
+                                                <i className="fa fa-image"></i> <br />
+                                                Foto
+                                            </span>
+                                    }
+                                </label>
                             </div>
 
-                            : null
                     }
+
+
 
                 </div>
 
@@ -798,6 +845,7 @@ const Create = () => {
                                 placeholder=""
                                 value={prestador.nome}
                                 required={true}
+                                disabled={user.MODO_APLICACAO === 1}
                                 onChange={handlePrestador} />
                         </div>
                         <div className="col-md-6">
@@ -810,6 +858,7 @@ const Create = () => {
                                 placeholder=""
                                 value={prestador.nome_mae}
                                 required={true}
+                                disabled={user.MODO_APLICACAO === 1}
                                 onChange={handlePrestador} />
                         </div>
 
@@ -828,6 +877,7 @@ const Create = () => {
                                 placeholder="000.000.000-00"
                                 value={prestador.cpf}
                                 required={true}
+                                disabled={user.MODO_APLICACAO === 1}
                                 onChange={handlePrestador} />
                         </div>
 
@@ -841,6 +891,7 @@ const Create = () => {
                                 placeholder="Data de Nascimento"
                                 value={prestador.dt_nascimento}
                                 required={true}
+                                disabled={user.MODO_APLICACAO === 1}
                                 onChange={handlePrestador} />
                         </div>
 
@@ -854,6 +905,7 @@ const Create = () => {
                                 placeholder="(00) 00000-0000"
                                 value={prestador.telefone1}
                                 required={true}
+                                disabled={user.MODO_APLICACAO === 1}
                                 onChange={handlePrestador} />
                         </div>
 
@@ -867,6 +919,7 @@ const Create = () => {
                                 placeholder="(00) 00000-0000"
                                 value={prestador.telefone2}
                                 required={true}
+                                disabled={user.MODO_APLICACAO === 1}
                                 onChange={handlePrestador} />
                         </div>
 
@@ -882,12 +935,14 @@ const Create = () => {
                             <select className="select-custom w-10 form-select form-select-md" id="estado_civil" name="estado_civil"
                                 value={prestador.estado_civil}
                                 required={true}
+                                disabled={user.MODO_APLICACAO === 1}
                                 onChange={handlePrestador}>
                                 <option defaultValue={true} value={0}>Solteiro</option>
                                 <option value={1}>Casado</option>
                                 <option value={2}>Separado</option>
                                 <option value={3}>Divorciado</option>
                                 <option value={4}>Viúvo</option>
+
                             </select>
                         </div>
 
@@ -896,6 +951,7 @@ const Create = () => {
                             <select className="select-custom w-10 form-select form-select-md" id="etnia" name="etnia"
                                 value={prestador.etnia}
                                 required={true}
+                                disabled={user.MODO_APLICACAO === 1}
                                 onChange={handlePrestador}>
                                 <option defaultValue={true} value={0}>Branco</option>
                                 <option value={1}>Preto</option>
@@ -911,6 +967,7 @@ const Create = () => {
                             <select className="select-custom w-10 form-select form-select-md" id="escolaridade" name="escolaridade"
                                 value={prestador.escolaridade}
                                 required={true}
+                                disabled={user.MODO_APLICACAO === 1}
                                 onChange={handlePrestador}>
                                 <option defaultValue={true} value={0}>Analfabeto</option>
                                 <option value={1}>Fundamental Incompleto</option>
@@ -931,6 +988,7 @@ const Create = () => {
                                 className="form-control shadow-none input-custom"
                                 type="text"
                                 placeholder=""
+                                disabled={user.MODO_APLICACAO === 1}
                                 value={prestador.religiao}
                                 onChange={handlePrestador}
                             />
@@ -944,6 +1002,7 @@ const Create = () => {
                                 className="form-control shadow-none input-custom"
                                 type="text"
                                 value={prestador.renda_familiar}
+                                disabled={user.MODO_APLICACAO === 1}
                                 onInput={handleInputChange}
                                 onChange={handleInputChange}
                             />
@@ -1009,7 +1068,7 @@ const Create = () => {
                         <Tab.Pane eventKey="endereco">
                             <div className="row">
                                 <div className="col-md-12 no-padding">
-                                    <Endereco endereco={endereco} handleChange={handleEndereco} camposObrigatorios={true} />
+                                    <Endereco endereco={endereco} handleChange={handleEndereco} camposObrigatorios={true} disabled={user.MODO_APLICACAO === 1} />
                                 </div>
                             </div>
                         </Tab.Pane>
@@ -1017,13 +1076,25 @@ const Create = () => {
                         <Tab.Pane eventKey="familiares">
                             <div className="row">
                                 <div className="col-md-12 no-padding">
-                                    <div className='menu'>
 
-                                        <button className='menu-button button-blue' onClick={() => { handleModalFamiliar(true) }}>
-                                            <i className='fa-solid fa-plus'></i> Adicionar Familiar
-                                        </button>
-                                    </div>
-                                    <Table columns={columnsFamiliar} data={prestador.familiares} onEdit={ModalEditFamiliar} onDelete={deleteFamiliar} />
+                                    {
+                                        user.MODO_APLICACAO === 0 ?
+                                            <>
+                                                <div className='menu'>
+
+                                                    <button className='menu-button button-blue' onClick={() => { handleModalFamiliar(true) }}>
+                                                        <i className='fa-solid fa-plus'></i> Adicionar Familiar
+                                                    </button>
+                                                </div>
+                                                <Table columns={columnsFamiliar} data={prestador.familiares} onEdit={ModalEditFamiliar} onDelete={deleteFamiliar} />
+                                            </>
+
+                                            :
+
+                                            <Table columns={columnsFamiliar} data={prestador.familiares} />
+                                    }
+
+
                                 </div>
                             </div>
                         </Tab.Pane>
@@ -1032,17 +1103,29 @@ const Create = () => {
 
                             <div className="row">
                                 <div className="col-md-12 no-padding">
-                                    <div className='menu'>
+                                    {
+                                        user.MODO_APLICACAO === 0 ?
 
-                                        <button className='menu-button button-blue' onClick={() => { handleModalBeneficio(true) }}>
-                                            <i className='fa-solid fa-plus'></i> Adicionar Benefício
-                                        </button>
-                                    </div>
+                                            <>
+                                                <div className='menu'>
 
-                                    <Table columns={[
-                                        { Header: 'Nome', accessor: 'nome' },
-                                        { Header: 'Observação', accessor: 'observacao' }
-                                    ]} data={prestador.beneficios} onDelete={deleteBeneficio} />
+                                                    <button className='menu-button button-blue' onClick={() => { handleModalBeneficio(true) }}>
+                                                        <i className='fa-solid fa-plus'></i> Adicionar Benefício
+                                                    </button>
+                                                </div>
+
+                                                <Table columns={[
+                                                    { Header: 'Nome', accessor: 'nome' },
+                                                    { Header: 'Observação', accessor: 'observacao' }
+                                                ]} data={prestador.beneficios} onDelete={deleteBeneficio} />
+                                            </>
+                                            :
+                                            <Table columns={[
+                                                { Header: 'Nome', accessor: 'nome' },
+                                                { Header: 'Observação', accessor: 'observacao' }
+                                            ]} data={prestador.beneficios} />
+                                    }
+
                                 </div>
                             </div>
 
@@ -1059,6 +1142,7 @@ const Create = () => {
                                             name="trabalho_descricao"
                                             className="form-control shadow-none input-custom"
                                             placeholder=""
+                                            disabled={user.MODO_APLICACAO === 1}
                                             value={trabalho.trabalho_descricao}
                                             onChange={handleTrabalho}
 
@@ -1073,6 +1157,7 @@ const Create = () => {
                                             name="trabalho_horario_inicio"
                                             className="form-control input rounded-2"
                                             type="time"
+                                            disabled={user.MODO_APLICACAO === 1}
                                             value={trabalho.trabalho_horario_inicio}
                                             onChange={handleTrabalho}
                                         />
@@ -1087,6 +1172,7 @@ const Create = () => {
                                             name="trabalho_horario_fim"
                                             className="form-control input rounded-2"
                                             type="time"
+                                            disabled={user.MODO_APLICACAO === 1}
                                             value={trabalho.trabalho_horario_fim}
                                             onChange={handleTrabalho}
                                         />
@@ -1096,7 +1182,7 @@ const Create = () => {
                                 <div className="col-md-6">
                                     <div className="input-form">
                                         <label htmlFor="trabalho_dias_semana">Dias Semana</label>
-                                        <InputDiasSemana id="trabalho_dias_semana" name="trabalho_dias_semana" handleChange={handleDias} value={trabalho.trabalho_dias_semana} />
+                                        <InputDiasSemana disabled={user.MODO_APLICACAO === 1} id="trabalho_dias_semana" name="trabalho_dias_semana" handleChange={handleDias} value={trabalho.trabalho_dias_semana} />
                                     </div>
                                 </div>
                             </div>
@@ -1106,16 +1192,31 @@ const Create = () => {
 
                             <div className="row">
                                 <div className="col-md-12 no-padding">
-                                    <div className='menu'>
 
-                                        <button className='menu-button button-blue' onClick={() => { handleModalHabilidade(true) }}>
-                                            <i className='fa-solid fa-plus'></i> Adicionar Habilidade
-                                        </button>
-                                    </div>
-                                    <Table columns={[
-                                        { Header: 'Descrição', accessor: 'descricao' },
-                                        { Header: 'Observação', accessor: 'observacao' }
-                                    ]} data={prestador.habilidades} onDelete={deleteHabilidade} />
+                                    {
+                                        user.MODO_APLICACAO === 0 ?
+                                            <>
+                                                <div className='menu'>
+
+                                                    <button className='menu-button button-blue' onClick={() => { handleModalHabilidade(true) }}>
+                                                        <i className='fa-solid fa-plus'></i> Adicionar Habilidade
+                                                    </button>
+                                                </div>
+                                                <Table columns={[
+                                                    { Header: 'Descrição', accessor: 'descricao' },
+                                                    { Header: 'Observação', accessor: 'observacao' }
+                                                ]} data={prestador.habilidades} onDelete={deleteHabilidade} />
+                                            </>
+
+                                            :
+
+                                            <Table columns={[
+                                                { Header: 'Descrição', accessor: 'descricao' },
+                                                { Header: 'Observação', accessor: 'observacao' }
+                                            ]} data={prestador.habilidades} />
+                                    }
+
+
                                 </div>
                             </div>
 
@@ -1125,17 +1226,31 @@ const Create = () => {
 
                             <div className="row">
                                 <div className="col-md-12 no-padding">
-                                    <div className='menu'>
+                                    {
+                                        user.MODO_APLICACAO === 0 ?
+                                            <>
+                                                <div className='menu'>
 
-                                        <button className='menu-button button-blue' onClick={() => { handleModalCurso(true) }}>
-                                            <i className='fa-solid fa-plus'></i> Adicionar Curso ou especialização
-                                        </button>
-                                    </div>
+                                                    <button className='menu-button button-blue' onClick={() => { handleModalCurso(true) }}>
+                                                        <i className='fa-solid fa-plus'></i> Adicionar Curso ou especialização
+                                                    </button>
+                                                </div>
 
-                                    <Table columns={[
-                                        { Header: 'Descrição', accessor: 'descricao' },
-                                        { Header: 'Observação', accessor: 'observacao' }
-                                    ]} data={prestador.cursos} onDelete={deleteCurso} />
+                                                <Table columns={[
+                                                    { Header: 'Descrição', accessor: 'descricao' },
+                                                    { Header: 'Observação', accessor: 'observacao' }
+                                                ]} data={prestador.cursos} onDelete={deleteCurso} />
+                                            </>
+
+                                            :
+
+                                            <Table columns={[
+                                                { Header: 'Descrição', accessor: 'descricao' },
+                                                { Header: 'Observação', accessor: 'observacao' }
+                                            ]} data={prestador.cursos} />
+
+                                    }
+
                                 </div>
                             </div>
 
@@ -1155,6 +1270,7 @@ const Create = () => {
                                                 <select className="select-custom w-10 form-select form-select-md" id="deficiencia" name="deficiencia"
                                                     value={prestador.saude.deficiencia}
                                                     required={true}
+                                                    disabled={user.MODO_APLICACAO === 1}
                                                     onChange={handleSaude}>
                                                     <option defaultValue={true} value='0'>Não</option>
                                                     <option value='1'>Mental</option>
@@ -1174,6 +1290,7 @@ const Create = () => {
                                                     type="text"
                                                     placeholder=""
                                                     value={prestador.saude.observacao}
+                                                    disabled={user.MODO_APLICACAO === 1}
                                                     rows={5}
                                                     onChange={handleSaude} />
                                             </div>
@@ -1181,17 +1298,32 @@ const Create = () => {
                                         </div>
 
                                         <div className="col-md-12" style={{ marginTop: "1rem" }}>
-                                            <div className='menu'>
+                                            {
+                                                user.MODO_APLICACAO === 0 ?
 
-                                                <button className='menu-button button-blue' onClick={() => { handleModalUsoDroga(true) }}>
-                                                    <i className='fa-solid fa-plus'></i> Adicionar informação de uso de Drogas
-                                                </button>
-                                            </div>
-                                            <Table columns={[
-                                                { Header: 'Nome', accessor: 'nome' },
-                                                { Header: 'Observação', accessor: 'observacao' },
-                                                { Header: 'Frequência', accessor: 'frequencia_descricao' }
-                                            ]} data={prestador.saude.drogas} onDelete={deleteUsoDroga} />
+                                                    <>
+                                                        <div className='menu'>
+
+                                                            <button className='menu-button button-blue' onClick={() => { handleModalUsoDroga(true) }}>
+                                                                <i className='fa-solid fa-plus'></i> Adicionar informação de uso de Drogas
+                                                            </button>
+                                                        </div>
+                                                        <Table columns={[
+                                                            { Header: 'Nome', accessor: 'nome' },
+                                                            { Header: 'Observação', accessor: 'observacao' },
+                                                            { Header: 'Frequência', accessor: 'frequencia_descricao' }
+                                                        ]} data={prestador.saude.drogas} onDelete={deleteUsoDroga} />
+                                                    </>
+
+                                                    :
+
+                                                    <Table columns={[
+                                                        { Header: 'Nome', accessor: 'nome' },
+                                                        { Header: 'Observação', accessor: 'observacao' },
+                                                        { Header: 'Frequência', accessor: 'frequencia_descricao' }
+                                                    ]} data={prestador.saude.drogas} />
+                                            }
+
                                         </div>
 
                                     </div>

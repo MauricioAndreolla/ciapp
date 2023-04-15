@@ -1,6 +1,7 @@
 const TipoInstituicao = {
-    Entidade: 0,
-    Central: 1
+    Central: 0,
+    Entidade: 1,
+  
 }
 Object.freeze(TipoInstituicao);
 

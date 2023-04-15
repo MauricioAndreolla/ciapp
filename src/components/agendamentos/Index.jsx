@@ -177,7 +177,7 @@ export default function Index(props) {
 
             <div className='menu'>
 
-                <button className='menu-button button-green' onClick={() => { CreateAgendamento() }}>
+                <button className='menu-button button-dark-blue ' onClick={() => { CreateAgendamento() }}>
                     <i className='fa-solid fa-plus'></i> Novo
                 </button>
             </div>

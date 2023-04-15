@@ -31,7 +31,7 @@ class Authentication {
         if (!this.isAuthenticated)
             return { status: false, text: "Usuário ou senha inválida" };
 
-        return { status: true, user: { id: checkUser.id, user: checkUser.nome, MODO_APLICACAO: MODO_APLICACAO } };
+        return { status: true, user: { id: checkUser.id, user: checkUser.nome, MODO_APLICACAO: MODO_APLICACAO.modo } };
 
     }
 

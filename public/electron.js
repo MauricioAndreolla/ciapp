@@ -18,6 +18,8 @@ const createWindow = () => {
     win = new BrowserWindow({
         width: 350,
         height: 600,
+        minWidth: 350,
+        minHeight: 600,
         contextIsolation: true,
         maximizable: false,
         resizable: false,
@@ -34,12 +36,12 @@ const createWindow = () => {
     win.setMenu(null);
     win.setTitle("Central Integrada de Alternativas Penais");
 
-    if(isDev){
+    if (isDev) {
         win.webContents.on('did-frame-finish-load', () => {
             win.webContents.openDevTools({ mode: 'detach' });
         });
     }
-    
+
 
 }
 
@@ -51,13 +53,13 @@ app.on('window-all-closed', () => {
 app.whenReady().then(async () => {
 
     //Verificar se a pasta onde irá ficar as bases SQlite existe
-    if (!fs.existsSync('C://ciapp/database')){
+    if (!fs.existsSync('C://ciapp/database')) {
         fs.mkdirSync('C://ciapp/database', { recursive: true });
     }
 
 
     //Testar conexão com banco interno
-    let connInternal =await connectInternalDatabase();
+    let connInternal = await connectInternalDatabase();
 
     if (!connInternal.status) {
         dialog.showErrorBox("Não foi possível instanciar a base de dados interna no sistema.", connInternal.text);
@@ -113,12 +115,14 @@ ipcMain.handle('maximize', async () => {
     win.maximizable = true;
     win.resizable = true;
     win.setSize(1366, 768);
+    win.setMinimumSize(1090, 640)
     win.maximize();
 })
 
 ipcMain.handle('unmaximize', async () => {
     win.unmaximize();
     win.setSize(350, 600);
+    win.setMinimumSize(350, 600)
     win.maximizable = false;
     win.resizable = false;
 })
