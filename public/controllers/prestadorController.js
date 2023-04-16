@@ -61,7 +61,7 @@ module.exports = {
             where: where,
             include: db.models.Processo
         });
-
+        await db.sequelize.close();
         return Prestadores.map(s => {
             return {
                 id: s.id,
@@ -109,7 +109,7 @@ module.exports = {
                 },
             ]
         });
-
+        await db.sequelize.close();
         let mappedValues = Prestadores.map(s => {
             return {
                 id: s.id,
@@ -205,6 +205,7 @@ module.exports = {
 
     async GetPrestadorSimple(id) {
         let Prestadores = await db.models.Prestador.findByPk(id);
+        await db.sequelize.close();
         return {
             nome: Prestadores.nome
         }
@@ -347,6 +348,7 @@ module.exports = {
 
                 }
             }
+            await db.sequelize.close();
             return { status: true, text: `Prestador(a) ${Prestador.nome} cadastrado(a) com sucesso!`, id: Prestador.id  };
 
         } catch (error) {
@@ -535,7 +537,7 @@ module.exports = {
             } else {
                 FichaMedica.setDrogas([]);
             }
-
+            await db.sequelize.close();
             return { status: true, text: `Prestador(a) ${Prestador.nome} alterado(a) com sucesso!` };
 
         } catch (error) {

@@ -159,6 +159,7 @@ ipcMain.handle('action', async (event, args) => {
         const routesResult = await routes.Action(args.controller, args.action, args.params);
         return routesResult;
     } catch (error) {
+        dialog.showErrorBox("Erro interno no sistema", error);
         return { status: false, text: "General error: " + error };
     }
 
