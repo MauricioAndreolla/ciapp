@@ -15,8 +15,8 @@ module.exports = {
     async Create(payload) {
 
         try {
-         
-            agendamentos.map(element => {
+            
+            payload.agendamento.map(element => {
                 if (element.processo == null || element.processo == '') {
                     return { status: false, text: `Selecione o processo` };
                 } else if (element.tarefa == null || element.tarefa == '') {
@@ -60,39 +60,41 @@ module.exports = {
 
     async Edit(payload) {
 
-        console.log(payload)
-
+        
+        
         try {
+            
+        
+            
+            payload.agendamento.forEach( async (payload) => {
+                if (payload.processo == null || payload.processo == '') {
+                    return { status: false, text: `Selecione o processo` };
+                } else if (payload.tarefa == null || payload.tarefa == '') {
+                    return { status: false, text: `Selecione a tarefa` };
+                } else if (payload.entidade == null || payload.entidade == '') {
+                    return { status: false, text: `Selecione a instituição` };
+                } else if (payload.agendamento_dias_semana.length <= 0) {
+                    return { status: false, text: `Selecione os dias da semana das tarefas` };
+                }
+              
+                let Agendamento = await db.models.Agendamento.findByPk(payload.id);
+             
+                Agendamento.data_inicial = payload.agendamento_dia_inicial,
+                    Agendamento.horario_inicio = payload.agendamento_horario_inicio,
+                    Agendamento.horario_fim = payload.agendamento_horario_fim,
+                    Agendamento.segunda = payload.agendamento_dias_semana.filter(s => s.value === 0).length > 0,
+                    Agendamento.terca = payload.agendamento_dias_semana.filter(s => s.value === 1).length > 0,
+                    Agendamento.quarta = payload.agendamento_dias_semana.filter(s => s.value === 2).length > 0,
+                    Agendamento.quinta = payload.agendamento_dias_semana.filter(s => s.value === 3).length > 0,
+                    Agendamento.sexta = payload.agendamento_dias_semana.filter(s => s.value === 4).length > 0,
+                    Agendamento.sabado = payload.agendamento_dias_semana.filter(s => s.value === 5).length > 0,
+                    Agendamento.domingo = payload.agendamento_dias_semana.filter(s => s.value === 6).length > 0,
+                    Agendamento.ProcessoId = payload.processo.id,
+                    Agendamento.TarefaId = payload.tarefa.id
+                await Agendamento.save();
+            });
 
 
-            if (payload.processo == null || payload.processo == '') {
-                return { status: false, text: `Selecione o processo` };
-            } else if (payload.tarefa == null || payload.tarefa == '') {
-                return { status: false, text: `Selecione a tarefa` };
-            } else if (payload.entidade == null || payload.entidade == '') {
-                return { status: false, text: `Selecione a instituição` };
-            } else if (payload.agendamento_dias_semana.length <= 0) {
-                return { status: false, text: `Selecione os dias da semana das tarefas` };
-            }
-
-
-            let Agendamento = await db.models.Agendamento.findByPk(payload.agendamentos.id);
-
-
-
-            Agendamento.data_inicial = payload.agendamento.agendamento_dia_inicial,
-                Agendamento.horario_inicio = payload.agendamento.agendamento_horario_inicio,
-                Agendamento.horario_fim = payload.agendamento.agendamento_horario_fim,
-                Agendamento.segunda = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 0).length > 0,
-                Agendamento.terca = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 1).length > 0,
-                Agendamento.quarta = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 2).length > 0,
-                Agendamento.quinta = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 3).length > 0,
-                Agendamento.sexta = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 4).length > 0,
-                Agendamento.sabado = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 5).length > 0,
-                Agendamento.domingo = payload.agendamento.agendamento_dias_semana.filter(s => s.value === 6).length > 0,
-                Agendamento.ProcessoId = payload.agendamento.processo.id,
-                Agendamento.TarefaId = payload.agendamento.tarefa.id
-            await Agendamento.save();
 
 
 

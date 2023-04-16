@@ -6,6 +6,8 @@ import InputDiasSemana from '../layout/InputDiasSemana';
 import { Button, Modal } from 'react-bootstrap';
 import Select from 'react-select';
 import { confirmAlert } from "react-confirm-alert";
+import { toast } from 'react-toastify';
+
 
 
 const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
@@ -19,8 +21,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     const [processos, setProcessos] = useState([]);
 
     useEffect(() => {
-        if (Model != null) {
 
+        if (Model != null && Model.id != null) {
 
             setAgendamento({
                 id: Model.id,
@@ -34,33 +36,58 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                 novo_registro: Model.novo_registro
             });
 
-            setAgendamentos([agendamento]);
+            setAgendamentos([Model]);
+        } else {
+            setAgendamento(
+                {
+                    id: null,
+                    agendamento_dia_inicial: '',
+                    agendamento_horario_inicio: '08:00',
+                    agendamento_horario_fim: '18:00',
+                    agendamento_dias_semana: [],
+                    processo: '',
+                    entidade: '',
+                    tarefa: '',
+                    novo_registro: true
+                }
+            );
+            setAgendamentos([]);
         }
 
         fetchProcessos();
         fetchEntidades();
-
-        console.log(Model);
     }, [Model]);
 
 
     const defaultProcesso = () => {
-        return { label: agendamento.processo.nro_processo, value: agendamento.processo.id }
+        if (Model != null) {
+            return { label: Model.processo.nro_processo, value: Model.processo.id }
+        } else {
+            return false;
+        }
     }
 
     const defaultEntidade = () => {
-        let value = `${agendamento.entidade.nome} - ${agendamento.entidade.cnpj}`
-        return { label: value, value: agendamento.entidade.id }
+        if (Model != null) {
+            let value = `${Model.entidade.nome} - ${Model.entidade.cnpj}`
+            return { label: value, value: Model.entidade.id }
+        } else {
+            return false;
+        }
     }
 
     const defaultTarefa = () => {
-        return { label: agendamento.tarefa.titulo, value: agendamento.tarefa.id }
+        if (Model != null) {
+            return { label: Model.tarefa.titulo, value: Model.tarefa.id }
+        } else {
+            return false;
+        }
     }
 
     const fetchProcessos = async () => {
         let data = await window.api.Action({ controller: "Processo", action: "GetProcessos" });
         let processo;
-       
+
         let values = data.map((element) => {
             return processo = {
                 value: element.id,
@@ -73,9 +100,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     }
 
     const fetchEntidades = async () => {
-        let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades" });
+        let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: { tipo_instituicao: 0 } });
         let entidade;
-        
         let values = data.map((element) => {
             return entidade = {
                 value: element.id,
@@ -83,6 +109,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                 name: 'entidade'
             }
         });
+
 
         setEntidades(values);
     }
@@ -111,27 +138,48 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
 
     const handleHide = () => {
-        // resetAgendamento();
         onHide();
     };
 
-
-    const handleAgendamento = (evt, name = null) => {
+    const handleAgendamentoOptions = (evt, name = null) => {
         let value = evt.value ?? evt.target.value;
 
         if (evt.name == 'entidade') {
             searchTarefa(evt);
         }
-
+ 
         setAgendamento({
             ...agendamento,
             [name ? evt.name : evt.target.name]: value
         })
     }
 
+    const handleAgendamento = (evt, name = null) => {
+        let value = evt.value ?? evt.target.value;
+
+        if (evt.target.name == 'agendamento_dia_inicial' && checkIfChangeDay() == true) {
+            let date = new Date(evt.target.value);
+            date.setDate(date.getDate() + 1);
+            evt.target.value = date.toISOString().slice(0, 10);
+            value = evt.target.value;
+            toast.warning(`Virada do dia adicao de 1 dia na data inicial`, { autoClose: 4000 });
+        }
+
+        if (evt.target.name == 'agendamento_horario_fim' && checkTime() == true) {
+            toast.warning(`Aviso:Agendamento acima de 8 horas`, { autoClose: 4000 });
+        }
+        
+        setAgendamento({
+            ...agendamento,
+            [name ? evt.name : evt.target.name]: value
+        })
+    
+    }
+
 
     const handleDiasSemana = (value) => {
-        console.log(value);
+
+
         setAgendamento({
             ...agendamento,
             ["agendamento_dias_semana"]: value.sort((a, b) => (a.value > b.value) ? 1 : ((b.value > a.value) ? -1 : 0))
@@ -165,68 +213,52 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         await resetAgendamento();
     }
 
-    // function verificaDatas() {
-    //     let horasInicial = agendamento_horario_inicio.slice(0, 2);
-    //     let minutosInicial = agendamento_horario_inicio.slice(3, 5);
-
-    //     let horasFinal = agendamento_horario_fim.slice(0, 2);
-    //     let minutosFinal = agendamento_horario_fim.slice(3, 5);
-
-    //     let horasInicialSegundos = parseInt(horasInicial) * 3600;
-    //     let minutosInicialSegundos = parseInt(minutosInicial) * 60;
-
-    //     let horasFinalSegundos = parseInt(horasFinal) * 3600;
-    //     let minutosFinalSegundos = parseInt(minutosFinal) * 60;
-
-    //     const segundosIniciais = horasInicialSegundos + minutosInicialSegundos;
-    //     const segundosFinais = horasFinalSegundos + minutosFinalSegundos;
-
-    //     const result = segundosFinais - segundosIniciais;
-
-    //     if (result <= 0) {
-    //         return true;
-    //     }
-
-    // }
+    const formatDate = ({ agendamento_dia_inicial }) => {
+        const [year, month, day] = agendamento_dia_inicial.split('-');
+        return `${day}/${month}/${year}`;
+    }
 
     const columnsAgendamento = [
-        // { id: e => e.agendamento_dia_inicial, Header: 'Data inicial', accessor: e => formatDate(e) },
+        { id: e => e.agendamento_dia_inicial, Header: 'Data inicial', accessor: e => formatDate(e)},
         { Header: 'Horário inicial', accessor: 'agendamento_horario_inicio' },
         { Header: 'Horário fim', accessor: 'agendamento_horario_fim' },
 
     ];
 
-    // const formatDate = ({ agendamento_dia_inicial }) => {
-    //     const [year, month, day] = agendamento_dia_inicial.split('-');
-    //     return `${day}/${month}/${year}`;
-    // }
+
+    const checkIfChangeDay = () => {
+        const [inicioHora, inicioMinuto] = agendamento.agendamento_horario_inicio.split(':').map(Number);
+        const [fimHora, fimMinuto] = agendamento.agendamento_horario_fim.split(':').map(Number);
+
+        const inicio = new Date(0, 0, 0, inicioHora, inicioMinuto);
+        const fim = new Date(0, 0, 0, fimHora, fimMinuto);
+
+        return fim < inicio || (fim.getDate() !== inicio.getDate());
+    }
+
+    const checkTime = () => {
+        const [inicioHora, inicioMinuto] = agendamento.agendamento_horario_inicio.split(':').map(Number);
+        const [fimHora, fimMinuto] = agendamento.agendamento_horario_fim.split(':').map(Number);
+
+        const horaInicialDate = new Date(0, 0, 0, inicioHora, inicioMinuto);
+        const horaFinalDate = new Date(0, 0, 0, fimHora, fimMinuto);
+
+        const diferencaHoras = (horaFinalDate - horaInicialDate) / (1000 * 60 * 60)
+
+        return diferencaHoras > 8;
+    }
+
 
     const deleteAgendamentoModal = (object) => {
-        console.log(object)
-        // if (object) {
-        //     confirmAlert({
-        //         title: 'Confirmação',
-        //         message: 'Tem certeza que deseja excluir este item?',
-        //         buttons: [
-        //             {
-        //                 label: 'Sim',
-        //                 onClick: () => {
-        //                     let agendamentos = agendamento.filter(s => s.id !== object.id);
-        //                     setAgendamento([
-        //                         ...agendamentos,
-        //                     ]);
-        //                 }
-        //             },
-        //             {
-        //                 className: 'btn-blue',
-        //                 label: 'Não',
-        //                 onClick: () => {
-        //                 }
-        //             }
-        //         ]
-        //     });
-        // }
+
+        if (object) {
+            let agendamentosTable = agendamentos.filter(s => s.id != object.id);
+            setAgendamentos([
+                ...agendamentosTable,
+            ]);
+        }
     }
+
 
     const handleAddTable = () => {
         setAgendamentos([...agendamentos, agendamento]);
@@ -246,40 +278,41 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
                                 <div className="form-group">
                                     <div className="input-form">
-                                        <label htmlFor="processo">Processo</label>
+                                        <label htmlFor="processo">Processo <small className="campo-obrigatorio"></small></label>
                                         <Select
                                             options={processos}
                                             id="processo"
                                             name="processo"
                                             placeholder="Processo"
-                                            onChange={handleAgendamento}
-                                            defaultValue={agendamento.id != null ? defaultProcesso : null}
+                                            onChange={handleAgendamentoOptions}
+                                            defaultValue={defaultProcesso}
                                         />
                                     </div>
                                 </div>
                                 <div className="form-group">
                                     <div className="input-form">
-                                        <label htmlFor="entidade">Entidade</label>
+                                        <label htmlFor="entidade">Entidade <small className="campo-obrigatorio"></small></label>
                                         <Select
                                             options={entidades}
                                             id="entidade"
                                             name="entidade"
                                             placeholder="Entidade"
-                                            onChange={handleAgendamento}
-                                            defaultValue={agendamento.id != null ? defaultEntidade : null}
+                                            onChange={handleAgendamentoOptions}
+                                            defaultValue={defaultEntidade}
+
                                         />
                                     </div>
                                 </div>
                                 <div className="form-group">
                                     <div className="input-form">
-                                        <label htmlFor="tarefa">Tarefa</label>
+                                        <label htmlFor="tarefa">Tarefa <small className="campo-obrigatorio"></small></label>
                                         <Select
                                             options={tarefas}
                                             id="tarefa"
                                             name="tarefa"
                                             placeholder="Tarefa"
-                                            onChange={handleAgendamento}
-                                            defaultValue={agendamento.id != null ? defaultTarefa : null}
+                                            onChange={handleAgendamentoOptions}
+                                            defaultValue={defaultTarefa}
                                         />
                                     </div>
                                 </div>
@@ -288,10 +321,10 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                             <div className="col-md-7">
                                 <div className="row">
 
-                                    <span>Tarefa: xxxxx</span>
+                                    <span>Tarefa: { }</span>
 
                                     <div className="form-group">
-                                        <label htmlFor="trabalho_horario_inicio">Horário de Entrada</label>
+                                        <label htmlFor="trabalho_horario_inicio">Horário de Entrada <small className="campo-obrigatorio"></small></label>
                                         <input
                                             required={true}
                                             id="agendamento_horario_inicio"
@@ -304,7 +337,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="agendamento_horario_fim">Horário de Saída</label>
+                                        <label htmlFor="agendamento_horario_fim">Horário de Saída <small className="campo-obrigatorio"></small></label>
                                         <input
                                             required={true}
                                             id="agendamento_horario_fim"
@@ -317,7 +350,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="agendamento_dia_inicial">Data inicial</label>
+                                        <label htmlFor="agendamento_dia_inicial">Data inicial <small className="campo-obrigatorio"></small></label>
                                         <input
                                             required={true}
                                             id="agendamento_dia_inicial"
@@ -332,7 +365,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
                                     <div className="form-group">
                                         <div className="input-form">
-                                            <label htmlFor="agendamento_dias_semana">Dias Semana</label>
+                                            <label htmlFor="agendamento_dias_semana">Dias Semana <small className="campo-obrigatorio"></small></label>
                                             <InputDiasSemana
                                                 id="agendamento_dias_semana"
                                                 name="agendamento_dias_semana"
@@ -361,45 +394,41 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                         </div>
 
 
-                        <div className='row table-container'>
-                            <div className='col-md-12'>
+                    </form>
+                    <div className='row table-container'>
+                        <div className='col-md-12'>
 
-                                <div className="tabs-agendamento">
-                                    <Tab.Container defaultActiveKey="agendamento">
-                                        <Nav variant="pills">
-                                            <Nav.Item>
-                                                <Nav.Link eventKey="agendamento">
-                                                    <i className="fas fa-address-card"></i>  Agendamento
-                                                </Nav.Link>
-                                            </Nav.Item>
-                                        </Nav>
+                            <div className="tabs-agendamento">
+                                <Tab.Container defaultActiveKey="agendamento">
+                                    <Nav variant="pills">
+                                        <Nav.Item>
+                                            <Nav.Link eventKey="agendamento">
+                                                <i className="fas fa-address-card"></i>  Agendamento
+                                            </Nav.Link>
+                                        </Nav.Item>
+                                    </Nav>
 
-                                        <Tab.Content>
-                                            <Tab.Pane eventKey="agendamento">
-                                                <Title title={"Dados do agendamento"} />
-                                                {agendamentos.length > 0 ?
-                                                    <div className="row">
-                                                        <div className="col-md-12 no-padding">
-                                                            <div className='menu'>
-                                                                {/* <button className='menu-button button-blue'
-                                                                onClick={() => { handleModalAgendamento(true) }}>
-                                                                <i className='fa-solid fa-plus'></i> Adicionar Agendamento
-                                                            </button> */}
-                                                            </div>
-                                                            <Table columns={columnsAgendamento} data={agendamentos} onEdit={deleteAgendamentoModal}
-                                                                onDelete={deleteAgendamentoModal} />
-                                                        </div>
+                                    <Tab.Content>
+                                        <Tab.Pane eventKey="agendamento">
+                                            <Title title={"Dados do agendamento"} />
+                                            {agendamentos.length > 0 ?
+                                                <div className="row">
+                                                    <div className="col-md-12 no-padding">
+                                                        <Table columns={columnsAgendamento}
+                                                            data={agendamentos}
+                                                            onDelete={deleteAgendamentoModal}
+                                                        />
                                                     </div>
-                                                    : 'Sem dados'}
-                                            </Tab.Pane>
-                                        </Tab.Content>
-                                    </Tab.Container>
-                                </div>
+                                                </div>
+                                                : 'Sem dados'}
+                                        </Tab.Pane>
+                                    </Tab.Content>
+                                </Tab.Container>
                             </div>
                         </div>
+                    </div>
 
 
-                    </form>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button className='btn btn-sm' variant="secondary" onClick={handleHide}>

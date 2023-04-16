@@ -323,7 +323,7 @@ const Create = () => {
                         <div className="col-md-4">
 
                             <div className="input-form">
-                                <label htmlFor="nome">Nome</label>
+                                <label htmlFor="nome">Nome <small className="campo-obrigatorio"></small></label>
                                 <input
                                     id="nome"
                                     name="nome"
@@ -339,7 +339,7 @@ const Create = () => {
 
                         <div className="col-md-4">
                             <div className="input-form">
-                                <label htmlFor="cnpj">CNPJ</label>
+                                <label htmlFor="cnpj">CNPJ <small className="campo-obrigatorio"></small></label>
                                 <input
                                     id="cnpj"
                                     className="form-control shadow-none input-custom"
@@ -374,7 +374,7 @@ const Create = () => {
 
                         <div className="col-md-4">
                             <div className="input-form">
-                                <label htmlFor="telefone1">Telefone 1 (obrigatório)</label>
+                                <label htmlFor="telefone1">Telefone 1 <small className="campo-obrigatorio"></small></label>
                                 <input
                                     id="telefone1"
                                     className="form-control shadow-none input-custom"
@@ -392,7 +392,7 @@ const Create = () => {
                         <div className="col-md-4">
 
                             <div className="input-form">
-                                <label htmlFor="telefone2">Telefone 2 (opcional)</label>
+                                <label htmlFor="telefone2">Telefone 2</label>
                                 <input
                                     id="telefone2"
                                     name="telefone2"

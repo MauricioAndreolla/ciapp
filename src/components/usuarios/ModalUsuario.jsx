@@ -69,7 +69,7 @@ const ModalUsuario = ({ Model, show, onHide, onAdd, onEdit }) => {
                     <form className="form-control">
 
                         <div className="form-group">
-                            <label htmlFor="userName">Usuário</label>
+                            <label htmlFor="userName">Usuário <small className="campo-obrigatorio"></small></label>
                             <input
                                 id="userName"
                                 name="userName"
@@ -83,7 +83,7 @@ const ModalUsuario = ({ Model, show, onHide, onAdd, onEdit }) => {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="user">Nome</label>
+                            <label htmlFor="user">Nome <small className="campo-obrigatorio"></small></label>
                             <input
                                 id="user"
                                 name="user"
@@ -97,7 +97,7 @@ const ModalUsuario = ({ Model, show, onHide, onAdd, onEdit }) => {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="password">Senha</label>
+                            <label htmlFor="password">Senha <small className="campo-obrigatorio"></small></label>
                             <input
                                 id="password"
                                 name="password"

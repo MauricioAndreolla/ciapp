@@ -66,7 +66,7 @@ const ModalTarefa = ({ Model, show, onHide, onAdd, onEdit }) => {
                     <form className="form-control">
 
                         <div className="form-group">
-                            <label htmlFor="titulo">Titulo</label>
+                            <label htmlFor="titulo">Titulo <small className="campo-obrigatorio"></small></label>
                             <input
                                 id="titulo"
                                 name="titulo"

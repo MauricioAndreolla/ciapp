@@ -73,7 +73,6 @@ export default function Index(props) {
         const payload = {
             agendamento: object
         }
-        console.log(payload)
         if (action == 'Create') {
             postResult = await window.api.Action({ controller: "Agendamentos", action: "Create", params: payload });
         } else {
@@ -125,6 +124,7 @@ export default function Index(props) {
     const handleModalAgendamento = (show = true, model = null) => {
         setModelAgendamento(model);
         setShowModalAgendamento(show);
+        
     }
 
     const createAgendamento = async (object) => {
@@ -133,7 +133,7 @@ export default function Index(props) {
           
 
             var exist 
-            // = agendamentos.find(s => s.agendamento_dia_inicial == object.agendamento_dia_inicial);
+           
             if (exist) {
                 toast.error(`Agendamento já informado`, { autoClose: false });
                 handleModalAgendamento(false);
