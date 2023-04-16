@@ -151,7 +151,6 @@ module.exports = {
 
                 payload.entidade.tarefas.forEach(async (tarefa) => {
 
-                    console.log(tarefa)
 
                     await db.models.Tarefa.create({
                         titulo: tarefa.titulo,
@@ -193,8 +192,7 @@ module.exports = {
 
 
         if (search) {
-            if (search.id)
-                where.id = search.id;
+            if (search.id) { where.id = search.id; }
 
             if (search.nome) {
                 where.nome = {
@@ -206,6 +204,9 @@ module.exports = {
                 where.cnpj = {
                     [Op.substring]: search.cnpj
                 }
+            }
+            if (search.tipo_instituicao != null) {
+                where.tipo_instituicao = search.tipo_instituicao;
             }
         }
 
