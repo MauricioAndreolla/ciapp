@@ -19,11 +19,12 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     const [tarefas, setTarefas] = useState([]);
     const [entidades, setEntidades] = useState([]);
     const [processos, setProcessos] = useState([]);
+    const [idTemp, setIdTemp] = useState(0);
+
 
     useEffect(() => {
 
         if (Model != null && Model.id != null) {
-
             setAgendamento({
                 id: Model.id,
                 agendamento_dia_inicial: Model.agendamento_dia_inicial,
@@ -42,13 +43,14 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                 {
                     id: null,
                     agendamento_dia_inicial: '',
-                    agendamento_horario_inicio: '08:00',
-                    agendamento_horario_fim: '18:00',
+                    agendamento_horario_inicio: '09:00',
+                    agendamento_horario_fim: '17:00',
                     agendamento_dias_semana: [],
                     processo: '',
                     entidade: '',
                     tarefa: '',
-                    novo_registro: true
+                    novo_registro: true,
+                    idTemp: idTemp
                 }
             );
             setAgendamentos([]);
@@ -136,7 +138,6 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         setTarefas(value);
     }
 
-
     const handleHide = () => {
         onHide();
     };
@@ -147,7 +148,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         if (evt.name == 'entidade') {
             searchTarefa(evt);
         }
- 
+
         setAgendamento({
             ...agendamento,
             [name ? evt.name : evt.target.name]: value
@@ -165,34 +166,31 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
             toast.warning(`Virada do dia adicao de 1 dia na data inicial`, { autoClose: 4000 });
         }
 
-        if (evt.target.name == 'agendamento_horario_fim' && checkTime() == true) {
+
+        if (evt.target.name == 'agendamento_horario_fim' && checkMoreThanEightHours(value) == true) {
             toast.warning(`Aviso:Agendamento acima de 8 horas`, { autoClose: 4000 });
         }
-        
+
         setAgendamento({
             ...agendamento,
             [name ? evt.name : evt.target.name]: value
         })
-    
+
     }
 
-
     const handleDiasSemana = (value) => {
-
-
         setAgendamento({
             ...agendamento,
             ["agendamento_dias_semana"]: value.sort((a, b) => (a.value > b.value) ? 1 : ((b.value > a.value) ? -1 : 0))
         });
     }
 
-
     const resetAgendamento = async () => {
         setAgendamento({
             id: null,
             agendamento_dia_inicial: '',
-            agendamento_horario_inicio: '08:00',
-            agendamento_horario_fim: '18:00',
+            agendamento_horario_inicio: '09:00',
+            agendamento_horario_fim: '17:00',
             agendamento_dias_semana: [],
             processo: '',
             entidade: '',
@@ -201,6 +199,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         });
 
         setAgendamentos([]);
+        setIdTemp(0);
     }
 
     const handleAdd = async () => {
@@ -219,12 +218,14 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     }
 
     const columnsAgendamento = [
-        { id: e => e.agendamento_dia_inicial, Header: 'Data inicial', accessor: e => formatDate(e)},
+        { id: e => e.agendamento_dia_inicial, Header: 'Data inicial', accessor: e => formatDate(e) },
         { Header: 'Horário inicial', accessor: 'agendamento_horario_inicio' },
         { Header: 'Horário fim', accessor: 'agendamento_horario_fim' },
-
     ];
 
+    const addTempId = () => {
+        setIdTemp(idTemp + 1);
+    }
 
     const checkIfChangeDay = () => {
         const [inicioHora, inicioMinuto] = agendamento.agendamento_horario_inicio.split(':').map(Number);
@@ -236,9 +237,9 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         return fim < inicio || (fim.getDate() !== inicio.getDate());
     }
 
-    const checkTime = () => {
+    const checkMoreThanEightHours = (horarioFim) => {
         const [inicioHora, inicioMinuto] = agendamento.agendamento_horario_inicio.split(':').map(Number);
-        const [fimHora, fimMinuto] = agendamento.agendamento_horario_fim.split(':').map(Number);
+        const [fimHora, fimMinuto] = horarioFim.split(':').map(Number);
 
         const horaInicialDate = new Date(0, 0, 0, inicioHora, inicioMinuto);
         const horaFinalDate = new Date(0, 0, 0, fimHora, fimMinuto);
@@ -249,19 +250,79 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     }
 
 
-    const deleteAgendamentoModal = (object) => {
+    const checkPeriod = () => {
+        const [inicioHora, inicioMinuto] = agendamento.agendamento_horario_inicio.split(':').map(Number);
+        const [fimHora, fimMinuto] = agendamento.agendamento_horario_fim.split(':').map(Number);
+        let result = false;
 
+        let tempoInicial1 = new Date(2023, 3, 16, inicioHora, inicioMinuto, 0);
+        let tempoFinal1 = new Date(2023, 3, 16, fimHora, fimMinuto, 0);
+       
+        const minutosInicio1 = tempoInicial1.getHours() * 60 + tempoInicial1.getMinutes();
+        const minutosFim1 = tempoFinal1.getHours() * 60 + tempoFinal1.getMinutes();
+
+
+        agendamentos.forEach((e) => {
+
+            const [inicioHoraAgendado, inicioMinutoAgendado] = e.agendamento_horario_inicio.split(':').map(Number);
+            const [fimHoraAgendado, fimMinutoAgendado] = e.agendamento_horario_fim.split(':').map(Number);
+
+
+            let tempoInicial2 = new Date(2023, 3, 16, inicioHoraAgendado, inicioMinutoAgendado, 0);
+            let tempoFinal2 = new Date(2023, 3, 16, fimHoraAgendado, fimMinutoAgendado, 0);
+
+
+            const minutosInicio2 = tempoInicial2.getHours() * 60 + tempoInicial2.getMinutes();
+            const minutosFim2 = tempoFinal2.getHours() * 60 + tempoFinal2.getMinutes();
+
+            console.log("Minutos 1 Inicio " + minutosInicio1);
+            console.log("Minutos 1 Fim " + minutosFim1);
+
+            console.log(" ------------------- ");
+
+
+            console.log("Minutos 2 Inicio " + minutosInicio2);
+            console.log("Minutos 2 Fim " + minutosFim2);
+
+            if (minutosInicio1 >= minutosInicio2 && minutosFim1 <= minutosFim2) {
+                console.log("check");
+                result = true;
+                return result;
+            } else {
+                if (minutosInicio1 <= minutosInicio2 && minutosFim1 <= minutosFim2) {
+                    console.log("check 2")
+                    result = true;
+                    return result;
+                }
+            }
+        })
+        return result;
+    }
+
+    const deleteAgendamentoModal = (object) => {
         if (object) {
-            let agendamentosTable = agendamentos.filter(s => s.id != object.id);
+            let agendamentosTable = agendamentos.filter(s => s.idTemp != object.idTemp);
             setAgendamentos([
                 ...agendamentosTable,
             ]);
         }
     }
 
-
     const handleAddTable = () => {
-        setAgendamentos([...agendamentos, agendamento]);
+        agendamento.idTemp = idTemp;
+        addTempId();
+
+        setAgendamento({
+            ...agendamento,
+            agendamento
+        })
+
+        if (checkPeriod() == true) {
+            toast.error(`Verifique o horário inicial e final, pois haverá conflito na agenda`, { autoClose: 4000 });
+            return;
+        } else {
+            setAgendamentos([...agendamentos, agendamento]);
+        }
     }
 
     return (
@@ -414,7 +475,8 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                             {agendamentos.length > 0 ?
                                                 <div className="row">
                                                     <div className="col-md-12 no-padding">
-                                                        <Table columns={columnsAgendamento}
+                                                        <Table
+                                                            columns={columnsAgendamento}
                                                             data={agendamentos}
                                                             onDelete={deleteAgendamentoModal}
                                                         />
@@ -441,7 +503,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                 type="submit"
                                 variant="primary"
                                 onClick={handleAdd}
-                                disabled={!(agendamento.agendamento_dia_inicial)}
+                                disabled={!(agendamentos.length > 0)}
                             >
                                 <i className="fa-solid fa-plus"></i>  <small>Agendar</small>
                             </Button>
@@ -451,7 +513,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                 type="submit"
                                 variant="primary"
                                 onClick={handleEdit}
-                                disabled={!(agendamento.agendamento_dia_inicial)}
+                                disabled={!(agendamentos.length > 0)}
                             >
                                 <i className="fa-solid fa-save"></i>  <small>Salvar</small>
                             </Button>

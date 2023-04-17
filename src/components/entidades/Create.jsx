@@ -64,14 +64,23 @@ const Create = () => {
         return tempID - 1;
     }
 
+    const resetTarefasEmCentrais = () => {
+        if (entidade.tipoInstituicao == 1) {
+            setEntidade({
+                ...entidade,
+                tarefas: []
+            });
+        }
+    }
 
     const submitEntidade = async () => {
+        resetTarefasEmCentrais();
+
         const payload = {
             entidade,
             endereco
         }
 
-    
         confirmAlert({
             title: 'Confirmação',
             message: `Confirma a criação da entidade ${entidade.nome}`,
@@ -88,7 +97,6 @@ const Create = () => {
                         else {
                             toast.error(postResult.text, { autoClose: false });
                         }
-
                     }
                 },
                 {
@@ -102,6 +110,8 @@ const Create = () => {
     }
 
     const editEntidade = async () => {
+        resetTarefasEmCentrais();
+        
         const payload = {
             entidade,
             endereco
@@ -176,12 +186,12 @@ const Create = () => {
             }
         }
 
-
         setEntidade({
             ...entidade,
             [prop_name ? prop_name : evt.target.name]: value
         })
     }
+
 
     const handleEndereco = (evt, name = null) => {
         const value = evt.value ?? evt.target.value;
@@ -446,12 +456,17 @@ const Create = () => {
                                         <i className="fas fa-address-card"></i>  Endereço
                                     </Nav.Link>
                                 </Nav.Item>
+                                {
+                                    entidade.tipoInstituicao == 1 ?
+                                        null
+                                        :
+                                        <Nav.Item>
+                                            <Nav.Link eventKey="tarefas">
+                                                <i className="fa-solid fa-clipboard-list"></i> Tarefas
+                                            </Nav.Link>
+                                        </Nav.Item>
 
-                                <Nav.Item>
-                                    <Nav.Link eventKey="tarefas">
-                                        <i className="fa-solid fa-clipboard-list"></i> Tarefas
-                                    </Nav.Link>
-                                </Nav.Item>
+                                }
                             </Nav>
 
                             <Tab.Content>
@@ -465,20 +480,23 @@ const Create = () => {
                                     </div>
                                 </Tab.Pane>
 
-
-                                <Tab.Pane eventKey="tarefas">
-                                    <Title title={"Dados das Tarefas"} />
-                                    <div className="row">
-                                        <div className="col-md-12 no-padding">
-                                            <div className='menu'>
-                                                <button className='menu-button button-blue' onClick={() => { HandleModalTarefa(true) }}>
-                                                    <i className='fa-solid fa-plus'></i> Adicionar Tarefa
-                                                </button>
+                                {
+                                    entidade.tipoInstituicao == 1 ?
+                                        null :
+                                        <Tab.Pane eventKey="tarefas">
+                                            <Title title={"Dados das Tarefas"} />
+                                            <div className="row">
+                                                <div className="col-md-12 no-padding">
+                                                    <div className='menu'>
+                                                        <button className='menu-button button-blue' onClick={() => { HandleModalTarefa(true) }}>
+                                                            <i className='fa-solid fa-plus'></i> Adicionar Tarefa
+                                                        </button>
+                                                    </div>
+                                                    <Table columns={columnsTarefa} data={entidade.tarefas} onEdit={ModalEditTarefa} onDelete={DeleteTarefa} />
+                                                </div>
                                             </div>
-                                            <Table columns={columnsTarefa} data={entidade.tarefas} onEdit={ModalEditTarefa} onDelete={DeleteTarefa} />
-                                        </div>
-                                    </div>
-                                </Tab.Pane>
+                                        </Tab.Pane>
+                                }
                             </Tab.Content>
                         </Tab.Container>
                     </div>

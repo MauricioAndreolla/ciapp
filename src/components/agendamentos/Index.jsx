@@ -18,8 +18,8 @@ export default function Index(props) {
     const [agendamento, setAgendamento] = useState([]);
     const [agendamentos, setAgendamentos] = useState({
         agendamento_dia_inicial: '',
-        agendamento_horario_inicio: '08:00',
-        agendamento_horario_fim: '18:00',
+        agendamento_horario_inicio: '09:00',
+        agendamento_horario_fim: '17:00',
         agendamento_dias_semana: {},
         processo: {},
         tarefa: []
@@ -28,8 +28,8 @@ export default function Index(props) {
     const [modelAgendamento, setModelAgendamento] = useState({
         id: null,
         agendamento_dia_inicial: '',
-        agendamento_horario_inicio: '08:00',
-        agendamento_horario_fim: '18:00',
+        agendamento_horario_inicio: '09:00',
+        agendamento_horario_fim: '17:00',
         agendamento_dias_semana: [],
         processo: '',
         entidade: '',
