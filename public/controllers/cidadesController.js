@@ -30,7 +30,7 @@ module.exports = {
             where: where,
             limit: 10
         });
-
+        await db.sequelize.close();
         let formatedData = data.map(s => { return { value: s.id, label: `${s.nome} - ${s.UF.sigla}` } })
         return formatedData;
 
@@ -45,7 +45,7 @@ module.exports = {
             include: db.models.UF,
             limit: 10
         });
-
+        await db.sequelize.close();
         let formatedData = data.map(s => { return { value: s.id, label: `${s.nome} - ${s.UF.sigla}` } })
         return formatedData;
 

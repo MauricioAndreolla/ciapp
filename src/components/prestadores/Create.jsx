@@ -694,7 +694,6 @@ const Create = () => {
             const fetchData = async () => {
                 setLoad(true);
                 let data = await window.api.Action({ controller: "Prestador", action: "GetPrestador", params: id });
-                ;
                 data = data[0];
                 setImage(data.image);
                 setPrestador({

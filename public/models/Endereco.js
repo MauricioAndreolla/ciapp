@@ -9,7 +9,7 @@ Endereco.init({
     rua: DataTypes.STRING,
     numero: DataTypes.STRING,
     bairro: DataTypes.STRING,
-    complemento: DataTypes.STRING,
+    complemento: DataTypes.TEXT,
     ref_integracao: DataTypes.INTEGER
 
 }, {

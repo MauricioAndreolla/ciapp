@@ -20,7 +20,7 @@ module.exports = {
         let habilidades = await db.models.Habilidade.findAll({
             where: where
         });
-
+        await db.sequelize.close();
         return habilidades.map(s => s.dataValues);
     },
 
@@ -31,7 +31,7 @@ module.exports = {
                 descricao: payload.descricao,
                 observacao: payload.observacao,
             });
-
+            await db.sequelize.close();
             return { status: true, text: "Habilidade cadastrada com sucesso!" }
 
         } catch (error) {

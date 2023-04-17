@@ -10,7 +10,7 @@ FichaMedica.init({
     },
 
     observacao: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
     },
 
 

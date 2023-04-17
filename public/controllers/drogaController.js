@@ -9,6 +9,7 @@ module.exports = {
     async GetDrogaInfo(id){
 
         let droga = await db.models.Droga.findByPk(id);
+        await db.sequelize.close();
         return droga ? droga.dataValues : {};
 
     },
@@ -29,7 +30,7 @@ module.exports = {
         let drogas = await db.models.Droga.findAll({
             where: where
         });
-
+        await db.sequelize.close();
         return drogas.map(s => s.dataValues);
     },
 
@@ -40,7 +41,7 @@ module.exports = {
                 nome: payload.nome,
                 observacao: payload.observacao,
             });
-
+            await db.sequelize.close();
             return { status: true, text: "Droga cadastrada com sucesso!" }
 
         } catch (error) {

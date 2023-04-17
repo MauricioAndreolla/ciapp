@@ -48,7 +48,7 @@ module.exports = {
 
 
             await db.models.Agendamento.bulkCreate(agendamentos)
-
+            await db.sequelize.close();
         } catch (error) {
             return { status: false, text: `Erro interno no servidor. ${error}` };
         }
@@ -92,6 +92,7 @@ module.exports = {
                     Agendamento.ProcessoId = payload.processo.id,
                     Agendamento.TarefaId = payload.tarefa.id
                 await Agendamento.save();
+                await db.sequelize.close();
             });
 
 
@@ -111,6 +112,7 @@ module.exports = {
         try {
             Agendamento = await db.models.Agendamento.findByPk(id);
             await Agendamento.destroy();
+            await db.sequelize.close();
         } catch (error) {
             return { status: false, text: "Erro interno no servidor." };
         }
@@ -145,6 +147,8 @@ module.exports = {
                 { model: db.models.Tarefa }
             ],
         });
+
+       await db.sequelize.close();
 
         return data.map(s => {
             let agendamentos = {
@@ -226,6 +230,8 @@ module.exports = {
                 ProcessoId: Agendamento.ProcessoId,
                 TarefaId: Agendamento.TarefaId,
             });
+
+            await db.sequelize.close();
         } catch (error) {
             return { status: false, text: "Erro interno no servidor. " + error.message };
         }

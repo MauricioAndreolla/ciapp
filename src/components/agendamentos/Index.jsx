@@ -37,9 +37,7 @@ export default function Index(props) {
         novo_registro: true
     });
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+
 
     const fetchData = async () => {
         const data = await window.api.Action({ controller: "Agendamentos", action: "GetAgendamentos", params: null });
@@ -168,7 +166,9 @@ export default function Index(props) {
         handleModalAgendamento(false, null);
         fetchData();
     }
-
+    useEffect(() => {
+        fetchData();
+    }, []);
     return (
 
         <>

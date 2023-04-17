@@ -15,7 +15,7 @@ Usuario.init({
         unique: true
     },
     senha: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false
     }
 }, {

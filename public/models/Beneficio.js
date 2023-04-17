@@ -11,7 +11,7 @@ Beneficio.init({
     },
 
     observacao: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
     },
 
     ref_integracao: {

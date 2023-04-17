@@ -220,7 +220,7 @@ module.exports = {
         });
 
 
-
+        await db.sequelize.close();
         return data.map(s => {
             return {
                 id: s.id,
@@ -265,7 +265,7 @@ module.exports = {
             }
         );
 
-
+        await db.sequelize.close();
         return {
             id: data.dataValues.id,
             nome: data.dataValues.nome,
@@ -306,6 +306,7 @@ module.exports = {
             Entidade.dt_descredenciamento = payload.dt_descredenciamento;
             Entidade.observacao = payload.motivo;
             await Entidade.save();
+            await db.sequelize.close();
             return { status: true, text: `Entidade ${Entidade.nome} descredenciada!` };
         } catch (error) {
             return { status: false, text: `Erro interno no servidor.${error}` };
@@ -321,6 +322,7 @@ module.exports = {
             Entidade.dt_descredenciamento = null;
             Entidade.observacao = null;
             await Entidade.save();
+            await db.sequelize.close();
             return { status: true, text: `Entidade ${Entidade.nome} credenciada!` };
         } catch (error) {
             return { status: false, text: `Erro interno no servidor. ${error}` };
@@ -337,7 +339,7 @@ module.exports = {
                 tipo_instituicao: TipoInstituicao.Central
             },
         });
-
+        await db.sequelize.close();
         return data.map(s => {
             return {
                 value: s.id,

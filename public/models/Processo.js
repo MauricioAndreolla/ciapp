@@ -15,25 +15,25 @@ Processo.init({
     },
 
     pena_originaria: {
-        type: DataTypes.STRING
+        type: DataTypes.TEXT
     },
     inciso: {
-        type: DataTypes.STRING
+        type: DataTypes.TEXT
     },
     detalhamento: {
-        type: DataTypes.STRING
+        type: DataTypes.TEXT
     },
     prd: {
         type: DataTypes.BOOLEAN
     },
     prd_descricao: {
-        type: DataTypes.STRING
+        type: DataTypes.TEXT
     },
     persecucao_penal: {
         type: DataTypes.BOOLEAN
     },
     pena_originaria_regime: {
-        type: DataTypes.STRING
+        type: DataTypes.INTEGER
     },
     horas_cumprir: {
         type: DataTypes.DOUBLE

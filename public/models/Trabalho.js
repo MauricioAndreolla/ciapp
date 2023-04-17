@@ -6,7 +6,7 @@ class Trabalho extends Model { }
 
 Trabalho.init({
     descricao: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
     },
 
     horario_inicio: {
