@@ -28,6 +28,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
             setAgendamento({
                 id: Model.id,
                 agendamento_dia_inicial: Model.agendamento_dia_inicial,
+                agendamento_dia_final: Model.agendamento_dia_final,
                 agendamento_horario_inicio: Model.agendamento_horario_inicio,
                 agendamento_horario_fim: Model.agendamento_horario_fim,
                 agendamento_dias_semana: Model.agendamento_dias_semana,
@@ -43,6 +44,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                 {
                     id: null,
                     agendamento_dia_inicial: '',
+                    agendamento_dia_final: '',
                     agendamento_horario_inicio: '09:00',
                     agendamento_horario_fim: '17:00',
                     agendamento_dias_semana: [],
@@ -102,7 +104,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     }
 
     const fetchEntidades = async () => {
-        let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: { tipo_instituicao: 0 } });
+        let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: { tipo_instituicao: 1, dt_descredenciamento: 0 } });
         let entidade;
         let values = data.map((element) => {
             return entidade = {
@@ -157,7 +159,6 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
     const handleAgendamento = (evt, name = null) => {
         let value = evt.value ?? evt.target.value;
-
         if (evt.target.name == 'agendamento_dia_inicial' && checkIfChangeDay() == true) {
             let date = new Date(evt.target.value);
             date.setDate(date.getDate() + 1);
@@ -189,6 +190,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         setAgendamento({
             id: null,
             agendamento_dia_inicial: '',
+            agendamento_dia_final: '',
             agendamento_horario_inicio: '09:00',
             agendamento_horario_fim: '17:00',
             agendamento_dias_semana: [],
@@ -212,13 +214,19 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         await resetAgendamento();
     }
 
-    const formatDate = ({ agendamento_dia_inicial }) => {
-        const [year, month, day] = agendamento_dia_inicial.split('-');
+    const formatDateInitial = ({ agendamento_dia_inicial  }) => {
+        const [year, month, day] = agendamento_dia_inicial?.split('-');
+        return `${day}/${month}/${year}`;
+    }
+
+    const formatDateFinally = ({ agendamento_dia_final  }) => {
+        const [year, month, day] = agendamento_dia_final?.split('-');
         return `${day}/${month}/${year}`;
     }
 
     const columnsAgendamento = [
-        { id: e => e.agendamento_dia_inicial, Header: 'Data inicial', accessor: e => formatDate(e) },
+        { id: e => e.agendamento_dia_inicial, Header: 'Data inicial', accessor: e => formatDateInitial(e) },
+        { id: e => e.agendamento_dia_final, Header: 'Data final', accessor: e => formatDateFinally(e) },
         { Header: 'Horário inicial', accessor: 'agendamento_horario_inicio' },
         { Header: 'Horário fim', accessor: 'agendamento_horario_fim' },
     ];
@@ -275,22 +283,11 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
             const minutosInicio2 = tempoInicial2.getHours() * 60 + tempoInicial2.getMinutes();
             const minutosFim2 = tempoFinal2.getHours() * 60 + tempoFinal2.getMinutes();
 
-            console.log("Minutos 1 Inicio " + minutosInicio1);
-            console.log("Minutos 1 Fim " + minutosFim1);
-
-            console.log(" ------------------- ");
-
-
-            console.log("Minutos 2 Inicio " + minutosInicio2);
-            console.log("Minutos 2 Fim " + minutosFim2);
-
             if (minutosInicio1 >= minutosInicio2 && minutosFim1 <= minutosFim2) {
-                console.log("check");
                 result = true;
                 return result;
             } else {
                 if (minutosInicio1 <= minutosInicio2 && minutosFim1 <= minutosFim2) {
-                    console.log("check 2")
                     result = true;
                     return result;
                 }
@@ -420,6 +417,19 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                             type="date"
                                             min={new Date().toISOString().split('T')[0]}
                                             value={agendamento.agendamento_dia_inicial}
+                                            onChange={handleAgendamento}
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="agendamento_dia_final">Data final</label>
+                                        <input
+                                            id="agendamento_dia_final"
+                                            name="agendamento_dia_final"
+                                            className="form-control input rounded-2"
+                                            type="date"
+                                            min={new Date().toISOString().split('T')[0]}
+                                            value={agendamento.agendamento_dia_final}
                                             onChange={handleAgendamento}
                                         />
                                     </div>

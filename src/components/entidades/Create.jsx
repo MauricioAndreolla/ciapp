@@ -24,7 +24,7 @@ const Create = () => {
         telefone2: '',
         email: '',
         tarefas: [],
-        tipoInstituicao: 0,
+        tipoInstituicao: 1,
         status: true
     });
 
@@ -56,6 +56,7 @@ const Create = () => {
             const data = await window.api.Action({ controller: "Entidades", action: "GetEntidade", params: id });
             setEntidade(data);
             setEndereco(data.endereco);
+           
         }
     }
 
@@ -65,7 +66,7 @@ const Create = () => {
     }
 
     const resetTarefasEmCentrais = () => {
-        if (entidade.tipoInstituicao == 1) {
+        if (entidade.tipoInstituicao == 0) {
             setEntidade({
                 ...entidade,
                 tarefas: []
@@ -427,7 +428,11 @@ const Create = () => {
 
                         <div className="form-check form-check-inline">
 
-                            <input className="form-check-input" type="radio" name="tipoInstituicao" id="entidade" defaultChecked onChange={handleEntidade} value="0" />
+                            <input className="form-check-input" type="radio" name="tipoInstituicao" id="entidade"  defaultChecked={true} 
+                            value={1}
+                            checked={ entidade.tipoInstituicao  === 1 } 
+                            onChange={handleEntidade}
+                            />
                             <label className="form-check-label" htmlFor="entidade">
                                 Entidade parceira
                             </label>
@@ -435,7 +440,10 @@ const Create = () => {
 
                         <div className="form-check form-check-inline">
 
-                            <input className="form-check-input" type="radio" name="tipoInstituicao" id="central" onChange={handleEntidade} value="1" />
+                            <input className="form-check-input" type="radio" value={0} name="tipoInstituicao" id="central"
+                            checked={ entidade.tipoInstituicao  === 0 }
+                            onChange={handleEntidade}
+                            />
                             <label className="form-check-label" htmlFor="central">
                                 Central
                             </label>
@@ -457,7 +465,7 @@ const Create = () => {
                                     </Nav.Link>
                                 </Nav.Item>
                                 {
-                                    entidade.tipoInstituicao == 1 ?
+                                    entidade.tipoInstituicao == 0 ?
                                         null
                                         :
                                         <Nav.Item>
@@ -475,13 +483,13 @@ const Create = () => {
                                     <Title title={"Dados de Endereço"} />
                                     <div className="row">
                                         <div className="col-md-12 no-padding">
-                                            <Endereco endereco={endereco} handleChange={handleEndereco} />
+                                            <Endereco camposObrigatorios={true} endereco={endereco} handleChange={handleEndereco} />
                                         </div>
                                     </div>
                                 </Tab.Pane>
 
                                 {
-                                    entidade.tipoInstituicao == 1 ?
+                                    entidade.tipoInstituicao == 0 ?
                                         null :
                                         <Tab.Pane eventKey="tarefas">
                                             <Title title={"Dados das Tarefas"} />

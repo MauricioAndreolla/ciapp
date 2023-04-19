@@ -6,10 +6,8 @@ const ModalDescredenciar = ({ Model, show, onHide, onAdd, onEdit }) => {
     const modalRef = useRef(null);
 
     const [descredenciamento, setDescresdenciamento] = useState({
-
         dt_descredenciamento: new Date(),
         motivo: '',
-
     });
 
     useEffect(() => {
@@ -24,21 +22,17 @@ const ModalDescredenciar = ({ Model, show, onHide, onAdd, onEdit }) => {
 
     const handleDescredenciamento = (evt, name = null) => {
         const value = evt.value ?? evt.target.value;
-
         setDescresdenciamento({
             ...descredenciamento,
             [name ? name : evt.target.name]: value
-        })
-
+        });
     }
 
     const resetDescredenciamento = async () => {
         setDescresdenciamento({
-
             dt_descredenciamento: new Date(),
             motivo: '',
-
-        })
+        });
     }
 
     const handleAdd = async () => {
@@ -85,9 +79,7 @@ const ModalDescredenciar = ({ Model, show, onHide, onAdd, onEdit }) => {
                                 value={descredenciamento.dt_descredenciamento}
                                 onChange={handleDescredenciamento}
                             />
-
                         </div>
-
                     </form>
                 </Modal.Body>
                 <Modal.Footer>
@@ -96,7 +88,6 @@ const ModalDescredenciar = ({ Model, show, onHide, onAdd, onEdit }) => {
                     </Button>
                     {
                         descredenciamento.id != null ?
-
                             <Button className='btn btn-sm btn-blue' type="submit" variant="primary" onClick={handleEdit} disabled={!(descredenciamento.motivo) && !(descredenciamento.dt_descredenciamento)}>
                                 <i className="fa-solid fa-save"></i>  <small>Salvar</small>
                             </Button>
@@ -105,13 +96,10 @@ const ModalDescredenciar = ({ Model, show, onHide, onAdd, onEdit }) => {
                                 <i className="fa-solid fa-plus"></i>  <small>Adicionar</small>
                             </Button>
                     }
-
                 </Modal.Footer>
             </Modal>
         </>
     );
-
-
 }
 
 export default ModalDescredenciar;

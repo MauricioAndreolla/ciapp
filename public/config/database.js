@@ -36,7 +36,7 @@ class Database {
                 dialect: 'mysql',
                 createDatabase: true,
                 pool: {
-                    max: Infinity, // remove o limite de conexões simultâneas
+                    max: 10, // remove o limite de conexões simultâneas
                     min: 0,
                     acquire: 30000,
                     idle: 10000

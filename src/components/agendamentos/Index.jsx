@@ -18,6 +18,7 @@ export default function Index(props) {
     const [agendamento, setAgendamento] = useState([]);
     const [agendamentos, setAgendamentos] = useState({
         agendamento_dia_inicial: '',
+        agendamento_dia_final: '',
         agendamento_horario_inicio: '09:00',
         agendamento_horario_fim: '17:00',
         agendamento_dias_semana: {},
@@ -28,6 +29,7 @@ export default function Index(props) {
     const [modelAgendamento, setModelAgendamento] = useState({
         id: null,
         agendamento_dia_inicial: '',
+        agendamento_dia_final: '',
         agendamento_horario_inicio: '09:00',
         agendamento_horario_fim: '17:00',
         agendamento_dias_semana: [],
@@ -44,15 +46,21 @@ export default function Index(props) {
         setAgendamentos(data);
     }
 
-    const formatDate = ({ agendamento_dia_inicial }) => {
+    const formatDateInitial = ({ agendamento_dia_inicial }) => {
         const [year, month, day] = agendamento_dia_inicial.split('-');
+        return `${day}/${month}/${year}`;
+    }
+
+    const formatDateFinally = ({ agendamento_dia_final  }) => {
+        const [year, month, day] = agendamento_dia_final.split('-');
         return `${day}/${month}/${year}`;
     }
 
     const columnsAgendamento = [
         { Header: 'Processo', accessor: e => e.processo.nro_processo },
         { Header: 'Tarefa', accessor: e => e.tarefa.titulo },
-        { Header: 'Data inicial', accessor: e => formatDate(e) },
+        { Header: 'Data inicial', accessor: e => formatDateInitial(e) },
+        { Header: 'Data final', accessor: e => formatDateFinally(e) },
         { Header: 'Hora Inicial', accessor: 'agendamento_horario_inicio' },
         { Header: 'Hora Final', accessor: 'agendamento_horario_fim' },
     ]
