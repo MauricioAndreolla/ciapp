@@ -61,11 +61,14 @@ Entidade.belongsTo(Endereco);
 
 Entidade.hasMany(Tarefa);
 
-Agendamento.hasOne(AtestadoFrequencia);
-AtestadoFrequencia.hasMany(Agendamento);
+Agendamento.hasMany(AtestadoFrequencia);
+AtestadoFrequencia.hasOne(Agendamento);
+
 
 Agendamento.belongsTo(Processo);
 Agendamento.belongsTo(Tarefa);
+
+Processo.hasMany(Agendamento);
 
 FichaMedica.belongsToMany(Droga, {through: FichaMedicaDrogas});
 Droga.belongsToMany(FichaMedica, {through: FichaMedicaDrogas});

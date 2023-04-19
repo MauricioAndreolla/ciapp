@@ -1,7 +1,7 @@
 const db = require('../config/database');
 const { Op } = require('sequelize');
 
-const { unformatCurrency, formatCurrency } = require('../utils/utils')
+const { unformatCurrency, formatCurrency, diff_hours } = require('../utils/utils')
 
 const checkDadosOrigatorios = (payload) => {
 
@@ -59,7 +59,17 @@ module.exports = {
 
         let Prestadores = await db.models.Prestador.findAll({
             where: where,
-            include: db.models.Processo
+            include: [
+                {
+                    model: db.models.Processo,
+                    include: [
+                        {
+                            model: db.models.Agendamento,
+                            include: { model: db.models.AtestadoFrequencia }
+                        }
+                    ]
+                }
+            ]
         });
         await db.sequelize.close();
         return Prestadores.map(s => {
@@ -67,8 +77,15 @@ module.exports = {
                 id: s.id,
                 cpf: s.cpf,
                 nome: s.nome,
-                nro_processo: s.Processos.length > 0 ? s.Processos[ s.Processos.length - 1].nro_processo : null,
-                horas_cumprir: s.Processos.length > 0 ? s.Processos[ s.Processos.length - 1].horas_cumprir : 0
+                nro_processo: s.Processos.length > 0 ? s.Processos[s.Processos.length - 1].nro_processo : null,
+                horas_cumprir: s.Processos.length > 0 ? s.Processos[s.Processos.length - 1].horas_cumprir : 0,
+                horas_cumpridas: s.Processos.length > 0 ? s.Processos[s.Processos.length - 1].Agendamentos.map(s => {
+
+                    return s.AtestadoFrequencia.map(s => {
+                        return diff_hours(s.dt_entrada, s.dt_saida)
+                    }).reduce((a, b) => a + b, 0)
+
+                }).reduce((a, b) => a + b, 0) : 0,
             }
         });
     },
@@ -349,7 +366,7 @@ module.exports = {
                 }
             }
             await db.sequelize.close();
-            return { status: true, text: `Prestador(a) ${Prestador.nome} cadastrado(a) com sucesso!`, id: Prestador.id  };
+            return { status: true, text: `Prestador(a) ${Prestador.nome} cadastrado(a) com sucesso!`, id: Prestador.id };
 
         } catch (error) {
             return { status: false, text: `Erro interno no servidor \n` + error };

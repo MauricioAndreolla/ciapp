@@ -569,3 +569,19 @@ table td {
   width: 250px;
   text-align: center;
 }
+
+
+.event{
+  font-size: 9pt !important;
+  display: block;
+  word-break: break-all;
+}
+
+.calendar-tab{
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 100%;
+  margin-top: 0.5rem;
+  padding: 1rem;
+}

@@ -1,6 +1,6 @@
 const db = require('../config/database');
 const { Op } = require('sequelize');
-const { unformatCurrency, formatCurrency } = require('../utils/utils')
+const { unformatCurrency, formatCurrency, diff_hours } = require('../utils/utils')
 
 
 
@@ -82,6 +82,10 @@ module.exports = {
             include: [
                 { model: db.models.Prestador },
                 { model: db.models.Vara },
+                {
+                    model: db.models.Agendamento,
+                    include: { model: db.models.AtestadoFrequencia }
+                }
 
             ],
             where: where
@@ -93,7 +97,16 @@ module.exports = {
                 nro_processo: s.nro_processo,
                 prestador: s.Prestadore.nome,
                 horas_cumprir: s.horas_cumprir,
-                horas_cumpridas: 0,
+                horas_cumpridas: 
+
+                s.Agendamentos.map(s => {
+
+                    return s.AtestadoFrequencia.map(s => {
+                        return diff_hours(s.dt_entrada, s.dt_saida)
+                    }).reduce((a, b) => a + b, 0)
+
+                }).reduce((a, b) => a + b, 0),
+                
                 vara: s.Vara ? s.Vara.descricao : 'N/A'
             }
         });

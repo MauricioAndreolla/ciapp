@@ -1,13 +1,7 @@
 const db = require('../config/database');
 const { Op } = require("sequelize");
+const { diff_hours } = require('../utils/utils')
 
-function diff_hours(dt2, dt1) {
-
-    var diff = (dt2.getTime() - dt1.getTime()) / 1000;
-    diff /= (60 * 60);
-    return Math.abs(Math.round(diff));
-
-}
 
 module.exports = {
 
@@ -15,7 +9,7 @@ module.exports = {
     async Create(payload) {
 
         try {
-            
+
             payload.agendamento.map(element => {
                 if (element.processo == null || element.processo == '') {
                     return { status: false, text: `Selecione o processo` };
@@ -60,13 +54,13 @@ module.exports = {
 
     async Edit(payload) {
 
-        
-        
+
+
         try {
-            
-        
-            
-            payload.agendamento.forEach( async (payload) => {
+
+
+
+            payload.agendamento.forEach(async (payload) => {
                 if (payload.processo == null || payload.processo == '') {
                     return { status: false, text: `Selecione o processo` };
                 } else if (payload.tarefa == null || payload.tarefa == '') {
@@ -76,9 +70,9 @@ module.exports = {
                 } else if (payload.agendamento_dias_semana.length <= 0) {
                     return { status: false, text: `Selecione os dias da semana das tarefas` };
                 }
-              
+
                 let Agendamento = await db.models.Agendamento.findByPk(payload.id);
-             
+
                 Agendamento.data_inicial = payload.agendamento_dia_inicial,
                     Agendamento.horario_inicio = payload.agendamento_horario_inicio,
                     Agendamento.horario_fim = payload.agendamento_horario_fim,
@@ -148,7 +142,7 @@ module.exports = {
             ],
         });
 
-       await db.sequelize.close();
+        await db.sequelize.close();
 
         return data.map(s => {
             let agendamentos = {
@@ -204,6 +198,135 @@ module.exports = {
             }
             return agendamentos;
         });
+    },
+
+    async GetAgendamentosEntidade(search) {
+
+        let where = {
+
+        };
+        let someAttributes = {};
+
+        if (search) {
+            if (search.processo) {
+                where.id = search.processo;
+            }
+
+        }
+
+
+        const data = await db.models.Agendamento.findAll({
+            attributes: [
+                'id',
+                'horario_inicio',
+                'horario_fim',
+                'data_inicial',
+                'segunda',
+                'terca',
+                'quarta',
+                'quinta',
+                'sexta',
+                'sabado',
+                'domingo',
+                [db.sequelize.literal('SUM(TIME_TO_SEC(TIMEDIFF(`AtestadoFrequencia`.`dt_saida`, `AtestadoFrequencia`.`dt_entrada`))/3600)'), 'horas_cumpridas']
+            ],
+            include: [
+                {
+                    model: db.models.Processo,
+                    include: [
+                        { model: db.models.Entidade },
+                        { model: db.models.Prestador },
+                        { model: db.models.Vara },
+                    ]
+                },
+                { model: db.models.Tarefa },
+                { model: db.models.AtestadoFrequencia }
+            ],
+            group: [
+                'Agendamento.id',
+                'Agendamento.horario_inicio',
+                'Agendamento.horario_fim',
+                'Agendamento.data_inicial',
+                'Agendamento.segunda',
+                'Agendamento.terca',
+                'Agendamento.quarta',
+                'Agendamento.quinta',
+                'Agendamento.sexta',
+                'Agendamento.sabado',
+                'Agendamento.domingo',
+                'Processo.id',
+                'Tarefa.id',
+                'Tarefa.titulo',
+                'Tarefa.descricao',
+                'Tarefa.status'
+            ],
+            having: {
+                [Op.or]: [
+                    { 'horas_cumpridas': null },
+                    db.sequelize.literal('`horas_cumpridas` < `Processo`.`horas_cumprir`')
+                ]
+            }
+        });
+
+        await db.sequelize.close();
+
+        var mappedValues = data.map(s => {
+            let agendamentos = {
+                id: s.id,
+                agendamento_horario_inicio: s.horario_inicio,
+                agendamento_horario_fim: s.horario_fim,
+                agendamento_dia_inicial: s.data_inicial,
+                agendamento_dias_semana: {
+                    domingo: s.domingo,
+                    segunda: s.segunda,
+                    terca: s.terca,
+                    quarta: s.quarta,
+                    quinta: s.quinta,
+                    sexta: s.sexta,
+                    sabado: s.sabado,
+                },
+
+                tarefa: {
+                    id: s.Tarefa.id,
+                    titulo: s.Tarefa.titulo,
+                    descricao: s.Tarefa.descricao,
+                    status: s.Tarefa.status
+                },
+                processo: {
+                    id: s.Processo.id,
+                    nro_processo: s.Processo.nro_processo,
+                    nro_artigo_penal: s.Processo.nro_artigo_penal,
+                    pena_originaria: s.Processo.pena_originaria,
+                    pena_originaria_regime: s.Processo.pena_originaria_regime,
+                    inciso: s.Processo.inciso,
+                    detalhamento: s.Processo.detalhamento,
+                    prd: s.Processo.prd,
+                    prd_descricao: s.Processo.prd_descricao,
+                    horas_cumprir: s.Processo.horas_cumprir,
+                    possui_multa: s.Processo.possui_multa,
+                    valor_a_pagar: s.Processo.valor_a_pagar,
+                    qtd_penas_anteriores: s.Processo.qtd_penas_anteriores,
+                    nome_prestador: s.Processo.Prestadore.nome,
+                    imagem_prestador: s.Processo.Prestadore.image,
+                    vara: s.Processo.Vara ? s.Processo.Vara.descricao : '',
+                    horas_cumpridas: s.AtestadoFrequencia.map(s => {
+                        return diff_hours(s.dt_entrada, s.dt_saida)
+                    }).reduce((a, b) => a + b, 0)
+                },
+                entidade: {
+                    id: s.Processo.Entidade.id,
+                    nome: s.Processo.Entidade.nome,
+                    cnpj: s.Processo.Entidade.cnpj,
+                    email: s.Processo.Entidade.email,
+                    telefone1: s.Processo.Entidade.telefone1,
+                    telefone2: s.Processo.Entidade.telefone2
+                }
+            }
+            return agendamentos;
+        });
+
+
+        return mappedValues;
     },
 
     async Registrar(payload) {

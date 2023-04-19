@@ -152,9 +152,9 @@ const Index = () => {
                                             <td>{r.nome}</td>
                                             <td>{r.cpf}</td>
                                             <td>{r.nro_processo ?? "--"}</td>
-                                            <td>{r.horas_cumprir > 0 ? r.horas_cumprir : "--"}</td>
+                                            <td>{r.horas_cumprir > 0 ? r.horas_cumprir : "0"}</td>
 
-                                            <td>HORAS CUMPRIDAS</td>
+                                            <td>{r.horas_cumpridas > 0 ? r.horas_cumpridas : "0"}</td>
                                             <td>
                                                 <div className="btn-group" role="group">
 

@@ -20,6 +20,7 @@ import EntidadesCreate from './components/entidades/Create';
 
 import Agendamentos from './components/agendamentos/Index';
 import AgendamentosCreate from './components/agendamentos/Create';
+import AgendamentosEntidade from './components/agendamentos/AgendamentosEntidade';
 
 const Main = () => {
 
@@ -62,6 +63,7 @@ const Main = () => {
                         <Route path="agendamentos" element={<Private><Agendamentos /></Private>} />
                         <Route path="agendamentos/Create" element={<Private><AgendamentosCreate /></Private>} />
                         <Route path="agendamentos/Edit/:id" element={<Private><AgendamentosCreate /></Private>} />
+                        <Route path="agendamentosEntidade" element={<Private><AgendamentosEntidade /></Private>} />
                         
                     </Route>
                 </Routes>

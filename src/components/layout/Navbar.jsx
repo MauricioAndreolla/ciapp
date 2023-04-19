@@ -26,6 +26,10 @@ function Navbar() {
                     <NavLink id="agendamentos" to="/agendamentos"><i className="fa-solid fa-clipboard-user"></i> Agendamentos</NavLink>
                 </li>
 
+                <li className={activeMenu === 'agendamentosEntidade' ? 'active' : ''} onClick={() => { setActiveMenu('agendamentosEntidade') }}>
+                    <NavLink id="agendamentosEntidade" to="/agendamentosEntidade"><i className="fa-solid fa-clipboard-user"></i> Agendamentos</NavLink>
+                </li>
+
                 <li className="nav-item dropdown">
                     <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Outros</a>
                     <ul className="dropdown-menu">
