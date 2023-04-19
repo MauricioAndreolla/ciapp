@@ -13,6 +13,7 @@ Agendamento.init({
   horario_inicio: { allowNull: false, type: DataTypes.TIME },
   horario_fim: { allowNull: false, type: DataTypes.TIME },
   data_inicial: { allowNull: false, type: DataTypes.DATEONLY },
+  data_final: { allowNull: true, type: DataTypes.DATEONLY },
   segunda: { allowNull: true, type: DataTypes.BOOLEAN },
   terca: { allowNull: true, type: DataTypes.BOOLEAN },
   quarta: { allowNull: true, type: DataTypes.BOOLEAN },

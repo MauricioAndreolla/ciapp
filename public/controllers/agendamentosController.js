@@ -26,6 +26,7 @@ module.exports = {
             const agendamentos = payload.agendamento.map(agendamento => {
                 return ({
                     data_inicial: agendamento.agendamento_dia_inicial,
+                    data_final: agendamento.agendamento_dia_final,
                     horario_inicio: agendamento.agendamento_horario_inicio,
                     horario_fim: agendamento.agendamento_horario_fim,
                     segunda: agendamento.agendamento_dias_semana.filter(s => s.value === 0).length > 0,
@@ -74,6 +75,7 @@ module.exports = {
                 let Agendamento = await db.models.Agendamento.findByPk(payload.id);
 
                 Agendamento.data_inicial = payload.agendamento_dia_inicial,
+                Agendamento.data_final = payload.agendamento_dia_final,
                     Agendamento.horario_inicio = payload.agendamento_horario_inicio,
                     Agendamento.horario_fim = payload.agendamento_horario_fim,
                     Agendamento.segunda = payload.agendamento_dias_semana.filter(s => s.value === 0).length > 0,
@@ -150,6 +152,7 @@ module.exports = {
                 agendamento_horario_inicio: s.horario_inicio,
                 agendamento_horario_fim: s.horario_fim,
                 agendamento_dia_inicial: s.data_inicial,
+                agendamento_dia_final: s.data_final,
                 agendamento_dias_semana: [
                     s.segunda ? { value: 0, label: "Segunda-feira" } : null,
                     s.terca ? { value: 1, label: "Terça-feira" } : null,

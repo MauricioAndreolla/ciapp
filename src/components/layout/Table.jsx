@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useTable, useSortBy, usePagination, useGlobalFilter } from "react-table";
 
 const Table = ({ data, columns, onEdit, onDelete }) => {
-    
+
     const {
         getTableProps,
         getTableBodyProps,
@@ -81,18 +81,19 @@ const Table = ({ data, columns, onEdit, onDelete }) => {
                                 <td>
                                     {
                                         onEdit ?
-                                        <button className="btn" title="Editar" onClick={() => onEdit(row.original)}> <i className="fa fa-edit"></i></button>
-                                        :null
-                                      
+                                            <button className="btn" title="Editar" onClick={() => onEdit(row.original)}> <i className="fa fa-edit"></i></button>
+                                            : null
+
                                     }
 
                                     {
-                                          onDelete ?
-                                          <button className="btn" title="Excluir" onClick={() => onDelete(row.original)}> <i className="fa fa-trash"></i></button>
-                                          :null
+                                        onDelete ?
+                                            <button className="btn" title="Excluir" onClick={() => onDelete(row.original)}> <i className="fa fa-trash"></i></button>
+                                            : null
                                     }
-                                  
-                                   
+
+                                
+
                                 </td>
                             </tr>
                         );

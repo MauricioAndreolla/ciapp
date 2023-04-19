@@ -10,24 +10,16 @@ import { toast } from 'react-toastify';
 
 const Index = () => {
     const navigate = useNavigate();
-    const [tempID, setempID] = useState(0);
     const [entidades, setEntidades] = useState({});
 
-    const [modelDescredenciar, setModelDescredenciar] = useState({
-        dt_descredenciamento: new Date(),
-        motivo: '',
-    });
-
-    const [showModalDescredenciar, setShowModalDescredenciar] = useState(false);
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     const fetchData = async () => {
         const data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: null });
         setEntidades(data);
     }
-
-    useEffect(() => {
-        fetchData();
-    }, []);
 
     const novaEntidade = () => {
         navigate('create');
@@ -36,10 +28,12 @@ const Index = () => {
     const editEntidade = (evt) => {
         navigate(`Edit/${evt.id}`);
     }
+    const [modelDescredenciar, setModelDescredenciar] = useState({
+        dt_descredenciamento: new Date(),
+        motivo: '',
+    });
 
-    const teste = () => {
-        console.log(teste);
-    }
+    const [showModalDescredenciar, setShowModalDescredenciar] = useState(false);
 
     const ModalDescredenciarShow = (object) => {
         HandleModalDescredenciar(true, object);
@@ -49,12 +43,6 @@ const Index = () => {
         setModelDescredenciar(model);
         setShowModalDescredenciar(show);
     }
-
-    const columnsEntidades = [
-        { Header: 'Id', accessor: 'id' },
-        { Header: 'Nome', accessor: 'nome' },
-        { Header: 'CNPJ', accessor: 'cnpj' },
-    ];
 
     const Credenciar = async (object) => {
 
@@ -87,10 +75,14 @@ const Index = () => {
         await fetchData();
     }
 
+    const columnsEntidades = [
+        { Header: 'Id', accessor: 'id' },
+        { Header: 'Nome', accessor: 'nome' },
+        { Header: 'CNPJ', accessor: 'cnpj' },
+    ];
+
     return (
-
         <>
-
             <div>
                 <Title title={"Entidades"} />
 
@@ -126,8 +118,8 @@ const Index = () => {
                                                     columns={columnsEntidades}
                                                     data={entidades}
                                                     onEdit={editEntidade}
-                                                    onDelete={(e) => e.dt_descredenciamento == null ? ModalDescredenciarShow(e) : Credenciar(e)}
-                                                    />
+                                                    onDelete={(e) => e.dt_descredenciamento == null ? ModalDescredenciarShow(e) : Credenciar(e, e.sytle = "teste")}
+                                                />
                                             </div>
                                         </div>
                                     </Tab.Pane>
@@ -139,8 +131,6 @@ const Index = () => {
                 </div>
             </div>
 
-
-
             <ModalDescredenciar
                 Model={modelDescredenciar}
                 show={showModalDescredenciar}
@@ -149,11 +139,7 @@ const Index = () => {
                 onEdit={Descredenciar}
             />
         </>
-
-
     );
-
-
 }
 
-export default Index
+export default Index;

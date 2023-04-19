@@ -2,12 +2,9 @@ const db = require('../config/database');
 const { Op } = require("sequelize");
 const { TipoInstituicao } = require('../utils/enums');
 
-
 module.exports = {
 
     async Create(payload) {
-
-
         if (!payload)
             return { status: false, text: "Nenhuma informação recebida" };
 
@@ -42,7 +39,8 @@ module.exports = {
                 where: {
                     cnpj: payload.entidade.cnpj
                 }
-            })
+            });
+
             if (check.length > 0)
                 return { status: false, text: `CNPJ já cadastrado no sistema` };
 
@@ -67,31 +65,22 @@ module.exports = {
 
             if (payload.entidade.tarefas.length > 0) {
                 for (let i = 0; i < payload.entidade.tarefas.length; i++) {
-
                     const tarefa = payload.entidade.tarefas[i];
-
                     await db.models.Tarefa.create({
                         EntidadeId: Entidade.id,
                         titulo: tarefa.titulo,
                         descricao: tarefa.descricao,
                         status: tarefa.status
-                    })
-
+                    });
                 }
             }
-
-
         } catch (error) {
             return { status: false, text: `Erro interno no servidor` };
         }
-
         return { status: true, text: `Entidade ${payload.entidade.nome} criada!` };
-
-
     },
 
     async Edit(payload) {
-
         if (!payload)
             return { status: false, text: "Nenhuma informação recebida" };
 
@@ -119,10 +108,7 @@ module.exports = {
         if (!payload.endereco.id_cidade)
             return { status: false, text: "Informe uma cidade" };
 
-
         try {
-
-
             let Entidade = await db.models.Entidade.findByPk(payload.entidade.id);
             Entidade.nome = payload.entidade.nome;
             Entidade.cnpj = payload.entidade.cnpj;
@@ -142,7 +128,6 @@ module.exports = {
             await Endereco.save();
 
             if (payload.entidade.tarefas) {
-
                 await db.models.Tarefa.destroy({
                     where: {
                         EntidadeId: payload.entidade.id
@@ -150,8 +135,6 @@ module.exports = {
                 });
 
                 payload.entidade.tarefas.forEach(async (tarefa) => {
-
-
                     await db.models.Tarefa.create({
                         titulo: tarefa.titulo,
                         descricao: tarefa.descricao,
@@ -164,10 +147,7 @@ module.exports = {
         } catch (error) {
             return { status: false, text: `Erro interno no servidor. ${error}` };
         }
-
         return { status: true, text: `Entidade ${payload.entidade.nome} editada!` };
-
-
     },
 
     async Delete(id) {
@@ -178,28 +158,25 @@ module.exports = {
             await Entidade.destroy();
             await Endereco.destroy();
         } catch (error) {
+            await db.sequelize.close();
             return { status: false, text: "Erro interno no servidor." };
         }
-
         return { status: true, text: `Entidade ${Entidade.nome} removida!` };
+
     },
 
 
     async GetEntidades(search) {
-
         let where = {};
         let someAttributes = {};
 
-
         if (search) {
             if (search.id) { where.id = search.id; }
-
             if (search.nome) {
                 where.nome = {
                     [Op.substring]: search.nome
                 }
             }
-
             if (search.cnpj) {
                 where.cnpj = {
                     [Op.substring]: search.cnpj
@@ -208,17 +185,18 @@ module.exports = {
             if (search.tipo_instituicao != null) {
                 where.tipo_instituicao = search.tipo_instituicao;
             }
+            if (search.dt_descredenciamento == 0) {
+                where.dt_descredenciamento = null;
+            }
         }
 
         const data = await db.models.Entidade.findAll({
-
             where: where,
             include: [
                 { model: db.models.Endereco },
                 { model: db.models.Tarefa }
             ],
         });
-
 
         await db.sequelize.close();
         return data.map(s => {
@@ -254,8 +232,6 @@ module.exports = {
     },
 
     async GetEntidade(id) {
-
-
         const data = await db.models.Entidade.findByPk(id,
             {
                 include: [
@@ -293,26 +269,34 @@ module.exports = {
                     status: e.status,
                 }
             })
-
         }
-
-
     },
 
     async Descredenciar(payload) {
-
         try {
-            let Entidade = await db.models.Entidade.findByPk(payload.id);
-            Entidade.dt_descredenciamento = payload.dt_descredenciamento;
-            Entidade.observacao = payload.motivo;
-            await Entidade.save();
-            await db.sequelize.close();
-            return { status: true, text: `Entidade ${Entidade.nome} descredenciada!` };
+            const agendamento = await db.models.Agendamento.findOne({
+                include: [
+                    {
+                        model: db.models.Tarefa,
+                        where: { entidadeId: payload.id }
+                    }
+                ]
+            });
+
+            if (agendamento != null) {
+                return { status: false, text: `Existe um agendamento para essa entidade não é possível descredenciar` };
+            } else {
+                let Entidade = await db.models.Entidade.findByPk(payload.id);
+                Entidade.dt_descredenciamento = payload.dt_descredenciamento;
+                Entidade.observacao = payload.motivo;
+                await Entidade.save();
+                await db.sequelize.close();
+                return { status: true, text: `Entidade ${Entidade.nome} descredenciada!` };
+            }
+
         } catch (error) {
             return { status: false, text: `Erro interno no servidor.${error}` };
         }
-
-
     },
 
     async Credenciar(id) {
@@ -332,9 +316,7 @@ module.exports = {
     },
 
     async GetCentraisSelect() {
-
         const data = await db.models.Entidade.findAll({
-
             where: {
                 tipo_instituicao: TipoInstituicao.Central
             },
@@ -347,5 +329,4 @@ module.exports = {
             }
         });
     }
-
 }
