@@ -70,9 +70,11 @@ module.exports = {
                     ]
                 }
             ]
-        });
-        await db.sequelize.close();
-        return Prestadores.map(s => {
+        }).finally(() => {
+            db.sequelize.close();
+          });
+
+        var mappedValues = Prestadores.map(s => {
             return {
                 id: s.id,
                 cpf: s.cpf,
@@ -88,6 +90,8 @@ module.exports = {
                 }).reduce((a, b) => a + b, 0) : 0,
             }
         });
+        // await db.sequelize.close();
+        return mappedValues;
     },
 
 
@@ -125,8 +129,10 @@ module.exports = {
                     }
                 },
             ]
-        });
-        await db.sequelize.close();
+        }).finally(() => {
+            db.sequelize.close();
+          });
+      
         let mappedValues = Prestadores.map(s => {
             return {
                 id: s.id,
@@ -216,13 +222,15 @@ module.exports = {
             }
         });
 
-
+        // await db.sequelize.close();
         return mappedValues;
     },
 
     async GetPrestadorSimple(id) {
-        let Prestadores = await db.models.Prestador.findByPk(id);
-        await db.sequelize.close();
+        let Prestadores = await db.models.Prestador.findByPk(id).finally(() => {
+            db.sequelize.close();
+          });
+        // await db.sequelize.close();
         return {
             nome: Prestadores.nome
         }

@@ -105,6 +105,9 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
     const fetchEntidades = async () => {
         let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: { tipo_instituicao: 1, dt_descredenciamento: 0 } });
+        
+        debugger;
+        
         let entidade;
         let values = data.map((element) => {
             return entidade = {

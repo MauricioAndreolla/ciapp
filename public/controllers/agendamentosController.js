@@ -42,8 +42,10 @@ module.exports = {
             })
 
 
-            await db.models.Agendamento.bulkCreate(agendamentos)
-            await db.sequelize.close();
+            await db.models.Agendamento.bulkCreate(agendamentos).finally(() => {
+                db.sequelize.close();
+              });
+            // await db.sequelize.close();
         } catch (error) {
             return { status: false, text: `Erro interno no servidor. ${error}` };
         }
@@ -87,8 +89,10 @@ module.exports = {
                     Agendamento.domingo = payload.agendamento_dias_semana.filter(s => s.value === 6).length > 0,
                     Agendamento.ProcessoId = payload.processo.id,
                     Agendamento.TarefaId = payload.tarefa.id
-                await Agendamento.save();
-                await db.sequelize.close();
+                await Agendamento.save().finally(() => {
+                    db.sequelize.close();
+                  });
+                // await db.sequelize.close();
             });
 
 
@@ -107,8 +111,10 @@ module.exports = {
     async Delete(id) {
         try {
             Agendamento = await db.models.Agendamento.findByPk(id);
-            await Agendamento.destroy();
-            await db.sequelize.close();
+            await Agendamento.destroy().finally(() => {
+                db.sequelize.close();
+              });
+            // await db.sequelize.close();
         } catch (error) {
             return { status: false, text: "Erro interno no servidor." };
         }
@@ -142,11 +148,12 @@ module.exports = {
                 },
                 { model: db.models.Tarefa }
             ],
-        });
+        }).finally(() => {
+            db.sequelize.close();
+          });
 
-        await db.sequelize.close();
 
-        return data.map(s => {
+        var mappedValues =  data.map(s => {
             let agendamentos = {
                 id: s.id,
                 agendamento_horario_inicio: s.horario_inicio,
@@ -201,6 +208,10 @@ module.exports = {
             }
             return agendamentos;
         });
+
+        // await db.sequelize.close();
+
+        return mappedValues;
     },
 
     async GetAgendamentosEntidade(search) {
@@ -217,6 +228,7 @@ module.exports = {
 
         }
 
+        const literalSQL = db.dialet === 0 ? 'SUM(TIME_TO_SEC(TIMEDIFF(`AtestadoFrequencia`.`dt_saida`, `AtestadoFrequencia`.`dt_entrada`))/3600)' : "SUM(strftime('%s', AtestadoFrequencia.dt_saida) - strftime('%s', AtestadoFrequencia.dt_entrada))/3600";
 
         const data = await db.models.Agendamento.findAll({
             attributes: [
@@ -224,6 +236,7 @@ module.exports = {
                 'horario_inicio',
                 'horario_fim',
                 'data_inicial',
+                'data_final',
                 'segunda',
                 'terca',
                 'quarta',
@@ -231,7 +244,7 @@ module.exports = {
                 'sexta',
                 'sabado',
                 'domingo',
-                [db.sequelize.literal('SUM(TIME_TO_SEC(TIMEDIFF(`AtestadoFrequencia`.`dt_saida`, `AtestadoFrequencia`.`dt_entrada`))/3600)'), 'horas_cumpridas']
+                [db.sequelize.literal(literalSQL), 'horas_cumpridas']
             ],
             include: [
                 {
@@ -250,6 +263,7 @@ module.exports = {
                 'Agendamento.horario_inicio',
                 'Agendamento.horario_fim',
                 'Agendamento.data_inicial',
+                'Agendamento.data_final',
                 'Agendamento.segunda',
                 'Agendamento.terca',
                 'Agendamento.quarta',
@@ -269,9 +283,11 @@ module.exports = {
                     db.sequelize.literal('`horas_cumpridas` < `Processo`.`horas_cumprir`')
                 ]
             }
-        });
+        }).finally(() => {
+            db.sequelize.close();
+          });
 
-        await db.sequelize.close();
+    
 
         var mappedValues = data.map(s => {
             let agendamentos = {
@@ -279,6 +295,7 @@ module.exports = {
                 agendamento_horario_inicio: s.horario_inicio,
                 agendamento_horario_fim: s.horario_fim,
                 agendamento_dia_inicial: s.data_inicial,
+                agendamento_dia_final: s.data_final,
                 agendamento_dias_semana: {
                     domingo: s.domingo,
                     segunda: s.segunda,
@@ -328,7 +345,7 @@ module.exports = {
             return agendamentos;
         });
 
-
+        // await db.sequelize.close();
         return mappedValues;
     },
 
@@ -355,9 +372,11 @@ module.exports = {
                 AgendamentoId: payload.id_agendamento,
                 ProcessoId: Agendamento.ProcessoId,
                 TarefaId: Agendamento.TarefaId,
-            });
+            }).finally(() => {
+                db.sequelize.close();
+              });
 
-            await db.sequelize.close();
+            // await db.sequelize.close();
         } catch (error) {
             return { status: false, text: "Erro interno no servidor. " + error.message };
         }

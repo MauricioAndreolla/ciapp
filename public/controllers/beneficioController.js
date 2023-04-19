@@ -11,7 +11,7 @@ module.exports = {
         if (payload && payload.filter && payload.filter.length > 0) {
             where = {
                 id: {
-                    [Sequelize.Op.in]:  payload.filter
+                    [Sequelize.Op.in]: payload.filter
                 }
             }
 
@@ -19,10 +19,14 @@ module.exports = {
 
         let beneficios = await db.models.Beneficio.findAll({
             where: where
-        });
-        await db.sequelize.close();
+        }).finally(() => {
+            db.sequelize.close();
+          });
 
-        return beneficios.map(s => s.dataValues);
+        var mappedValues = beneficios.map(s => s.dataValues);
+        // await db.sequelize.close();
+
+        return mappedValues;
     },
 
     async CreateBeneficio(payload) {
@@ -31,9 +35,11 @@ module.exports = {
             let result = await db.models.Beneficio.create({
                 nome: payload.nome,
                 observacao: payload.observacao,
-            });
+            }).finally(() => {
+                db.sequelize.close();
+              });
 
-            await db.sequelize.close();
+            // await db.sequelize.close();
             return { status: true, text: "Beneficio cadastrado com sucesso!" }
 
         } catch (error) {

@@ -29,9 +29,13 @@ module.exports = {
             include: db.models.UF,
             where: where,
             limit: 10
-        });
-        await db.sequelize.close();
+        }).finally(() => {
+            db.sequelize.close();
+          });
+
         let formatedData = data.map(s => { return { value: s.id, label: `${s.nome} - ${s.UF.sigla}` } })
+        // await db.sequelize.close();
+       
         return formatedData;
 
     },
@@ -44,9 +48,14 @@ module.exports = {
             where: { id: id },
             include: db.models.UF,
             limit: 10
-        });
-        await db.sequelize.close();
-        let formatedData = data.map(s => { return { value: s.id, label: `${s.nome} - ${s.UF.sigla}` } })
+        }).finally(() => {
+            db.sequelize.close();
+          });
+      
+        let formatedData = data.map(s => { return { value: s.id, label: `${s.nome} - ${s.UF.sigla}` } });
+
+        // await db.sequelize.close();
+        
         return formatedData;
 
     }

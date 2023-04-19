@@ -196,10 +196,11 @@ module.exports = {
                 { model: db.models.Endereco },
                 { model: db.models.Tarefa }
             ],
-        });
+        }).finally(() => {
+            db.sequelize.close();
+          });
 
-        await db.sequelize.close();
-        return data.map(s => {
+        var mappedValues = data.map(s => {
             return {
                 id: s.id,
                 nome: s.nome,
@@ -229,6 +230,8 @@ module.exports = {
                 }),
             }
         });
+        // await db.sequelize.close();
+        return mappedValues;
     },
 
     async GetEntidade(id) {
@@ -239,10 +242,13 @@ module.exports = {
                     { model: db.models.Tarefa }
                 ],
             }
-        );
+        ).finally(() => {
+            db.sequelize.close();
+          });
 
-        await db.sequelize.close();
-        return {
+        // await db.sequelize.close();
+
+        var mappedValues = {
             id: data.dataValues.id,
             nome: data.dataValues.nome,
             cnpj: data.dataValues.cnpj,
@@ -270,6 +276,7 @@ module.exports = {
                 }
             })
         }
+        return mappedValues;
     },
 
     async Descredenciar(payload) {
@@ -289,8 +296,10 @@ module.exports = {
                 let Entidade = await db.models.Entidade.findByPk(payload.id);
                 Entidade.dt_descredenciamento = payload.dt_descredenciamento;
                 Entidade.observacao = payload.motivo;
-                await Entidade.save();
-                await db.sequelize.close();
+                await Entidade.save().finally(() => {
+                    db.sequelize.close();
+                  });
+                // await db.sequelize.close();
                 return { status: true, text: `Entidade ${Entidade.nome} descredenciada!` };
             }
 
@@ -305,8 +314,10 @@ module.exports = {
             let Entidade = await db.models.Entidade.findByPk(id);
             Entidade.dt_descredenciamento = null;
             Entidade.observacao = null;
-            await Entidade.save();
-            await db.sequelize.close();
+            await Entidade.save().finally(() => {
+                db.sequelize.close();
+              });
+            // await db.sequelize.close();
             return { status: true, text: `Entidade ${Entidade.nome} credenciada!` };
         } catch (error) {
             return { status: false, text: `Erro interno no servidor. ${error}` };
@@ -320,13 +331,17 @@ module.exports = {
             where: {
                 tipo_instituicao: TipoInstituicao.Central
             },
-        });
-        await db.sequelize.close();
-        return data.map(s => {
+        }).finally(() => {
+            db.sequelize.close();
+          });
+
+        var mappedValues = data.map(s => {
             return {
                 value: s.id,
                 label: `${s.id} - ${s.nome}`
             }
         });
+        // await db.sequelize.close();
+        return mappedValues;
     }
 }

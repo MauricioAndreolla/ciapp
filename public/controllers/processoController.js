@@ -33,8 +33,10 @@ module.exports = {
                 { model: db.models.Entidade }
                 // { model: db.models.AtestadoFrequencia }
             ]
-        });
-        await db.sequelize.close();
+        }).finally(() => {
+            db.sequelize.close();
+          });
+      
         const data = {
             id: Processo.id,
             id_central: { value: Processo.EntidadeId, label: Processo.Entidade.nome },
@@ -56,7 +58,7 @@ module.exports = {
             //     return diff_hours(s.dt_entrada, s.dt_saida)
             // }).reduce((a, b) => a + b, 0)
         }
-
+        // await db.sequelize.close();
         return data;
 
 
@@ -89,8 +91,10 @@ module.exports = {
 
             ],
             where: where
-        });
-        await db.sequelize.close();
+        }).finally(() => {
+            db.sequelize.close();
+          });
+     
         const listaProcessos = Processos.map(s => {
             return {
                 id: s.id,
@@ -110,7 +114,7 @@ module.exports = {
                 vara: s.Vara ? s.Vara.descricao : 'N/A'
             }
         });
-
+        // await db.sequelize.close();
         return listaProcessos;
     },
 
@@ -171,8 +175,10 @@ module.exports = {
             Processo.possui_multa = payload.processo.prd ? payload.processo.possui_multa : false;
             Processo.valor_a_pagar = payload.processo.prd && payload.processo.possui_multa ? unformatCurrency(payload.processo.valor_a_pagar ?? '0') ?? 0 : 0;
             Processo.qtd_penas_anteriores = parseInt(payload.processo.qtd_penas_anteriores);
-            await Processo.save();
-            await db.sequelize.close();
+            await Processo.save().finally(() => {
+                db.sequelize.close();
+              });
+            // await db.sequelize.close();
 
             return { status: true, text: `Processo ${payload.processo.nro_processo} salvo!` };
         } catch (error) {

@@ -19,8 +19,10 @@ module.exports = {
 
         let varas = await db.models.Vara.findAll({
             where: where
-        });
-        await db.sequelize.close();
+        }).finally(() => {
+            db.sequelize.close();
+          });
+        // await db.sequelize.close();
         return varas.map(s => s.dataValues);
     },
 
@@ -29,8 +31,10 @@ module.exports = {
 
             let result = await db.models.Vara.create({
                 descricao: descricao
-            });
-            await db.sequelize.close();
+            }).finally(() => {
+                db.sequelize.close();
+              });
+            // await db.sequelize.close();
             return { status: true, text: "Vara judicial cadastrada com sucesso!" }
 
         } catch (error) {

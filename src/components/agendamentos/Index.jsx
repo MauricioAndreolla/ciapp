@@ -51,9 +51,12 @@ export default function Index(props) {
         return `${day}/${month}/${year}`;
     }
 
-    const formatDateFinally = ({ agendamento_dia_final  }) => {
-        const [year, month, day] = agendamento_dia_final.split('-');
-        return `${day}/${month}/${year}`;
+    const formatDateFinally = ({ agendamento_dia_final }) => {
+        if (agendamento_dia_final) {
+            const [year, month, day] = agendamento_dia_final.split('-');
+            return `${day}/${month}/${year}`;
+        }
+        return "--";
     }
 
     const columnsAgendamento = [
@@ -130,16 +133,16 @@ export default function Index(props) {
     const handleModalAgendamento = (show = true, model = null) => {
         setModelAgendamento(model);
         setShowModalAgendamento(show);
-        
+
     }
 
     const createAgendamento = async (object) => {
         if (object) {
             var agendamentos = agendamento;
-          
 
-            var exist 
-           
+
+            var exist
+
             if (exist) {
                 toast.error(`Agendamento já informado`, { autoClose: false });
                 handleModalAgendamento(false);

@@ -19,9 +19,12 @@ module.exports = {
 
         let cursos = await db.models.Curso.findAll({
             where: where
-        });
-        await db.sequelize.close();
-        return cursos.map(s => s.dataValues);
+        }).finally(() => {
+            db.sequelize.close();
+          });
+        var mappedValues = cursos.map(s => s.dataValues);
+        // await db.sequelize.close();
+        return mappedValues;
     },
 
     async CreateCurso(payload) {
@@ -30,8 +33,10 @@ module.exports = {
             let result = await db.models.Curso.create({
                 descricao: payload.descricao,
                 observacao: payload.observacao,
-            });
-            await db.sequelize.close();
+            }).finally(() => {
+                db.sequelize.close();
+              });
+            // await db.sequelize.close();
             return { status: true, text: "Curso/ especialização cadastrada com sucesso!" }
 
         } catch (error) {

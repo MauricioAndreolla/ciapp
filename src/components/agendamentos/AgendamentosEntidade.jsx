@@ -45,6 +45,7 @@ export default function AgendamentosEntidades(props) {
             var mappedData = data.map(s => {
                 return {
                     data_inicio: s.agendamento_dia_inicial,
+                    data_fim: s.agendamento_dia_final,
                     horario_inicial: s.agendamento_horario_inicio,
                     horario_final: s.agendamento_horario_fim,
                     titulo_tarefa: s.tarefa.titulo,
@@ -60,8 +61,9 @@ export default function AgendamentosEntidades(props) {
                     ].filter(s => s !== null)
                 }
             })
-
+           
             var repeatedEvents = await generateRepeatedEvents(mappedData);
+
 
             SetEvents(repeatedEvents);
 
@@ -93,41 +95,50 @@ export default function AgendamentosEntidades(props) {
     }
 
 
-    const generateRepeatedEvents = (events, numWeeks = 260) => {
+    const generateRepeatedEvents = (events) => {
         const repeatedEvents = [];
-
+      
         events.forEach(event => {
-            const startTime = moment(event.horario_inicial, 'HH:mm');
-            const endTime = moment(event.horario_final, 'HH:mm');
-
-            event.dias_semana.forEach(day => {
-                for (let i = 0; i < numWeeks; i++) {
-                    const date = moment(event.data_inicio).clone().add(i, 'weeks').day(day);
-
-                    const start = date.clone().set({
-                        hour: startTime.get('hour'),
-                        minute: startTime.get('minute')
-                    });
-
-                    const end = date.clone().set({
-                        hour: endTime.get('hour'),
-                        minute: endTime.get('minute')
-                    });
-
-                    const newEvent = {
-                        title: `${event.nome_prestador} \n - ${event.titulo_tarefa}`,
-                        start: new Date(Date.parse(start)),
-                        end: new Date(Date.parse(end)),
-                        allDay: false
-                    };
-
-                    repeatedEvents.push(newEvent);
-                }
-            });
+          const startTime = moment(event.horario_inicial, 'HH:mm');
+          const endTime = moment(event.horario_final, 'HH:mm');
+      
+          const startDate = moment(event.data_inicio);
+          let endDate;
+          if (event.data_fim) {
+            endDate = moment(event.data_fim);
+          } else {
+            endDate = moment().add(10, 'years');
+          }
+      
+          let date = startDate.clone();
+          while (date.isSameOrBefore(endDate, 'day')) {
+            if (event.dias_semana.includes(date.day())) {
+              const start = date.clone().set({
+                hour: startTime.get('hour'),
+                minute: startTime.get('minute')
+              });
+      
+              const end = date.clone().set({
+                hour: endTime.get('hour'),
+                minute: endTime.get('minute')
+              });
+      
+              const newEvent = {
+                title: `${event.nome_prestador} \n - ${event.titulo_tarefa}`,
+                start: new Date(Date.parse(start)),
+                end: new Date(Date.parse(end)),
+                allDay: false
+              };
+      
+              repeatedEvents.push(newEvent);
+            }
+      
+            date.add(1, 'day');
+          }
         });
-
+      
         return repeatedEvents;
-    };
+      };
 
 
     const navigate = useNavigate();
@@ -253,6 +264,7 @@ export default function AgendamentosEntidades(props) {
                                                                 <th>Processo</th>
                                                                 <th>Prestador</th>
                                                                 <th>Data de Inicio</th>
+                                                                <th>Data de Fim</th>
                                                                 <th>Dias da Semana</th>
                                                                 <th>Hora inicial planejada</th>
                                                                 <th>Hora final planejada</th>
@@ -270,6 +282,7 @@ export default function AgendamentosEntidades(props) {
                                                                         <td>{r.processo.nro_processo}</td>
                                                                         <td>{r.processo.nome_prestador}</td>
                                                                         <td>{formatDate(r.agendamento_dia_inicial)}</td>
+                                                                        <td>{ r.agendamento_dia_final ? formatDate(r.agendamento_dia_final) : "--"}</td>
 
 
                                                                         <td>

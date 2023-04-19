@@ -68,7 +68,7 @@ export default function Create() {
                 label: `${element.nome} - ${element.cnpj}`
             }
         });
-
+        debugger;
         setEntidades(values);
 
         // let data = tarefas.map((e) => {

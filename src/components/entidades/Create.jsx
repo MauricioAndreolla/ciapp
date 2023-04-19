@@ -94,6 +94,7 @@ const Create = () => {
                         setLoad(false);
                         if (postResult.status) {
                             toast.success(postResult.text, { autoClose: 3000 });
+                            navigate("/entidades");
                         }
                         else {
                             toast.error(postResult.text, { autoClose: false });
