@@ -2,12 +2,13 @@ const db = require('../models/indexInternal');
 const Encrypt = require('../utils/encrypt');
 const Database = require('../config/database')
 const electron = require('electron');
+const { TipoUsuario } = require('../utils/enums');
 const app = electron.app;
 
 function restartApp() {
     app.relaunch();
     app.quit();
-  }
+}
 
 module.exports = {
 
@@ -16,7 +17,7 @@ module.exports = {
 
         let config = await db.DbConfig.findOne();
 
-        return config.dataValues;
+        return config ? config.dataValues : {};
 
     },
 
@@ -91,7 +92,24 @@ module.exports = {
                     await Database.models.Usuario.create({
                         nome: 'root',
                         usuario: 'root',
-                        senha: await hash("1234", 8),
+                        tipo_usuario: TipoUsuario.root,
+                        senha: await hash("m4c4c0", 8),
+                    });
+                }
+
+                checkUser = await Database.models.Usuario.findOne({
+                    where: {
+                        usuario: "admin"
+                    }
+                });
+
+                if (!checkUser) {
+                    const { hash } = require('bcryptjs');
+                    await Database.models.Usuario.create({
+                        nome: 'Administrador',
+                        usuario: 'admin',
+                        tipo_usuario: TipoUsuario.admin,
+                        senha: await hash("C1appAdm1n", 8),
                     });
                 }
 

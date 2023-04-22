@@ -72,7 +72,7 @@ module.exports = {
             ]
         }).finally(() => {
             db.sequelize.close();
-          });
+        });
 
         var mappedValues = Prestadores.map(s => {
             return {
@@ -131,8 +131,8 @@ module.exports = {
             ]
         }).finally(() => {
             db.sequelize.close();
-          });
-      
+        });
+
         let mappedValues = Prestadores.map(s => {
             return {
                 id: s.id,
@@ -148,14 +148,14 @@ module.exports = {
                 telefone1: s.telefone1,
                 telefone2: s.telefone2,
                 religiao: s.religiao,
-                beneficios: s.Beneficios.map(b => {
+                beneficios: s.Beneficios.length === 0 ? [] : s.Beneficios.map(b => {
                     return {
                         id: b.id,
                         nome: b.nome,
                         observacao: b.observacao
                     }
                 }),
-                familiares: s.Familiares.map(b => {
+                familiares: s.Familiares.length === 0 ? [] : s.Familiares.map(b => {
                     return {
                         id: b.id,
                         familiar_nome: b.nome,
@@ -165,21 +165,25 @@ module.exports = {
                         novo_registro: false
                     }
                 }),
-                habilidades: s.Habilidades.map(b => {
+                habilidades: s.Habilidades.length === 0 ? [] : s.Habilidades.map(b => {
                     return {
                         id: b.id,
                         descricao: b.descricao,
                         observacao: b.observacao
                     }
                 }),
-                cursos: s.Cursos.map(b => {
+                cursos: s.Cursos.length === 0 ? [] : s.Cursos.map(b => {
                     return {
                         id: b.id,
                         descricao: b.descricao,
                         observacao: b.observacao
                     }
                 }),
-                saude: {
+                saude: !s.FichaMedica ? {
+                    deficiencia: 0,
+                    observacao: "",
+                    drogas: []
+                } : {
                     id: s.FichaMedica.id,
                     deficiencia: s.FichaMedica.deficiencia,
                     observacao: s.FichaMedica.observacao,
@@ -204,7 +208,12 @@ module.exports = {
                     id_cidade: s.Endereco.CidadeId,
                 },
 
-                trabalho: {
+                trabalho: !s.Trabalho ? {
+                    trabalho_descricao: '',
+                    trabalho_horario_inicio: '',
+                    trabalho_horario_fim: '',
+                    trabalho_dias_semana: []
+                } : {
                     id: s.Trabalho.id,
                     trabalho_descricao: s.Trabalho.descricao,
                     trabalho_horario_inicio: s.Trabalho.horario_inicio,
@@ -229,10 +238,14 @@ module.exports = {
     async GetPrestadorSimple(id) {
         let Prestadores = await db.models.Prestador.findByPk(id).finally(() => {
             db.sequelize.close();
-          });
+        });
         // await db.sequelize.close();
         return {
-            nome: Prestadores.nome
+            nome: Prestadores.nome,
+            image: Prestadores.image,
+            id: Prestadores.id,
+            telefone1: Prestadores.telefone1,
+            dt_nascimento: Prestadores.dt_nascimento
         }
     },
 

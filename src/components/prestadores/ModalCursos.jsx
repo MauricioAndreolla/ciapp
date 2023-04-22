@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-
+import Load from "../layout/Load";
 import Select from 'react-select';
 import ModalCreateCurso from '../cursos/ModalCreateCurso';
 
@@ -10,9 +10,11 @@ const ModalCursos = ({ show, onHide, onAdd }) => {
 
     const [cursos, setCursos] = useState([]);
     const [cursosAdicionados, setCursosAdicionados] = useState([]);
-
+    const [load, setLoad] = useState(false);
     const getCursos = async () => {
-        const data = await await window.api.Action({ controller: "Curso", action: "GetCursos" });
+        setLoad(true);
+        const data =  await window.api.Action({ controller: "Curso", action: "GetCursos" });
+        setLoad(false);
         setCursos(data.map(s => { return { value: s.id, label: s.descricao } }))
     }
     const [showModalCreateCurso, setShowModalCreateCurso] = useState(false);
@@ -79,6 +81,7 @@ const ModalCursos = ({ show, onHide, onAdd }) => {
             </Modal>
 
             <ModalCreateCurso show={showModalCreateCurso} onHide={hideCreateModal} />
+            <Load show={load} />
         </>
     );
 

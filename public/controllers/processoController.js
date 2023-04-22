@@ -35,8 +35,8 @@ module.exports = {
             ]
         }).finally(() => {
             db.sequelize.close();
-          });
-      
+        });
+
         const data = {
             id: Processo.id,
             id_central: { value: Processo.EntidadeId, label: Processo.Entidade.nome },
@@ -83,6 +83,7 @@ module.exports = {
         const Processos = await db.models.Processo.findAll({
             include: [
                 { model: db.models.Prestador },
+                { model: db.models.Entidade },
                 { model: db.models.Vara },
                 {
                     model: db.models.Agendamento,
@@ -93,25 +94,26 @@ module.exports = {
             where: where
         }).finally(() => {
             db.sequelize.close();
-          });
-     
+        });
+
         const listaProcessos = Processos.map(s => {
             return {
                 id: s.id,
                 nro_processo: s.nro_processo,
                 prestador: s.Prestadore.nome,
                 horas_cumprir: s.horas_cumprir,
-                horas_cumpridas: 
+                horas_cumpridas:
 
-                s.Agendamentos.map(s => {
+                    s.Agendamentos.map(s => {
 
-                    return s.AtestadoFrequencia.map(s => {
-                        return diff_hours(s.dt_entrada, s.dt_saida)
-                    }).reduce((a, b) => a + b, 0)
+                        return s.AtestadoFrequencia.map(s => {
+                            return diff_hours(s.dt_entrada, s.dt_saida)
+                        }).reduce((a, b) => a + b, 0)
 
-                }).reduce((a, b) => a + b, 0),
-                
-                vara: s.Vara ? s.Vara.descricao : 'N/A'
+                    }).reduce((a, b) => a + b, 0),
+
+                vara: s.Vara ? s.Vara.descricao : 'N/A',
+                central: s.Entidade ? s.Entidade.nome : 'N/A'
             }
         });
         // await db.sequelize.close();
@@ -177,7 +179,7 @@ module.exports = {
             Processo.qtd_penas_anteriores = parseInt(payload.processo.qtd_penas_anteriores);
             await Processo.save().finally(() => {
                 db.sequelize.close();
-              });
+            });
             // await db.sequelize.close();
 
             return { status: true, text: `Processo ${payload.processo.nro_processo} salvo!` };
@@ -186,5 +188,61 @@ module.exports = {
         }
 
     },
+
+    async GetRegistros(payload) {
+        try {
+            var id_prestador = payload.id;
+
+            var Processos = await db.models.Processo.findAll({
+                where: {
+                    PrestadoreId: id_prestador
+                }
+            })
+
+            var id_processo = Processos.map(s => s.id);
+
+            const registros = await db.models.AtestadoFrequencia.findAll({
+                include: [
+                    {
+                        model: db.models.Agendamento,
+                        include: [
+                            {
+                                model: db.models.Tarefa,
+                                include: [
+                                    { model: db.models.Entidade }
+                                ]
+                            }
+                        ],
+                        where: {
+                            ProcessoId: id_processo
+                        }
+                    }
+                ],
+
+            });
+
+            const data = registros.map(s => {
+                return {
+                    id: s.id,
+                    dt_entrada: s.dt_entrada.toLocaleString("pt-BR"),
+                    dt_saida: s.dt_saida.toLocaleString("pt-BR"),
+                    observacao: s.observacao,
+                    total_horas: diff_hours(s.dt_entrada, s.dt_saida),
+                    tarefa: s.Agendamento.Tarefa.titulo,
+                    data_inicial: s.Agendamento.data_inicial,
+                    horario_inicio: s.Agendamento.horario_inicio,
+                    horario_fim: s.Agendamento.horario_fim,
+                    entidade: s.Agendamento.Tarefa.Entidade.nome
+
+                }
+            });
+
+            return { status: true, data: data };
+
+        } catch (error) {
+            return { status: false, text: "Erro interno no servidor." };
+        }
+
+    }
 
 }

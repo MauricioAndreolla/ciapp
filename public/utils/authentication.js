@@ -7,6 +7,7 @@ class Authentication {
     static idUser = null;
     static name = "";
     static username = "";
+    static tipo_usuario = null;
 
 
     static async Authenticate(username, password) {
@@ -25,13 +26,14 @@ class Authentication {
                 this.idUser = checkUser.id;
                 this.name = checkUser.nome;
                 this.username = checkUser.usuario;
+                this.tipo_usuario = checkUser.tipo_usuario;
             }
         }
 
         if (!this.isAuthenticated)
             return { status: false, text: "Usuário ou senha inválida" };
 
-        return { status: true, user: { id: checkUser.id, user: checkUser.nome, MODO_APLICACAO: MODO_APLICACAO.modo } };
+        return { status: true, user: { id: checkUser.id, user: checkUser.nome, tipo_usuario: checkUser.tipo_usuario, MODO_APLICACAO: MODO_APLICACAO.modo } };
 
     }
 

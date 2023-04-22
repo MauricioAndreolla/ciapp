@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-
+import Load from "../layout/Load";
 import Select from 'react-select';
 import ModalCreateDroga from '../drogas/ModalCreateDroga';
 
 
 const ModalUsoDroga = ({ show, onHide, onAdd }) => {
     const modalRef = useRef(null);
-
+    const [load, setLoad] = useState(false);
     const [drogas, setDrogas] = useState([]);
 
     const [drogaAdicionada, setDrogaAdicionada] = useState({
@@ -18,7 +18,9 @@ const ModalUsoDroga = ({ show, onHide, onAdd }) => {
 
 
     const getDrogas = async () => {
+        setLoad(true);
         const data = await await window.api.Action({ controller: "Droga", action: "GetDrogas" });
+        setLoad(false);
         setDrogas(data.map(s => { return { value: s.id, label: s.nome } }))
     }
     const [showModalCreateDroga, setShowModalCreateDroga] = useState(false);
@@ -45,20 +47,20 @@ const ModalUsoDroga = ({ show, onHide, onAdd }) => {
 
         const value = evt.value ?? evt.target.value;
 
-        if(name && name.name){
+        if (name && name.name) {
             setDrogaAdicionada
-            ({
-                ...drogaAdicionada,
-                [name.name ?? evt.target.name]: value
-            });
+                ({
+                    ...drogaAdicionada,
+                    [name.name ?? evt.target.name]: value
+                });
 
         }
-        else{
+        else {
             setDrogaAdicionada
-            ({
-                ...drogaAdicionada,
-                [name ? name : evt.target.name]: value
-            });
+                ({
+                    ...drogaAdicionada,
+                    [name ? name : evt.target.name]: value
+                });
 
         }
 
@@ -126,6 +128,7 @@ const ModalUsoDroga = ({ show, onHide, onAdd }) => {
             </Modal>
 
             <ModalCreateDroga show={showModalCreateDroga} onHide={hideCreateModal} />
+            <Load show={load} />
         </>
     );
 

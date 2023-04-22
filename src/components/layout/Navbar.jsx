@@ -22,26 +22,37 @@ function Navbar() {
                     <NavLink id="entidades" to="/entidades"><i className="fa-solid fa-archway"></i> Entidades</NavLink>
                 </li>
 
-                <li className={activeMenu === 'agendamentos' ? 'active' : ''} onClick={() => { setActiveMenu('agendamentos') }}>
-                    <NavLink id="agendamentos" to="/agendamentos"><i className="fa-solid fa-clipboard-user"></i> Agendamentos</NavLink>
-                </li>
+                {
+                    user.MODO_APLICACAO === 0 ?
 
-                <li className={activeMenu === 'agendamentosEntidade' ? 'active' : ''} onClick={() => { setActiveMenu('agendamentosEntidade') }}>
-                    <NavLink id="agendamentosEntidade" to="/agendamentosEntidade"><i className="fa-solid fa-clipboard-user"></i> Agendamentos</NavLink>
-                </li>
+
+                        <li className={activeMenu === 'agendamentos' ? 'active' : ''} onClick={() => { setActiveMenu('agendamentos') }}>
+                            <NavLink id="agendamentos" to="/agendamentos"><i className="fa-solid fa-clipboard-user"></i> Agendamentos</NavLink>
+                        </li>
+
+                        :
+
+                        <li className={activeMenu === 'agendamentosEntidade' ? 'active' : ''} onClick={() => { setActiveMenu('agendamentosEntidade') }}>
+                            <NavLink id="agendamentosEntidade" to="/agendamentosEntidade"><i className="fa-solid fa-clipboard-user"></i> Agendamentos</NavLink>
+                        </li>
+
+                }
+
+
+
 
                 <li className="nav-item dropdown">
                     <a className="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Outros</a>
                     <ul className="dropdown-menu">
 
                         <li className={activeMenu === 'sincronizacao' ? 'active' : ''} onClick={() => { setActiveMenu('sincronizacao') }}>
-                            <NavLink id="sincronizacao" to="/"><i className="fa-solid fa-file-export"></i> Exportar Dados</NavLink>
+                            <NavLink id="sincronizacao" to="/sincronizacao"><i className="fa-solid fa-refresh"></i> Sincronização de dados</NavLink>
                         </li>
 
 
 
 
-                       
+
 
 
                         <li className={activeMenu === 'usuarios' ? 'active' : ''} onClick={() => { setActiveMenu('login') }}>
@@ -56,10 +67,10 @@ function Navbar() {
                     </ul>
                 </li>
             </ul>
-            
+
 
             <div className="modo-aplicacao">
-                modo apliação: <b>{user.MODO_APLICACAO === 0 ? "central" : user.MODO_APLICACAO === 1 ? "entidade" : "não definido" }</b>
+                modo apliação: <b>{user.MODO_APLICACAO === 0 ? "central" : user.MODO_APLICACAO === 1 ? "entidade" : "não definido"}</b>
             </div>
 
         </nav>

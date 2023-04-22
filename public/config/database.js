@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const dbInternal = require('../models/indexInternal');
 const Encrypt = require('../utils/encrypt');
 const mysql = require('mysql2/promise');
+const { modo } = require('../utils/appMode');
 
 class Database {
 
@@ -46,7 +47,7 @@ class Database {
         else if (this.dialet === 1) {
             this.sequelize = new Sequelize({
                 dialect: 'sqlite',
-                storage: 'C://ciapp/database/ciapp.sqlite',
+                storage: `C://ciapp/database/${modo === 0 ? "central" : "entidade"}/ciapp.sqlite`,
             });
         }
 

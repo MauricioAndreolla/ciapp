@@ -369,9 +369,7 @@ module.exports = {
                 dt_entrada: new Date(payload.registro.data + " " + payload.registro.horario_entrada),
                 dt_saida: new Date(payload.registro.data + " " + payload.registro.horario_saida),
                 observacao: payload.registro.observacao,
-                AgendamentoId: payload.id_agendamento,
-                ProcessoId: Agendamento.ProcessoId,
-                TarefaId: Agendamento.TarefaId,
+                AgendamentoId: payload.id_agendamento
             }).finally(() => {
                 db.sequelize.close();
               });

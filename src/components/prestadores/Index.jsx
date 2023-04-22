@@ -2,6 +2,11 @@ import { useNavigate, NavLink } from 'react-router-dom'
 import { useState, useEffect, useContext } from "react";
 import Title from "../layout/Title";
 import { AuthenticationContext } from "../context/Authentication";
+import ModalDetalhes from './ModalDetalhes';
+import ModalRegistro from './ModalRegistros';
+import Load from "../layout/Load";
+
+
 const Index = () => {
     const { user } = useContext(AuthenticationContext);
     const [prestadores, setPrestadores] = useState([]);
@@ -11,15 +16,39 @@ const Index = () => {
         nome: '',
     });
 
+
+    const [showModalDetalhes, setShowModalDetalhes] = useState(false);
+    const [idDetalhes, setIdDetalhes] = useState(null);
+    const [showModalRegistro, setShowModalRegistro] = useState(false);
+    const [idRegistro, setIdRegistro] = useState(null);
+    const [load, setLoad] = useState(false);
+    const handleModalDetalhes = (show = true) => {
+        setShowModalDetalhes(show);
+    }
+
+    const handleModalRegistro = (show = true) => {
+        setShowModalRegistro(show);
+    }
+
     const navigate = useNavigate();
     const novoPrestador = () => {
         navigate('create');
     }
 
+    const Visualizar = (id) => {
+        setIdDetalhes(id);
+        handleModalDetalhes(true);
+    }
+
+    const Registros = (id) => {
+        setIdRegistro(id);
+        handleModalRegistro(true);
+    }
+
     const fetchData = async () => {
-
+        setLoad(true);
         const data = await window.api.Action({ controller: "Prestador", action: "GetPrestadores", params: search });
-
+        setLoad(false);
         setPrestadores(data);
     }
     useEffect(() => {
@@ -104,19 +133,24 @@ const Index = () => {
                         onChange={handleSearch}
                     />
                 </div>
+                {
+                    user.MODO_APLICACAO === 0 ?
+                        <div className="input-form col-md-3">
+                            <label htmlFor="cpf">CPF</label>
+                            <input
+                                id="cpf"
+                                name="cpf"
+                                className="form-control shadow-none input-custom"
+                                type="text"
+                                placeholder="Ex: 000.000.000-00"
+                                value={search.cpf}
+                                onChange={handleSearch}
+                            />
+                        </div>
 
-                <div className="input-form col-md-3">
-                    <label htmlFor="cpf">CPF</label>
-                    <input
-                        id="cpf"
-                        name="cpf"
-                        className="form-control shadow-none input-custom"
-                        type="text"
-                        placeholder="Ex: 000.000.000-00"
-                        value={search.cpf}
-                        onChange={handleSearch}
-                    />
-                </div>
+                        : null
+                }
+
 
 
 
@@ -136,7 +170,12 @@ const Index = () => {
                                     <tr>
                                         <th></th>
                                         <th>Nome</th>
-                                        <th>CPF</th>
+                                        {
+                                            user.MODO_APLICACAO === 0 ?
+                                                <th>CPF</th>
+                                                : null
+                                        }
+
                                         <th>Último Processo</th>
                                         <th>Horas a Cumprir</th>
                                         <th>Horas Cumpridas</th>
@@ -150,7 +189,12 @@ const Index = () => {
                                         <tr key={r.id} style={{ verticalAlign: "middle" }}>
                                             <td>{r.id}</td>
                                             <td>{r.nome}</td>
-                                            <td>{r.cpf}</td>
+                                            {
+                                                user.MODO_APLICACAO === 0 ?
+                                                    <td>{r.cpf}</td>
+                                                    : null
+                                            }
+
                                             <td>{r.nro_processo ?? "--"}</td>
                                             <td>{r.horas_cumprir > 0 ? r.horas_cumprir : "0"}</td>
 
@@ -170,9 +214,14 @@ const Index = () => {
                                                                 </>
                                                                 :
                                                                 <>
-                                                                    <li> <NavLink className="dropdown-item" id="edit" to={`/prestadores/edit/${r.id}`}> <i className='fa fa-eye'></i> Visualizar</NavLink></li>
+                                                                    <li> <a className="dropdown-item btn" onClick={() => { Visualizar(r.id) }} to="#"><i className="fa fa-eye"></i> Detalhes</a></li>
+
                                                                 </>
+
+
                                                         }
+
+                                                        <li> <a className="dropdown-item btn" onClick={() => { Registros(r.id) }} to="#"><i className="fa fa-eye"></i> Ver Registros</a></li>
 
                                                         {/* <li> <a className="dropdown-item" onClick={() => { GerarListagem(r.id, r.ultimo_processo, r.nome) }} to="#"><i className="fa-solid fa-file"></i> Gerar Relatório</a></li>
                                                 <li> <a className="dropdown-item" onClick={() => { DeletePrestador(r.id, r.nome) }} to="#"><i className="fa-solid fa-trash"></i> Excluir</a></li> */}
@@ -188,8 +237,9 @@ const Index = () => {
                         </div>
                     </div>
             }
-
-
+            <ModalDetalhes show={showModalDetalhes} onHide={() => { handleModalDetalhes(false) }} id={idDetalhes} />
+            <ModalRegistro show={showModalRegistro} onHide={() => { handleModalRegistro(false) }} id={idRegistro} />
+            <Load show={load} />
 
         </>
     );

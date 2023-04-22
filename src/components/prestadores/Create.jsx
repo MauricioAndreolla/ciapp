@@ -360,8 +360,9 @@ const Create = () => {
     const addNewCurso = async (cursos) => {
 
         if (cursos && cursos.length > 0) {
+            setLoad(true);
             const data = await await window.api.Action({ controller: "Curso", action: "GetCursos", params: { filter: cursos.map(s => s.value) } });
-
+            setLoad(false);
             if (data) {
                 let adicionar = data.filter(s => prestador.cursos.filter(p => p.id === s.id).length == 0);
 
@@ -386,8 +387,9 @@ const Create = () => {
     const addNewBeneficio = async (beneficios) => {
 
         if (beneficios && beneficios.length > 0) {
+            setLoad(true);
             const data = await await window.api.Action({ controller: "Beneficio", action: "GetBeneficios", params: { filter: beneficios.map(s => s.value) } });
-
+            setLoad(false);
             if (data) {
                 let adicionar = data.filter(s => prestador.beneficios.filter(p => p.id === s.id).length == 0);
                 if (adicionar.length > 0) {
@@ -413,8 +415,9 @@ const Create = () => {
     const addNewHabilidades = async (habilidades) => {
 
         if (habilidades && habilidades.length > 0) {
+            setLoad(true);
             const data = await await window.api.Action({ controller: "Habilidade", action: "GetHabilidades", params: { filter: habilidades.map(s => s.value) } });
-
+            setLoad(false);
             if (data) {
                 let adicionar = data.filter(s => prestador.habilidades.filter(p => p.id === s.id).length == 0);
                 if (adicionar.length > 0) {

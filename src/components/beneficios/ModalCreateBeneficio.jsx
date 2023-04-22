@@ -1,10 +1,10 @@
 import { useState, useRef } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { toast } from "react-toastify";
-
+import Load from "../layout/Load";
 const ModalBeneficio = ({ show, onHide }) => {
     const modalRef = useRef(null);
-
+    const [load, setLoad] = useState(false);
     const [beneficio, setBeneficio] = useState({
         nome: "",
         observacao: "",
@@ -31,8 +31,9 @@ const ModalBeneficio = ({ show, onHide }) => {
             toast.error(`Necessário informar um nome.`);
             return;
         }
-
+        setLoad(true);
         const data = await await window.api.Action({ controller: "Beneficio", action: "CreateBeneficio", params: beneficio });
+        setLoad(false);
         if(!data.status){
             toast.error(`Erro: ${data.text}`, { autoClose: false });
         }
@@ -84,6 +85,7 @@ const ModalBeneficio = ({ show, onHide }) => {
 
                 </Modal.Footer>
             </Modal>
+            <Load show={load} />
         </>
     );
 

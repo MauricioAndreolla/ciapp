@@ -69,6 +69,7 @@ label {
   place-content: center;
   flex-wrap: wrap;
   flex-direction: column;
+  margin-top: 3rem;
 }
 
 #logo-text {
@@ -78,7 +79,7 @@ label {
 }
 
 #login-logo img {
-  width: 200px;
+  width: 150px;
 }
 
 .form-group {
@@ -183,7 +184,8 @@ input {
 }
 
 .brand img {
-  width: 4rem !important;
+  width: 3.5rem !important;
+  margin: 0.5rem !important;
 }
 
 .side-menu {
@@ -506,7 +508,7 @@ table td {
   color: white;
   background: #000000;
   opacity: 0.7;
-  z-index: 99;
+  z-index: 999999;
 }
 
 .load-message h3 {

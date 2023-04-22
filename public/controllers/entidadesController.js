@@ -343,5 +343,24 @@ module.exports = {
         });
         // await db.sequelize.close();
         return mappedValues;
+    },
+
+    async GetEntidadesSelect() {
+        const data = await db.models.Entidade.findAll({
+            where: {
+                tipo_instituicao: TipoInstituicao.Entidade
+            },
+        }).finally(() => {
+            db.sequelize.close();
+          });
+
+        var mappedValues = data.map(s => {
+            return {
+                value: s.id,
+                label: `${s.id} - ${s.nome}`
+            }
+        });
+        // await db.sequelize.close();
+        return mappedValues;
     }
 }

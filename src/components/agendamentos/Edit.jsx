@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Title from "../layout/Title";
 import InputDiasSemana from "../layout/InputDiasSemana";
 import Select from 'react-select';
-
+import { toast } from 'react-toastify';
 
 export default function Edit(props) {
     const { id } = useParams();
@@ -91,12 +91,17 @@ export default function Edit(props) {
         }
 
         if (verificaDatas() == true) {
-            window.api.Alert({ status: false, text: "Horário inicial inferior ou igual ao horário final", title: "Erro!" });
+            toast.error( "Horário inicial inferior ou igual ao horário final");
             return;
         }
 
         const postResult = await window.api.Action({ controller: "Agendamentos", action: "Edit", params: payload });
-        window.api.Alert({ status: postResult.status, text: postResult.text, title: postResult.status ? "Sucesso!" : "Erro!" });
+       
+        if (!postResult.status) {
+            toast.error(postResult.text, { autoClose: false });
+        } else {
+            toast.success(postResult.text, { autoClose: 3000 });
+        }
 
         if (postResult.status){
             navigate("/agendamentos/index");

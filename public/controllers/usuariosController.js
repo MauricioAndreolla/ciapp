@@ -2,6 +2,8 @@ const db = require('../config/database');
 const { Op } = require("sequelize");
 const { hash } = require('bcryptjs');
 
+const authentication = require('../utils/authentication');
+
 
 module.exports = {
 
@@ -23,6 +25,7 @@ module.exports = {
             await db.models.Usuario.create({
                 nome: payload.userName,
                 usuario: payload.user,
+                tipo_usuario: payload.tipo_usuario,
                 senha: await hash(payload.password, 8)
             });
 
@@ -35,6 +38,8 @@ module.exports = {
 
     async Delete(id) {
 
+        if (id == authentication.idUser)
+            return { status: false, text: "Não é possível remover o usuário logado." };
         let User = {};
         let nome = '';
         try {
@@ -51,7 +56,7 @@ module.exports = {
 
     async Edit(payload) {
 
-     
+
         if (!payload)
             return { status: false, text: "Nenhuma informação recebida" };
 
@@ -64,10 +69,11 @@ module.exports = {
         if (!payload.password)
             return { status: false, text: "Informe uma senha" };
         try {
-            
+
             let Usuario = await db.models.Usuario.findByPk(payload.id);
             Usuario.nome = payload.userName;
             Usuario.usuario = payload.user;
+            Usuario.tipo_usuario = payload.tipo_usuario;
             Usuario.senha = await hash(payload.password, 8);
             await Usuario.save();
 
@@ -83,7 +89,9 @@ module.exports = {
 
     async GetUsuarios(search) {
 
-        let where = {};
+        let where = {
+            id: { [Op.ne]: 1 },
+        };
 
         if (search) {
             if (search.id)
@@ -102,7 +110,7 @@ module.exports = {
             }
         }
 
-       
+
         const data = await db.models.Usuario.findAll({
             where: where,
         });
@@ -113,6 +121,8 @@ module.exports = {
                 nome: s.nome,
                 usuario: s.usuario,
                 senha: s.senha,
+                tipo_usuario: s.tipo_usuario,
+                tipo_usuario_desc: s.tipo_usuario === 0 ? "Normal" : s.tipo_usuario === 1 ? "Administrador" : "--"
             }
         });
     }

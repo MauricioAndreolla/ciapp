@@ -9,6 +9,10 @@ Usuario.init({
         type: DataTypes.STRING,
         allowNull: false
     },
+    tipo_usuario: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     usuario: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -17,6 +21,14 @@ Usuario.init({
     senha: {
         type: DataTypes.TEXT,
         allowNull: false
+    },
+    ativo: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+    },
+    somente_leitura: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 }, {
     sequelize: Database.sequelize,

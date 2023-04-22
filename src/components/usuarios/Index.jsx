@@ -1,31 +1,34 @@
 import { useNavigate } from 'react-router-dom'
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Title from "../layout/Title";
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
 import Table from '../layout/Table';
 import ModalUsuario from './ModalUsuario';
 import { toast } from "react-toastify";
+import Load from "../layout/Load";
 
-
+import { AuthenticationContext } from "../context/Authentication";
 
 export default function Usuarios() {
-
+    const { user } = useContext(AuthenticationContext);
     const navigate = useNavigate();
     const [search, setSearch] = useState({ name: '', user: '' });
     const [users, setUsers] = useState([]);
-
+    const [load, setLoad] = useState(false);
     const columnsUsuario = [
         { Header: 'Id', accessor: 'id' },
         { Header: 'Nome', accessor: 'nome' },
         { Header: 'Usuário', accessor: 'usuario' },
+        { Header: 'Tipo Usuário', accessor: 'tipo_usuario_desc' },
     ];
 
     const [modelUsuario, setModelUsuario] = useState({
         id: null,
         userName: '',
         user: '',
-        password: ''
+        password: '',
+        tipo_usuario: 0
     });
 
     const [showModalUsuario, setShowModalUsuario] = useState(false);
@@ -35,7 +38,9 @@ export default function Usuarios() {
     }, [search]);
 
     const fetchData = async () => {
+        setLoad(true);
         const data = await window.api.Action({ controller: "Usuarios", action: "GetUsuarios", params: search });
+        setLoad(false);
         setUsers(data);
     }
 
@@ -44,10 +49,11 @@ export default function Usuarios() {
             userName: object.userName,
             user: object.user,
             password: object.password,
+            tipo_usuario: object.tipo_usuario,
         }
-
+        setLoad(true);
         const postResult = await window.api.Action({ controller: "Usuarios", action: "Create", params: payload });
-
+        setLoad(false);
         if (!postResult.status) {
             toast.error(postResult.text, { autoClose: 3000 });
         } else {
@@ -67,11 +73,12 @@ export default function Usuarios() {
             userName: object.userName,
             user: object.user,
             password: object.password,
+            tipo_usuario: object.tipo_usuario,
         }
 
-
+        setLoad(true);
         const postResult = await window.api.Action({ controller: "Usuarios", action: "Edit", params: payload });
-
+        setLoad(false);
         if (!postResult.status) {
             toast.error(postResult.text, { autoClose: 3000 });
         } else {
@@ -84,9 +91,9 @@ export default function Usuarios() {
     function DeleteUser({ id, nome }) {
 
         const handleClickDelete = async (id) => {
-
+            setLoad(true);
             const result = await window.api.Action({ controller: "Usuarios", action: "Delete", params: id });
-           
+            setLoad(false);
             if (result.status) {
                 toast.success(result.text, { autoClose: 3000 });
                 await fetchData();
@@ -157,12 +164,28 @@ export default function Usuarios() {
                                         <Title title={"Usuários Cadastrados"} />
                                         <div className="row">
                                             <div className="col-md-12 no-padding">
-                                                <div className='menu'>
-                                                    <button className='menu-button button-blue' onClick={ModalAddUsuario}>
-                                                        <i className='fa-solid fa-plus'></i> Adicionar Usuario
-                                                    </button>
-                                                </div>
-                                                <Table columns={columnsUsuario} data={users} onEdit={ModalEditUsuario} onDelete={DeleteUser} />
+
+                                                {
+                                                    user.tipo_usuario !== 0 ?
+                                                        <div className='menu'>
+                                                            <button className='menu-button button-blue' onClick={ModalAddUsuario}>
+                                                                <i className='fa-solid fa-plus'></i> Adicionar Usuario
+                                                            </button>
+                                                        </div>
+                                                        : null
+                                                }
+
+
+                                                {
+                                                    user.tipo_usuario !== 0 ?
+                                                        <Table columns={columnsUsuario} data={users} onEdit={ModalEditUsuario} onDelete={DeleteUser} />
+                                                        :
+                                                        <Table columns={columnsUsuario} data={users} />
+                                                }
+
+
+
+
                                             </div>
                                         </div>
                                     </Tab.Pane>
@@ -172,11 +195,11 @@ export default function Usuarios() {
                             <ModalUsuario Model={modelUsuario} show={showModalUsuario} onHide={() => { handleModalUsuario(false) }} onAdd={createUser} onEdit={editUsuario} />
                         </div>
 
-                        : "Usuários não encontrados"}
+                        : <div className="col-md-12 zero-count">Nenhum registro localizado.</div>}
 
                 </div>
             </div>
-
+            <Load show={load} />
         </>
 
 

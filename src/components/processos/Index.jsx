@@ -2,7 +2,7 @@ import { useNavigate, NavLink } from 'react-router-dom'
 import { useState, useEffect, useContext } from "react";
 import Title from "../layout/Title";
 import { AuthenticationContext } from "../context/Authentication";
-
+import Load from "../layout/Load";
 const Index = () => {
     const { user } = useContext(AuthenticationContext);
     const [processos, setProcessos] = useState([]);
@@ -11,16 +11,16 @@ const Index = () => {
         nro_processo: '',
         nome: '',
     });
-
+    const [load, setLoad] = useState(false);
     const navigate = useNavigate();
     const novoProcesso = () => {
         navigate('create');
     }
 
     const fetchData = async () => {
-
+        setLoad(true);
         const data = await window.api.Action({ controller: "Processo", action: "GetProcessos", params: null });
-
+        setLoad(false);
         setProcessos(data);
     }
 
@@ -114,6 +114,7 @@ const Index = () => {
                                         <th>Horas a Cumprir</th>
                                         <th>Horas Cumpridas</th>
                                         <th>Vara</th>
+                                        <th>Central Responsável</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -127,6 +128,7 @@ const Index = () => {
                                             <td>{r.horas_cumprir}</td>
                                             <td>{r.horas_cumpridas}</td>
                                             <td>{r.vara}</td>
+                                            <td>{r.central}</td>
 
                                             <td>
                                                 <div className="btn-group" role="group">
@@ -138,15 +140,17 @@ const Index = () => {
                                                         {
                                                             user.MODO_APLICACAO === 0 ?
 
-                                                            <>
-                                                                 <li> <NavLink className="dropdown-item" id="edit" to={`/processos/edit/${r.id}`}> <i className='fa fa-edit'></i> Editar</NavLink></li>
-                                                            </>
+                                                                <>
+                                                                    <li> <NavLink className="dropdown-item" id="edit" to={`/processos/edit/${r.id}`}> <i className='fa fa-edit'></i> Editar</NavLink></li>
+                                                                </>
 
-                                                            :
+                                                                :
 
-                                                            <li> <NavLink className="dropdown-item" id="edit" to={`/processos/edit/${r.id}`}> <i className='fa fa-eye'></i> Visualizar</NavLink></li>
+                                                                null
+
+                                                            // <li> <NavLink className="dropdown-item" id="edit" to={`/processos/edit/${r.id}`}> <i className='fa fa-eye'></i> Visualizar</NavLink></li>
                                                         }
-                                                   
+
                                                         {/* <li> <a className="dropdown-item" onClick={() => { showRegistros(r.id) }} to="#"><i className="fa-solid fa-list-check"></i> Ver registros</a></li>
                                                         <li> <a className="dropdown-item" onClick={() => { DeleteProcesso(r.id, r.nro_processo) }} to="#"><i className="fa-solid fa-trash"></i> Excluir </a></li> */}
                                                     </ul>
@@ -163,7 +167,7 @@ const Index = () => {
                     </div>
             }
 
-
+            <Load show={load} />
 
         </>
     );

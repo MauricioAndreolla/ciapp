@@ -54,11 +54,20 @@ const Frequencia = {
 }
 Object.freeze(Frequencia);
 
+
+const TipoUsuario = {
+    root: 2,
+    admin: 1,
+    normal: 0
+}
+Object.freeze(TipoUsuario);
+
 module.exports = {
     TipoInstituicao: TipoInstituicao,
     EstadoCivil: EstadoCivil,
     Escolaridade: Escolaridade,
     Etnia: Etnia,
     Deficiencia: Deficiencia,
-    Frequencia: Frequencia
+    Frequencia: Frequencia,
+    TipoUsuario: TipoUsuario
 }

@@ -8,9 +8,9 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-
+import { toast } from 'react-toastify';
 import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
-
+import Load from "../layout/Load";
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import 'moment-timezone';
@@ -20,6 +20,7 @@ export default function AgendamentosEntidades(props) {
     const date = new Date();
     const [show, setShow] = useState(false);
     const [modalModel, setModalModel] = useState(null);
+    const [load, setLoad] = useState(false);
 
     const [registro, setRegistro] = useState({
         horario_entrada: null,
@@ -151,8 +152,9 @@ export default function AgendamentosEntidades(props) {
         processo: ''
     });
     const fetchData = async () => {
+        setLoad(true);
         const data = await window.api.Action({ controller: "Agendamentos", action: "GetAgendamentosEntidade", params: search });
-        console.log(data)
+        setLoad(false);
         setAgendamentos(data);
         handleEvents(data);
 
@@ -187,8 +189,15 @@ export default function AgendamentosEntidades(props) {
 
     const submitRegistro = async () => {
         var id_agendamento = modalModel.id;
+        setLoad(true);
         const postResult = await window.api.Action({ controller: "Agendamentos", action: "Registrar", params: { id_agendamento: id_agendamento, registro: registro } });
-        window.api.Alert({ status: postResult.status, text: postResult.text, title: postResult.status ? "Sucesso!" : "Erro!" });
+        setLoad(false);
+        if (!postResult.status) {
+            toast.error(postResult.text, { autoClose: false });
+        } else {
+            toast.success(postResult.text, { autoClose: 3000 });
+        }
+
 
         if (postResult.status) {
             setShow(false);
@@ -442,6 +451,8 @@ export default function AgendamentosEntidades(props) {
 
                 </Modal.Footer>
             </Modal>
+
+            <Load show={load} />
         </>
 
     )

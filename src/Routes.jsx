@@ -22,6 +22,9 @@ import Agendamentos from './components/agendamentos/Index';
 import AgendamentosCreate from './components/agendamentos/Create';
 import AgendamentosEntidade from './components/agendamentos/AgendamentosEntidade';
 
+
+import Sincronizacao from './components/sincronizacao/Index';
+
 const Main = () => {
 
     const Private = ({ children }) => {
@@ -64,6 +67,9 @@ const Main = () => {
                         <Route path="agendamentos/Create" element={<Private><AgendamentosCreate /></Private>} />
                         <Route path="agendamentos/Edit/:id" element={<Private><AgendamentosCreate /></Private>} />
                         <Route path="agendamentosEntidade" element={<Private><AgendamentosEntidade /></Private>} />
+
+
+                        <Route path="sincronizacao" element={<Private><Sincronizacao /></Private>} />
                         
                     </Route>
                 </Routes>

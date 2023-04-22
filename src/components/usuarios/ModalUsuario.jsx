@@ -12,6 +12,7 @@ const ModalUsuario = ({ Model, show, onHide, onAdd, onEdit }) => {
         userName: '',
         user: '',
         password: '',
+        tipo_usuario: 0
     });
 
     useEffect(() => {
@@ -20,13 +21,15 @@ const ModalUsuario = ({ Model, show, onHide, onAdd, onEdit }) => {
                 id: Model.id,
                 userName: Model.nome,
                 user: Model.usuario,
-                password: Model.senha
+                password: Model.senha,
+                tipo_usuario: Model.tipo_usuario
             });
         }
     }, [Model]);
 
-    const handleHide = () => {
+    const handleHide = async () => {
         onHide();
+        await resetUsuario();
     };
 
     const handleUsuario = (evt, name = null) => {
@@ -45,6 +48,7 @@ const ModalUsuario = ({ Model, show, onHide, onAdd, onEdit }) => {
             userName: '',
             user: '',
             password: '',
+            tipo_usuario: '0'
         })
     }
 
@@ -69,13 +73,13 @@ const ModalUsuario = ({ Model, show, onHide, onAdd, onEdit }) => {
                     <form className="form-control">
 
                         <div className="form-group">
-                            <label htmlFor="userName">Usuário <small className="campo-obrigatorio"></small></label>
+                            <label htmlFor="userName">Nome <small className="campo-obrigatorio"></small></label>
                             <input
                                 id="userName"
                                 name="userName"
                                 className="form-control shadow-none input-custom"
                                 type="text"
-                                placeholder="Nome do Usuário"
+                                placeholder="Nome"
                                 value={usuario.userName}
                                 onChange={handleUsuario}
                             />
@@ -83,14 +87,23 @@ const ModalUsuario = ({ Model, show, onHide, onAdd, onEdit }) => {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="user">Nome <small className="campo-obrigatorio"></small></label>
+                            <label htmlFor="tipo_usuario">Tipo Usuário</label>
+                            <select className="form-control shadow-none input-custom" value={usuario.tipo_usuario} onChange={handleUsuario} name="tipo_usuario" id='tipo_usuario'>
+                                <option value="0">Normal</option>
+                                <option value="1">Administrador</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="user">Usuário <small className="campo-obrigatorio"></small></label>
                             <input
                                 id="user"
                                 name="user"
                                 className="form-control shadow-none input-custom"
                                 type="text"
-                                placeholder="Nome"
+                                placeholder="Usuário"
                                 value={usuario.user}
+                                disabled={usuario.id != null}
                                 onChange={handleUsuario}
 
                             />

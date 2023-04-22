@@ -10,7 +10,6 @@ Prestador.init({
     },
     cpf: {
         type: DataTypes.STRING,
-        unique: true
     },
     nome_mae: {
         type: DataTypes.STRING,
@@ -52,7 +51,7 @@ Prestador.init({
   
           let imgBase64 = "";
   
-          if(Database.dialet === 0){
+          if(Database.dialet === 1){
             imgBase64 = Buffer.from(buffer).toString('base64');
             if(imgBase64) imgBase64 = `data:image/jpeg;base64,${imgBase64}`;
           }
@@ -62,6 +61,14 @@ Prestador.init({
           
           return imgBase64;
         }
+      },
+      ativo: {
+          type: DataTypes.BOOLEAN,
+          defaultValue: true
+      },
+      somente_leitura: {
+          type: DataTypes.BOOLEAN,
+          defaultValue: false
       }
 
 }, {

@@ -1,18 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-
+import Load from "../layout/Load";
 import Select from 'react-select';
 import ModalCreateHabilidade from '../habilidades/ModalCreateHabilidade';
 
 
 const ModalHabilidade = ({ show, onHide, onAdd }) => {
     const modalRef = useRef(null);
-
+    const [load, setLoad] = useState(false);
     const [habilidades, setHabilidades] = useState([]);
     const [habilidadesAdicionadas, setHabilidadesAdicionadas] = useState([]);
 
     const getHabilidades = async () => {
+        setLoad(true);
         const data = await await window.api.Action({ controller: "Habilidade", action: "GetHabilidades" });
+        setLoad(false);
         setHabilidades(data.map(s => { return { value: s.id, label: s.descricao } }))
     }
     const [showModalCreateHabilidade, setShowModalCreateHabilidade] = useState(false);
@@ -79,6 +81,7 @@ const ModalHabilidade = ({ show, onHide, onAdd }) => {
             </Modal>
 
             <ModalCreateHabilidade show={showModalCreateHabilidade} onHide={hideCreateModal} />
+            <Load show={load} />
         </>
     );
 

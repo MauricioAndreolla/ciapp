@@ -1,18 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-
+import Load from "../layout/Load";
 import Select from 'react-select';
 import ModalCreateBeneficio from '../beneficios/ModalCreateBeneficio';
 
 
 const ModalBeneficios = ({ show, onHide, onAdd }) => {
     const modalRef = useRef(null);
-
+    const [load, setLoad] = useState(false);
     const [beneficios, setBeneficios] = useState([]);
     const [beneficiosAdicionadas, setBeneficiosAdicionadas] = useState([]);
 
     const getBeneficios = async () => {
-        const data = await await window.api.Action({ controller: "Beneficio", action: "GetBeneficios" });
+        setLoad(true);
+        const data = await window.api.Action({ controller: "Beneficio", action: "GetBeneficios" });
+        setLoad(false);
         setBeneficios(data.map(s => { return { value: s.id, label: s.nome } }))
     }
     const [showModalCreateBeneficio, setShowModalCreateBeneficio] = useState(false);
@@ -79,6 +81,7 @@ const ModalBeneficios = ({ show, onHide, onAdd }) => {
             </Modal>
 
             <ModalCreateBeneficio show={showModalCreateBeneficio} onHide={hideCreateModal} />
+            <Load show={load} />
         </>
     );
 

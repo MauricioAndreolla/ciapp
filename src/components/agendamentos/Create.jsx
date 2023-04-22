@@ -147,7 +147,11 @@ export default function Create() {
         // }
 
         const postResult = await window.api.Action({ controller: "Agendamentos", action: "Create", params: payload });
-        window.api.Alert({ status: postResult.status, text: postResult.text, title: postResult.status ? "Sucesso!" : "Erro!" });
+        if (!postResult.status) {
+            toast.error(postResult.text, { autoClose: false });
+        } else {
+            toast.success(postResult.text, { autoClose: 3000 });
+        }
 
         if (postResult.status)
             navigate("/agendamentos");

@@ -30,6 +30,7 @@ const createWindow = () => {
             worldSafeExecuteJavaScript: true,
             contextIsolation: true,
         },
+        icon: __dirname + '/favicon.ico'
     })
     // win.maximize();
     win.loadURL(startUrl);

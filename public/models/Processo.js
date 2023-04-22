@@ -6,7 +6,7 @@ class Processo extends Model { }
 
 Processo.init({
     nro_processo: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         allowNull: false
     },
   
@@ -33,7 +33,7 @@ Processo.init({
         type: DataTypes.BOOLEAN
     },
     pena_originaria_regime: {
-        type: DataTypes.INTEGER
+        type: DataTypes.BIGINT
     },
     horas_cumprir: {
         type: DataTypes.DOUBLE
@@ -49,6 +49,14 @@ Processo.init({
     },
     ref_integracao: {
         type: DataTypes.INTEGER,
+    },
+    ativo: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+    },
+    somente_leitura: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 
 }, {

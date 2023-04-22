@@ -74,5 +74,30 @@
     "electron-builder": "^23.6.0",
     "foreman": "^3.0.1",
     "wait-on": "^7.0.1"
+  },
+  "build": {
+    "productName": "CIAPP - Central",
+    "appId": "com.ciapp.central",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "dist/**/*",
+      "build/**/*"
+    ],
+    "win": {
+      "icon": "./public/favicon.ico",
+      "target": "nsis",
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CIAPP - Central",
+      "artifactName": "${productName}-setup-${version}.${ext}"
+    }
   }
 }

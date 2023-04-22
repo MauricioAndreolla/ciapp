@@ -24,7 +24,6 @@ const Main = () => {
             {/* <Sidebar /> */}
             <div className="content">
                 <h1>Modo de aplicação: {modoAplicacao}</h1>
-                <button className="btn btn-danger">aaa</button>
             </div>
         </div>
 

@@ -1,23 +1,28 @@
 import { useNavigate, NavLink, useParams } from 'react-router-dom'
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import Title from "../layout/Title";
 import { Alert, Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
 import Table from '../layout/Table';
 import ModalDescredenciar from './ModalDescredenciar';
+import { AuthenticationContext } from "../context/Authentication";
 import { toast } from 'react-toastify';
-
+import Load from "../layout/Load";
 const Index = () => {
     const navigate = useNavigate();
     const [entidades, setEntidades] = useState({});
+    const [load, setLoad] = useState(false);
+    const { user } = useContext(AuthenticationContext);
 
     useEffect(() => {
         fetchData();
     }, []);
 
     const fetchData = async () => {
+        setLoad(true);
         const data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: null });
+        setLoad(false);
         setEntidades(data);
     }
 
@@ -85,16 +90,22 @@ const Index = () => {
         <>
             <div>
                 <Title title={"Entidades"} />
+                {
+                    user.MODO_APLICACAO === 0 ?
 
-                <div className='menu'>
+                        <div className='menu'>
 
-                    <button className='menu-button button-dark-blue ' onClick={() => { novaEntidade() }}>
-                        <i className='fa-solid fa-plus'></i> Novo
-                    </button>
-                </div>
+                            <button className='menu-button button-dark-blue ' onClick={() => { novaEntidade() }}>
+                                <i className='fa-solid fa-plus'></i> Novo
+                            </button>
+                        </div>
+
+                        : null
+                }
+
             </div>
 
-            <div className='row table-container mt-5'>
+            <div className='row table-container'>
                 <div className='col-md-12'>
                     {entidades.length > 0 ?
                         <div className="tabs-entidades">
@@ -114,19 +125,33 @@ const Index = () => {
                                         <Title title={"Entidades Cadastradas"} />
                                         <div className="row">
                                             <div className="col-md-12 no-padding">
-                                                <Table
-                                                    columns={columnsEntidades}
-                                                    data={entidades}
-                                                    onEdit={editEntidade}
-                                                    onDelete={(e) => e.dt_descredenciamento == null ? ModalDescredenciarShow(e) : Credenciar(e, e.sytle = "teste")}
-                                                />
+
+                                                {
+                                                    user.MODO_APLICACAO === 0 ?
+
+                                                        <Table
+                                                            columns={columnsEntidades}
+                                                            data={entidades}
+                                                            onEdit={editEntidade}
+                                                            onDelete={(e) => e.dt_descredenciamento == null ? ModalDescredenciarShow(e) : Credenciar(e, e.sytle = "teste")}
+                                                        />
+
+                                                        :
+
+                                                        <Table
+                                                            columns={columnsEntidades}
+                                                            data={entidades}
+                                                        />
+
+                                                }
+
                                             </div>
                                         </div>
                                     </Tab.Pane>
                                 </Tab.Content>
                             </Tab.Container>
                         </div>
-                        : "Entidades não encontradas"}
+                        :  <div className="col-md-12 zero-count">Nenhum registro localizado.</div>}
 
                 </div>
             </div>
@@ -138,6 +163,7 @@ const Index = () => {
                 onAdd={Descredenciar}
                 onEdit={Descredenciar}
             />
+            <Load show={load} />
         </>
     );
 }

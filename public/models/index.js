@@ -60,9 +60,11 @@ Endereco.hasOne(Entidade);
 Entidade.belongsTo(Endereco);
 
 Entidade.hasMany(Tarefa);
+Tarefa.belongsTo(Entidade)
 
 Agendamento.hasMany(AtestadoFrequencia);
-AtestadoFrequencia.hasOne(Agendamento);
+AtestadoFrequencia.belongsTo(Agendamento);
+
 
 
 Agendamento.belongsTo(Processo);
@@ -76,7 +78,6 @@ Droga.belongsToMany(FichaMedica, {through: FichaMedicaDrogas});
 module.exports = {
     Agendamento,
     AtestadoFrequencia,
-    Tarefa,
     Usuario,
     Entidade,
     Tarefa,

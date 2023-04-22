@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { toast } from "react-toastify";
-
+import Load from "../layout/Load";
 const ModalHabilidade = ({ show, onHide }) => {
     const modalRef = useRef(null);
 
@@ -10,7 +10,7 @@ const ModalHabilidade = ({ show, onHide }) => {
         observacao: "",
     });
 
-
+    const [load, setLoad] = useState(false);
     const handleHabilidade = (evt, prop_name = null) => {
         const value = evt.value ?? evt.target.value;
 
@@ -31,8 +31,9 @@ const ModalHabilidade = ({ show, onHide }) => {
             toast.error(`Necessário informar uma descrição.`);
             return;
         }
-
+        setLoad(true);
         const data = await await window.api.Action({ controller: "Habilidade", action: "CreateHabilidade", params: habilidade });
+        setLoad(false);
         if(!data.status){
             toast.error(`Erro: ${data.text}`, { autoClose: false });
         }
@@ -84,6 +85,7 @@ const ModalHabilidade = ({ show, onHide }) => {
 
                 </Modal.Footer>
             </Modal>
+            <Load show={load} />
         </>
     );
 

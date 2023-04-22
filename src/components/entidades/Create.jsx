@@ -53,7 +53,9 @@ const Create = () => {
 
     const fetchData = async () => {
         if (id != null) {
+            setLoad(true);
             const data = await window.api.Action({ controller: "Entidades", action: "GetEntidade", params: id });
+            setLoad(false);
             setEntidade(data);
             setEndereco(data.endereco);
            

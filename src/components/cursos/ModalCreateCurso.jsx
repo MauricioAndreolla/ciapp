@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { toast } from "react-toastify";
-
+import Load from "../layout/Load";
 const ModalCreateCurso = ({ show, onHide }) => {
     const modalRef = useRef(null);
 
@@ -11,7 +11,7 @@ const ModalCreateCurso = ({ show, onHide }) => {
         instituicao: ""
     });
 
-
+    const [load, setLoad] = useState(false);
     const handleCurso = (evt, prop_name = null) => {
         const value = evt.value ?? evt.target.value;
 
@@ -32,8 +32,9 @@ const ModalCreateCurso = ({ show, onHide }) => {
             toast.error(`Necessário informar uma descrição.`);
             return;
         }
-
+        setLoad(true);
         const data = await await window.api.Action({ controller: "Curso", action: "CreateCurso", params: curso });
+        setLoad(false);
         if (!data.status) {
             toast.error(`Erro: ${data.text}`, { autoClose: false });
         }
@@ -85,6 +86,7 @@ const ModalCreateCurso = ({ show, onHide }) => {
 
                 </Modal.Footer>
             </Modal>
+            <Load show={load} />
         </>
     );
 

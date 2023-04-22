@@ -7,13 +7,13 @@ import { toast } from 'react-toastify';
 import { Alert, Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
 import Table from '../layout/Table';
 import ModalAgendamento from './ModalAgendamento';
-
+import Load from "../layout/Load";
 
 export default function Index(props) {
     const navigate = useNavigate();
     const [showModalAgendamento, setShowModalAgendamento] = useState(false);
     const [tempID, setempID] = useState(0);
-
+    const [load, setLoad] = useState(false);
 
     const [agendamento, setAgendamento] = useState([]);
     const [agendamentos, setAgendamentos] = useState({
@@ -42,7 +42,9 @@ export default function Index(props) {
 
 
     const fetchData = async () => {
+        setLoad(true);
         const data = await window.api.Action({ controller: "Agendamentos", action: "GetAgendamentos", params: null });
+        setLoad(false);
         setAgendamentos(data);
     }
 
@@ -225,12 +227,13 @@ export default function Index(props) {
                                 </Tab.Content>
                             </Tab.Container>
                         </div>
-                        : "Agendamentos não encontrados"}
+                        : <div className="col-md-12 zero-count">Nenhum registro localizado.</div>}
 
                 </div>
             </div>
 
             <ModalAgendamento Model={modelAgendamento} show={showModalAgendamento} onHide={() => { handleModalAgendamento(false) }} onAdd={createAgendamento} onEdit={editAgendamento} />
+            <Load show={load} />
         </>
 
 
