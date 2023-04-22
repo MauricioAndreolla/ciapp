@@ -79,7 +79,7 @@
     "productName": "CIAPP - Central",
     "appId": "com.ciapp.central",
     "directories": {
-      "output": "dist"
+      "output": "dist/Central"
     },
     "files": [
       "dist/**/*",

@@ -671,8 +671,8 @@ const GetFileCentral = async (payload) => {
             Vara: {
                 id: s.Vara.id,
                 descricao: s.Vara.descricao,
-                ativo: s.ativo,
-                somente_leitura: s.somente_leitura,
+                ativo: s.Vara.ativo,
+                somente_leitura: s.Vara.somente_leitura,
             },
 
             Prestador: {
@@ -687,8 +687,8 @@ const GetFileCentral = async (payload) => {
                 // escolaridade: s.Prestadore.escolaridade,
                 // renda_familiar: s.Prestadore.renda_familiar,
                 telefone1: s.Prestadore.telefone1,
-                ativo: s.ativo,
-                somente_leitura: s.somente_leitura,
+                ativo: s.Prestadore.ativo,
+                somente_leitura: s.Prestadore.somente_leitura,
                 // telefone2: s.Prestadore.telefone2,
                 // religiao: s.Prestadore.religiao,
 
@@ -805,8 +805,8 @@ const GetFileCentral = async (payload) => {
         tipo_instituicao: Entidade.tipo_instituicao,
         dt_descredenciamento: Entidade.dt_descredenciamento,
         observacao: Entidade.observacao,
-        ativo: s.ativo,
-        somente_leitura: s.somente_leitura,
+        ativo: Entidade.ativo,
+        somente_leitura: Entidade.somente_leitura,
         endereco: {
             id: Entidade.Endereco.id,
             rua: Entidade.Endereco.rua,

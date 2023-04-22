@@ -21,7 +21,7 @@ const Index = () => {
 
     const fetchData = async () => {
         setLoad(true);
-        const data = await window.api.Action({ controller: "Processo", action: "GetProcessos", params: null });
+        const data = await window.api.Action({ controller: "Processo", action: "GetProcessos", params: search });
         setLoad(false);
         setProcessos(data);
     }
@@ -75,7 +75,7 @@ const Index = () => {
 
         fetchData();
 
-    }, []);
+    }, [search]);
 
     return (
         <>
