@@ -53,7 +53,7 @@ class Database {
                     acquire: 30000,
                     idle: 10000
                 },
-                storage: `C://ciapp/database/${modo === 0 ? "central" : "entidade"}/${databaseName}.sqlite`,
+                storage: `C://ciapp/database/${modo === 0 ? "central" : "entidade"}/${this.databaseName}.sqlite`,
             });
         }
 
