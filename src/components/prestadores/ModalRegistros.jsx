@@ -5,7 +5,7 @@ import Load from "../layout/Load";
 
 const ModalRegistros = ({ id, show, onHide }) => {
     const modalRef = useRef(null);
-    const [registros, setRegistros] = useState([]);
+    const [registros, setRegistros] = useState(null);
     const [load, setLoad] = useState(false);
 
     const handleHide = () => {
@@ -42,10 +42,14 @@ const ModalRegistros = ({ id, show, onHide }) => {
                     <div className="row">
 
                         {
-                            registros.length === 0 ?
+                            registros === null ?
                                 <div className="col-md-12">
                                     <h5><i className="fas fa-spinner fa-spin"></i> carregando...</h5>
                                 </div>
+                                :
+
+                                registros.length === 0 ?
+                                <div className="col-md-12 zero-count">Nenhum registro localizado.</div>
                                 :
 
                                 <>

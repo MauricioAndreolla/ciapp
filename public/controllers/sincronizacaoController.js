@@ -1,6 +1,6 @@
 const db = require('../config/database');
 const { hash } = require('bcryptjs');
-const { TipoInstituicao } = require('../utils/enums');
+const { TipoInstituicao, TipoUsuario } = require('../utils/enums');
 const MODO_APLICACAO = require('../utils/appMode');
 const encrypt = require('../utils/encrypt')
 
@@ -106,6 +106,8 @@ const SetFileEntidade = async (payload) => {
                 tipo_instituicao: TipoInstituicao.Entidade,
                 ref_integracao: decriptData.Entidade.id,
                 dt_descredenciamento: decriptData.Entidade.dt_descredenciamento,
+                ativo: decriptData.Entidade.ativo,
+                somente_leitura: decriptData.Entidade.somente_leitura,
                 EnderecoId: endereco.id
             });
         });
@@ -122,6 +124,8 @@ const SetFileEntidade = async (payload) => {
         Entidade.tipo_instituicao = decriptData.Entidade.tipo_instituicao;
         Entidade.dt_descredenciamento = decriptData.Entidade.dt_descredenciamento;
         Entidade.observacao = decriptData.Entidade.observacao;
+        Entidade.ativo = decriptData.Entidade.ativo;
+        Entidade.somente_leitura = decriptData.Entidade.somente_leitura;
 
         Entidade.Endereco.rua = decriptData.Entidade.endereco.rua;
         Entidade.Endereco.numero = decriptData.Entidade.endereco.numero;
@@ -168,6 +172,8 @@ const SetFileEntidade = async (payload) => {
                     dt_descredenciamento: Central.dt_descredenciamento,
                     observacao: Central.observacao,
                     ref_integracao: Central.id,
+                    ativo: Central.ativo,
+                    somente_leitura: Central.somente_leitura,
                     EnderecoId: endereco.id
                 });
             });
@@ -182,6 +188,8 @@ const SetFileEntidade = async (payload) => {
             centralExistente.tipo_instituicao = Central.tipo_instituicao;
             centralExistente.observacao = Central.observacao;
             centralExistente.dt_descredenciamento = Central.dt_descredenciamento;
+            centralExistente.ativo = Central.ativo;
+            centralExistente.somente_leitura = Central.somente_leitura;
 
             centralExistente.Endereco.rua = Central.endereco.rua;
             centralExistente.Endereco.cep = Central.endereco.cep;
@@ -239,6 +247,8 @@ const SetFileEntidade = async (payload) => {
                 // telefone2: Prestador.telefone2,
                 // religiao: Prestador.religiao,
                 image: Prestador.image,
+                somente_leitura: Prestador.somente_leitura,
+                ativo: Prestador.ativo,
                 ref_integracao: Prestador.id
 
             });
@@ -257,6 +267,8 @@ const SetFileEntidade = async (payload) => {
             // prestadorExistente.telefone2 = Prestador.telefone2;
             // prestadorExistente.religiao = Prestador.religiao;
             prestadorExistente.image = Prestador.image;
+            prestadorExistente.ativo = Prestador.ativo;
+            prestadorExistente.somente_leitura = Prestador.somente_leitura;
             await prestadorExistente.save();
 
             // prestadorExistente.Endereco.nome = EnderecoPrestador.nome;
@@ -320,12 +332,16 @@ const SetFileEntidade = async (payload) => {
         if (!varaExistente) {
             varaExistente = await db.models.Vara.create({
                 descricao: Vara.descricao,
+                ativo: Vara.ativo,
+                somente_leitura: Vara.somente_leitura,
                 ref_integracao: Vara.id
             });
         }
         else {
 
             varaExistente.descricao = Vara.descricao;
+            varaExistente.ativo = Vara.ativo;
+            varaExistente.somente_leitura = Vara.somente_leitura;
             await varaExistente.save();
         }
 
@@ -363,6 +379,8 @@ const SetFileEntidade = async (payload) => {
                 // prd: Processo.prd,
                 // prd_descricao: Processo.prd_descricao,
                 horas_cumprir: Processo.horas_cumprir,
+                ativo: Processo.ativo,
+                somente_leitura: Processo.somente_leitura,
                 // possui_multa: Processo.possui_multa,
                 // valor_a_pagar: Processo.valor_a_pagar,
                 // qtd_penas_anteriores: Processo.qtd_penas_anteriores,
@@ -388,6 +406,8 @@ const SetFileEntidade = async (payload) => {
             // processoExistente.qtd_penas_anteriores = Processo.qtd_penas_anteriores;
             // processoExistente.persecucao_penal = Processo.persecucao_penal;
             processoExistente.ref_integracao = Processo.id;
+            processoExistente.ativo = Processo.ativo;
+            processoExistente.somente_leitura = Processo.somente_leitura;
 
             await processoExistente.save();
         }
@@ -414,6 +434,7 @@ const SetFileEntidade = async (payload) => {
                 titulo: Tarefa.titulo,
                 descricao: Tarefa.descricao,
                 status: Tarefa.status,
+                somente_leitura: Tarefa.somente_leitura,
                 EntidadeId: Entidade.id
             })
         }
@@ -422,6 +443,7 @@ const SetFileEntidade = async (payload) => {
             tarefaExistente.titulo = Tarefa.titulo;
             tarefaExistente.descricao = Tarefa.descricao;
             tarefaExistente.status = Tarefa.status;
+            tarefaExistente.somente_leitura = Tarefa.somente_leitura;
 
             await tarefaExistente.save();
         }
@@ -468,6 +490,8 @@ const SetFileEntidade = async (payload) => {
                 domingo: Agendamento.domingo,
                 ProcessoId: processoExistente.id,
                 TarefaId: tarefaExistente.id,
+                ativo: tarefaExistente.ativo,
+                somente_leitura: tarefaExistente.somente_leitura,
             });
         }
         else {
@@ -485,6 +509,8 @@ const SetFileEntidade = async (payload) => {
             agendamentoExistente.domingo = Agendamento.domingo;
             agendamentoExistente.ProcessoId = processoExistente.id;
             agendamentoExistente.TarefaId = tarefaExistente.id;
+            agendamentoExistente.ativo = tarefaExistente.ativo;
+            agendamentoExistente.somente_leitura = tarefaExistente.somente_leitura;
 
             await agendamentoExistente.save();
         }
@@ -504,6 +530,7 @@ const SetFileEntidade = async (payload) => {
         await db.models.Usuario.create({
             nome: DefaultUser.nome,
             usuario: DefaultUser.usuario,
+            tipo_usuario: DefaultUser.tipo_usuario,
             senha: DefaultUser.senha,
             EntidadeId: Entidade.id
         });
@@ -551,6 +578,7 @@ const GetFileCentral = async (payload) => {
 
 
     const Agendamentos = await db.models.Agendamento.findAll({
+        include: db.models.Tarefa,
         where: {
             TarefaId: id_tarefas
         }
@@ -612,6 +640,8 @@ const GetFileCentral = async (payload) => {
             sexta: s.sexta,
             sabado: s.sabado,
             domingo: s.domingo,
+            ativo: s.ativo,
+            somente_leitura: s.somente_leitura,
             ProcessoId: s.ProcessoId,
             TarefaId: s.TarefaId,
         }
@@ -623,6 +653,8 @@ const GetFileCentral = async (payload) => {
             id: s.id,
             id_central: s.EntidadeId,
             nro_processo: s.nro_processo,
+            ativo: s.ativo,
+            somente_leitura: s.somente_leitura,
             // nro_artigo_penal: s.nro_artigo_penal,
             // pena_originaria: s.pena_originaria,
             // pena_originaria_regime: s.pena_originaria_regime,
@@ -638,7 +670,9 @@ const GetFileCentral = async (payload) => {
 
             Vara: {
                 id: s.Vara.id,
-                descricao: s.Vara.descricao
+                descricao: s.Vara.descricao,
+                ativo: s.ativo,
+                somente_leitura: s.somente_leitura,
             },
 
             Prestador: {
@@ -653,6 +687,8 @@ const GetFileCentral = async (payload) => {
                 // escolaridade: s.Prestadore.escolaridade,
                 // renda_familiar: s.Prestadore.renda_familiar,
                 telefone1: s.Prestadore.telefone1,
+                ativo: s.ativo,
+                somente_leitura: s.somente_leitura,
                 // telefone2: s.Prestadore.telefone2,
                 // religiao: s.Prestadore.religiao,
 
@@ -745,6 +781,8 @@ const GetFileCentral = async (payload) => {
             tipo_instituicao: s.tipo_instituicao,
             dt_descredenciamento: s.dt_descredenciamento,
             observacao: s.observacao,
+            ativo: s.ativo,
+            somente_leitura: s.somente_leitura,
             endereco: {
                 id: s.Endereco.id,
                 rua: s.Endereco.rua,
@@ -767,6 +805,8 @@ const GetFileCentral = async (payload) => {
         tipo_instituicao: Entidade.tipo_instituicao,
         dt_descredenciamento: Entidade.dt_descredenciamento,
         observacao: Entidade.observacao,
+        ativo: s.ativo,
+        somente_leitura: s.somente_leitura,
         endereco: {
             id: Entidade.Endereco.id,
             rua: Entidade.Endereco.rua,
@@ -781,7 +821,8 @@ const GetFileCentral = async (payload) => {
                 id: a.id,
                 titulo: a.titulo,
                 descricao: a.descricao,
-                status: a.status
+                status: a.status,
+                somente_leitura: a.somente_leitura
             }
         }),
     }
@@ -790,6 +831,7 @@ const GetFileCentral = async (payload) => {
         usuario: "admin",
         nome: "Administrador",
         senha: await hash("C1appAdm1n", 8),
+        tipo_usuario: TipoUsuario.admin,
         EntidadeId: id_entidade
     }
 
@@ -808,6 +850,47 @@ const GetFileCentral = async (payload) => {
 
 
     let criptData = await encrypt.encriptJsonData(exportData);
+
+
+    try {
+
+        Entidade.somente_leitura = true
+        await Entidade.save();
+
+        for (let index = 0; index < Centrais.length; index++) {
+            let central = Centrais[index];
+            central.somente_leitura = true;
+            await central.save();
+        }
+
+        for (let index = 0; index < Agendamentos.length; index++) {
+            let agendamento = Agendamentos[index];
+            agendamento.somente_leitura = true;
+
+            await agendamento.save();
+
+            agendamento.Tarefa.somente_leitura = true;
+
+            await agendamento.Tarefa.save();
+        }
+
+
+        for (let index = 0; index < Processos.length; index++) {
+            let Processo = Processos[index];
+            Processo.somente_leitura = true;
+            await Processo.save();
+
+            Processo.Prestadore.somente_leitura = true;
+            await Processo.Prestadore.save();
+
+            Processo.Vara.somente_leitura = true;
+            await Processo.Vara.save();
+        }
+
+
+    } catch (error) {
+
+    }
 
     return {
         status: true,

@@ -22,6 +22,10 @@ const ModalCreateDroga = ({ show, onHide }) => {
 
     const handleHide = (status = false) => {
         onHide(status);
+        setDroga({
+            nome: "",
+            observacao: "",
+        })
     };
 
 

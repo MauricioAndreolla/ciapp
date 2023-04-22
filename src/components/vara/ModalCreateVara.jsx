@@ -10,6 +10,7 @@ const ModalCreateVara = ({ show, onHide, onAdd }) => {
 
     const handleHide = (status = false) => {
         onHide(status);
+        SetDescricao('');
     };
 
     const handleAdd = async () => {

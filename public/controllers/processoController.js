@@ -25,6 +25,23 @@ const checkDadosOrigatorios = (payload) => {
 
 module.exports = {
 
+    async Delete(id) {
+
+        let Processo = await db.models.Processo.findByPk(id, {
+            include: db.models.Agendamento
+        });
+        if (!Processo) return { status: false, text: 'Processo não localizado.' };
+
+        if (Processo.Agendamentos.length > 0) return { status: false, text: `O Processo ${Processo.nro_processo} possuí Agendamentos associados e não pode ser deletado` };
+
+        await Processo.destroy();
+
+        return { status: true, text: `Processo ${Processo.nome} deletado!` };
+
+
+    },
+
+
     async GetProcesso(id) {
         const Processo = await db.models.Processo.findByPk(id, {
             include: [
@@ -51,6 +68,7 @@ module.exports = {
             prd_descricao: Processo.prd_descricao,
             horas_cumprir: Processo.horas_cumprir,
             possui_multa: Processo.possui_multa,
+            somente_leitura: Processo.somente_leitura,
             valor_a_pagar: formatCurrency(Processo.valor_a_pagar),
             qtd_penas_anteriores: Processo.qtd_penas_anteriores,
             nome_prestador: Processo.Prestadore.nome,
@@ -102,6 +120,7 @@ module.exports = {
                 nro_processo: s.nro_processo,
                 prestador: s.Prestadore.nome,
                 horas_cumprir: s.horas_cumprir,
+                somente_leitura: s.somente_leitura,
                 horas_cumpridas:
 
                     s.Agendamentos.map(s => {

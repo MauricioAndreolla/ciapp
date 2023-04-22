@@ -3,6 +3,8 @@ import { useState, useEffect, useContext } from "react";
 import Title from "../layout/Title";
 import { AuthenticationContext } from "../context/Authentication";
 import Load from "../layout/Load";
+import { confirmAlert } from 'react-confirm-alert';
+import { toast } from "react-toastify";
 const Index = () => {
     const { user } = useContext(AuthenticationContext);
     const [processos, setProcessos] = useState([]);
@@ -34,6 +36,37 @@ const Index = () => {
         });
 
 
+    }
+
+    const Deletar = (id, nro_processo) => {
+        confirmAlert({
+            title: 'Confirmação',
+            message: `Deseja deletar o processo ${nro_processo} ?`,
+            buttons: [
+                {
+                    label: 'Sim',
+                    onClick: async () => {
+                        setLoad(true);
+                        const postResult = await window.api.Action({ controller: "Processo", action: "Delete", params: id });
+                        setLoad(false);
+
+                        if (postResult.status) {
+                            toast.success(postResult.text);
+                            return fetchData()
+                        }
+                        else
+                            toast.error(postResult.text, { autoClose: false });
+
+                    }
+                },
+                {
+                    className: 'btn-blue',
+                    label: 'Não',
+                    onClick: () => {
+                    }
+                }
+            ]
+        });
     }
 
 
@@ -142,6 +175,10 @@ const Index = () => {
 
                                                                 <>
                                                                     <li> <NavLink className="dropdown-item" id="edit" to={`/processos/edit/${r.id}`}> <i className='fa fa-edit'></i> Editar</NavLink></li>
+                                                                    {!r.somente_leitura ?
+                                                                        <li> <a className="dropdown-item btn" onClick={() => { Deletar(r.id, r.nro_processo) }} to="#"><i className="fa fa-trash"></i> Deletar</a></li>
+                                                                        : null
+                                                                    }
                                                                 </>
 
                                                                 :

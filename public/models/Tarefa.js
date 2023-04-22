@@ -18,10 +18,6 @@ Tarefa.init({
   descricao: { allowNull: true, type: DataTypes.TEXT },
   status: { allowNull: false, type: DataTypes.BOOLEAN },
   ref_integracao: { allowNull: true, type: DataTypes.INTEGER },
-  ativo: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
-  },
   somente_leitura: {
       type: DataTypes.BOOLEAN,
       defaultValue: false

@@ -22,6 +22,10 @@ const ModalBeneficio = ({ show, onHide }) => {
 
     const handleHide = (status = false) => {
         onHide(status);
+        setBeneficio({
+            nome: "",
+            observacao: "",
+        })
     };
 
 

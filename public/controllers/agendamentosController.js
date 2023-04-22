@@ -44,7 +44,7 @@ module.exports = {
 
             await db.models.Agendamento.bulkCreate(agendamentos).finally(() => {
                 db.sequelize.close();
-              });
+            });
             // await db.sequelize.close();
         } catch (error) {
             return { status: false, text: `Erro interno no servidor. ${error}` };
@@ -77,7 +77,7 @@ module.exports = {
                 let Agendamento = await db.models.Agendamento.findByPk(payload.id);
 
                 Agendamento.data_inicial = payload.agendamento_dia_inicial,
-                Agendamento.data_final = payload.agendamento_dia_final,
+                    Agendamento.data_final = payload.agendamento_dia_final,
                     Agendamento.horario_inicio = payload.agendamento_horario_inicio,
                     Agendamento.horario_fim = payload.agendamento_horario_fim,
                     Agendamento.segunda = payload.agendamento_dias_semana.filter(s => s.value === 0).length > 0,
@@ -91,7 +91,7 @@ module.exports = {
                     Agendamento.TarefaId = payload.tarefa.id
                 await Agendamento.save().finally(() => {
                     db.sequelize.close();
-                  });
+                });
                 // await db.sequelize.close();
             });
 
@@ -113,7 +113,7 @@ module.exports = {
             Agendamento = await db.models.Agendamento.findByPk(id);
             await Agendamento.destroy().finally(() => {
                 db.sequelize.close();
-              });
+            });
             // await db.sequelize.close();
         } catch (error) {
             return { status: false, text: "Erro interno no servidor." };
@@ -136,9 +136,9 @@ module.exports = {
 
 
         const data = await db.models.Agendamento.findAll({
-            // where: {
-            //     ProcessoId: where,
-            // },
+            where: {
+                ativo: true,
+            },
             include: [
                 {
                     model: db.models.Processo,
@@ -146,14 +146,19 @@ module.exports = {
                         model: db.models.Entidade,
                     }
                 },
-                { model: db.models.Tarefa }
+                {
+                    model: db.models.Tarefa,
+                    where: {
+                        status: true
+                    }
+                }
             ],
         }).finally(() => {
             db.sequelize.close();
-          });
+        });
 
 
-        var mappedValues =  data.map(s => {
+        var mappedValues = data.map(s => {
             let agendamentos = {
                 id: s.id,
                 agendamento_horario_inicio: s.horario_inicio,
@@ -231,6 +236,9 @@ module.exports = {
         const literalSQL = db.dialet === 0 ? 'SUM(TIME_TO_SEC(TIMEDIFF(`AtestadoFrequencia`.`dt_saida`, `AtestadoFrequencia`.`dt_entrada`))/3600)' : "SUM(strftime('%s', AtestadoFrequencia.dt_saida) - strftime('%s', AtestadoFrequencia.dt_entrada))/3600";
 
         const data = await db.models.Agendamento.findAll({
+            where: {
+                ativo: true
+            },
             attributes: [
                 'id',
                 'horario_inicio',
@@ -255,7 +263,12 @@ module.exports = {
                         { model: db.models.Vara },
                     ]
                 },
-                { model: db.models.Tarefa },
+                {
+                    model: db.models.Tarefa,
+                    where: {
+                        status: true
+                    }
+                },
                 { model: db.models.AtestadoFrequencia }
             ],
             group: [
@@ -285,9 +298,9 @@ module.exports = {
             }
         }).finally(() => {
             db.sequelize.close();
-          });
+        });
 
-    
+
 
         var mappedValues = data.map(s => {
             let agendamentos = {
@@ -372,7 +385,7 @@ module.exports = {
                 AgendamentoId: payload.id_agendamento
             }).finally(() => {
                 db.sequelize.close();
-              });
+            });
 
             // await db.sequelize.close();
         } catch (error) {

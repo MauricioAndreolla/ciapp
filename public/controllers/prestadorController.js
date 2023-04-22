@@ -38,6 +38,23 @@ const checkDadosOrigatorios = (payload) => {
 }
 module.exports = {
 
+
+    async Delete(id) {
+
+        let Prestador = await db.models.Prestador.findByPk(id, {
+            include: db.models.Processo
+        });
+        if (!Prestador) return { status: false, text: 'Prestador não localizado.' };
+
+        if (Prestador.Processos.length > 0) return { status: false, text: `O Prestador ${Prestador.nome} possuí Processos associados e não pode ser deletado` };
+
+        await Prestador.destroy();
+
+        return { status: true, text: `Prestador ${Prestador.nome} deletado!` };
+
+
+    },
+
     async GetPrestadores(search) {
 
         let where = {};
@@ -79,6 +96,7 @@ module.exports = {
                 id: s.id,
                 cpf: s.cpf,
                 nome: s.nome,
+                somente_leitura: s.somente_leitura,
                 nro_processo: s.Processos.length > 0 ? s.Processos[s.Processos.length - 1].nro_processo : null,
                 horas_cumprir: s.Processos.length > 0 ? s.Processos[s.Processos.length - 1].horas_cumprir : 0,
                 horas_cumpridas: s.Processos.length > 0 ? s.Processos[s.Processos.length - 1].Agendamentos.map(s => {

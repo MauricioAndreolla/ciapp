@@ -5,7 +5,8 @@ import { AuthenticationContext } from "../context/Authentication";
 import ModalDetalhes from './ModalDetalhes';
 import ModalRegistro from './ModalRegistros';
 import Load from "../layout/Load";
-
+import { confirmAlert } from 'react-confirm-alert';
+import { toast } from "react-toastify";
 
 const Index = () => {
     const { user } = useContext(AuthenticationContext);
@@ -43,6 +44,37 @@ const Index = () => {
     const Registros = (id) => {
         setIdRegistro(id);
         handleModalRegistro(true);
+    }
+
+    const Deletar = (id, nome) => {
+        confirmAlert({
+            title: 'Confirmação',
+            message: `Deseja deletar o prestador ${nome} ?`,
+            buttons: [
+                {
+                    label: 'Sim',
+                    onClick: async () => {
+                        setLoad(true);
+                        const postResult = await window.api.Action({ controller: "Prestador", action: "Delete", params: id });
+                        setLoad(false);
+
+                        if (postResult.status) {
+                            toast.success(postResult.text);
+                            return fetchData()
+                        }
+                        else
+                            toast.error(postResult.text, { autoClose: false });
+
+                    }
+                },
+                {
+                    className: 'btn-blue',
+                    label: 'Não',
+                    onClick: () => {
+                    }
+                }
+            ]
+        });
     }
 
     const fetchData = async () => {
@@ -211,6 +243,13 @@ const Index = () => {
                                                                 <>
                                                                     <li> <NavLink className="dropdown-item" id="edit" to={`/prestadores/edit/${r.id}`}> <i className='fa fa-edit'></i> Editar</NavLink></li>
                                                                     <li> <NavLink className="dropdown-item" id="novoProcesso" to={`/processos/create/${r.id}`}> <i className='fa fa-plus'></i> Novo Processo</NavLink></li>
+
+                                                                    {!r.somente_leitura ?
+                                                                        <li> <a className="dropdown-item btn" onClick={() => { Deletar(r.id, r.nome) }} to="#"><i className="fa fa-trash"></i> Deletar</a></li>
+                                                                        : null
+                                                                    }
+
+
                                                                 </>
                                                                 :
                                                                 <>

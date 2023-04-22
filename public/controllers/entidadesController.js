@@ -211,6 +211,7 @@ module.exports = {
                 tipo_instituicao: TipoInstituicao.Entidade,
                 dt_descredenciamento: s.dt_descredenciamento,
                 motivo: s.observacao,
+                somente_leitura: s.somente_leitura,
                 endereco: {
                     id: s.Endereco.id,
                     rua: s.Endereco.rua,

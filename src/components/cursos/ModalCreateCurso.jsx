@@ -23,6 +23,11 @@ const ModalCreateCurso = ({ show, onHide }) => {
 
     const handleHide = (status = false) => {
         onHide(status);
+        setCurso({
+            descricao: "",
+            observacao: "",
+            instituicao: ""
+        });
     };
 
 

@@ -109,22 +109,9 @@ const Index = () => {
                 <div className='col-md-12'>
                     {entidades.length > 0 ?
                         <div className="tabs-entidades">
-                            <Tab.Container defaultActiveKey="entidades">
-                                <Nav variant="pills">
-                                    <Nav.Item>
-                                        <Nav.Link eventKey="entidades">
-                                            Entidades
-                                        </Nav.Link>
-                                    </Nav.Item>
-                                </Nav>
-
-                                <Tab.Content>
-
-                                    <Tab.Pane eventKey="entidades">
-
-                                        <Title title={"Entidades Cadastradas"} />
+                          <Title title={"Entidades Cadastradas"} />
                                         <div className="row">
-                                            <div className="col-md-12 no-padding">
+                                            <div className="col-md-12">
 
                                                 {
                                                     user.MODO_APLICACAO === 0 ?
@@ -147,9 +134,6 @@ const Index = () => {
 
                                             </div>
                                         </div>
-                                    </Tab.Pane>
-                                </Tab.Content>
-                            </Tab.Container>
                         </div>
                         :  <div className="col-md-12 zero-count">Nenhum registro localizado.</div>}
 

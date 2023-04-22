@@ -7,7 +7,7 @@ const { modo } = require('../utils/appMode');
 class Database {
 
     static dialet = null;
-    static databaseName = 'ciapp';
+    static databaseName = `ciapp${modo === 0 ? "Central" : "Entidade"}`;
     static username = "";
     static password = "";
     static host = "";
@@ -37,7 +37,7 @@ class Database {
                 dialect: 'mysql',
                 createDatabase: true,
                 pool: {
-                    max: 10, // remove o limite de conexões simultâneas
+                    max: 100, 
                     min: 0,
                     acquire: 30000,
                     idle: 10000
@@ -47,7 +47,13 @@ class Database {
         else if (this.dialet === 1) {
             this.sequelize = new Sequelize({
                 dialect: 'sqlite',
-                storage: `C://ciapp/database/${modo === 0 ? "central" : "entidade"}/ciapp.sqlite`,
+                pool: {
+                    max: 100, 
+                    min: 0,
+                    acquire: 30000,
+                    idle: 10000
+                },
+                storage: `C://ciapp/database/${modo === 0 ? "central" : "entidade"}/${databaseName}.sqlite`,
             });
         }
 

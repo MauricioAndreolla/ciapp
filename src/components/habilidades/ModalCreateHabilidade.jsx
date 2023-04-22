@@ -22,6 +22,10 @@ const ModalHabilidade = ({ show, onHide }) => {
 
     const handleHide = (status = false) => {
         onHide(status);
+        setHabilidade({
+            descricao: "",
+            observacao: "",
+        })
     };
 
 

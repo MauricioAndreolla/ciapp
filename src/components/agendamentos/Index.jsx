@@ -195,26 +195,13 @@ export default function Index(props) {
                 </button>
             </div>
 
-            <div className='row table-container mt-5'>
+            <div className='row table-container'>
                 <div className='col-md-12'>
                     {agendamentos.length > 0 ?
-                        <div className="tabs-agendamentos">
-                            <Tab.Container defaultActiveKey="agendamentos">
-                                <Nav variant="pills">
-                                    <Nav.Item>
-                                        <Nav.Link eventKey="agendamentos">
-                                            Agendamentos
-                                        </Nav.Link>
-                                    </Nav.Item>
-                                </Nav>
-
-                                <Tab.Content>
-
-                                    <Tab.Pane eventKey="agendamentos">
-
-                                        <Title title={"Agendamentos Cadastrados"} />
+                        <div>
+                               <Title title={"Agendamentos Cadastrados"} />
                                         <div className="row">
-                                            <div className="col-md-12 no-padding">
+                                            <div className="col-md-12">
                                                 <Table
                                                     columns={columnsAgendamento}
                                                     data={agendamentos}
@@ -223,9 +210,6 @@ export default function Index(props) {
                                                 />
                                             </div>
                                         </div>
-                                    </Tab.Pane>
-                                </Tab.Content>
-                            </Tab.Container>
                         </div>
                         : <div className="col-md-12 zero-count">Nenhum registro localizado.</div>}
 
