@@ -179,6 +179,7 @@ const Create = () => {
         return `${cnpjLimpo.slice(0, 2)}.${cnpjLimpo.slice(2, 5)}.${cnpjLimpo.slice(5, 8)}/${cnpjLimpo.slice(8, 12)}-${cnpjLimpo.slice(12)}`;
     }
 
+   
     const handleEntidade = (evt, prop_name = null) => {
         let value = evt.value ?? evt.target.value;
 
@@ -432,8 +433,7 @@ const Create = () => {
                         <div className="form-check form-check-inline">
 
                             <input className="form-check-input" type="radio" name="tipoInstituicao" id="entidade"  defaultChecked={true} 
-                            value={1}
-                            checked={ entidade.tipoInstituicao  === 1 } 
+                            value="1"
                             onChange={handleEntidade}
                             />
                             <label className="form-check-label" htmlFor="entidade">
@@ -443,8 +443,7 @@ const Create = () => {
 
                         <div className="form-check form-check-inline">
 
-                            <input className="form-check-input" type="radio" value={0} name="tipoInstituicao" id="central"
-                            checked={ entidade.tipoInstituicao  === 0 }
+                            <input className="form-check-input" type="radio" value="0" name="tipoInstituicao" id="central"
                             onChange={handleEntidade}
                             />
                             <label className="form-check-label" htmlFor="central">

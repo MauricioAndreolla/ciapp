@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 // import Label from "../../shared/Label";
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+
 import Title from "../layout/Title";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
@@ -14,6 +17,7 @@ import Load from "../layout/Load";
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import 'moment-timezone';
+
 
 export default function AgendamentosEntidades(props) {
     moment.locale('pt-br');
@@ -62,7 +66,7 @@ export default function AgendamentosEntidades(props) {
                     ].filter(s => s !== null)
                 }
             })
-           
+
             var repeatedEvents = await generateRepeatedEvents(mappedData);
 
 
@@ -98,48 +102,48 @@ export default function AgendamentosEntidades(props) {
 
     const generateRepeatedEvents = (events) => {
         const repeatedEvents = [];
-      
+
         events.forEach(event => {
-          const startTime = moment(event.horario_inicial, 'HH:mm');
-          const endTime = moment(event.horario_final, 'HH:mm');
-      
-          const startDate = moment(event.data_inicio);
-          let endDate;
-          if (event.data_fim) {
-            endDate = moment(event.data_fim);
-          } else {
-            endDate = moment().add(10, 'years');
-          }
-      
-          let date = startDate.clone();
-          while (date.isSameOrBefore(endDate, 'day')) {
-            if (event.dias_semana.includes(date.day())) {
-              const start = date.clone().set({
-                hour: startTime.get('hour'),
-                minute: startTime.get('minute')
-              });
-      
-              const end = date.clone().set({
-                hour: endTime.get('hour'),
-                minute: endTime.get('minute')
-              });
-      
-              const newEvent = {
-                title: `${event.nome_prestador} \n - ${event.titulo_tarefa}`,
-                start: new Date(Date.parse(start)),
-                end: new Date(Date.parse(end)),
-                allDay: false
-              };
-      
-              repeatedEvents.push(newEvent);
+            const startTime = moment(event.horario_inicial, 'HH:mm');
+            const endTime = moment(event.horario_final, 'HH:mm');
+
+            const startDate = moment(event.data_inicio);
+            let endDate;
+            if (event.data_fim) {
+                endDate = moment(event.data_fim);
+            } else {
+                endDate = moment().add(10, 'years');
             }
-      
-            date.add(1, 'day');
-          }
+
+            let date = startDate.clone();
+            while (date.isSameOrBefore(endDate, 'day')) {
+                if (event.dias_semana.includes(date.day())) {
+                    const start = date.clone().set({
+                        hour: startTime.get('hour'),
+                        minute: startTime.get('minute')
+                    });
+
+                    const end = date.clone().set({
+                        hour: endTime.get('hour'),
+                        minute: endTime.get('minute')
+                    });
+
+                    const newEvent = {
+                        title: `${event.nome_prestador} \n - ${event.titulo_tarefa}`,
+                        start: new Date(Date.parse(start)),
+                        end: new Date(Date.parse(end)),
+                        allDay: false
+                    };
+
+                    repeatedEvents.push(newEvent);
+                }
+
+                date.add(1, 'day');
+            }
         });
-      
+
         return repeatedEvents;
-      };
+    };
 
 
     const navigate = useNavigate();
@@ -216,18 +220,92 @@ export default function AgendamentosEntidades(props) {
         const [year, month, day] = agendamento_dia_inicial.split('-');
         return `${day}/${month}/${year}`;
     }
-    const formato = {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    };
 
+    const GerarListagem = async (r) => {
+        const search = {
+            agendamento: r.id,
+        }
+        
+        const data = await window.api.Action({ controller: "Agendamentos", action: "GetAgendamentosEntidade", params: search });
+        const atestados = data.map((e) => {
+            return ({
+                "Número Processo": e.processo.nro_processo,
+                "Prestador": e.processo.nome_prestador,
+                "Tarefa": e.tarefa.titulo,
+                "Entidade": e.entidade.nome,
+                "Hora de entrada": e.atestadoFrequencia[0].dt_entrada,
+                "Hora de saída": e.atestadoFrequencia[0].dt_saida,
+                "Horas Cumpridas": e.processo.horas_cumpridas,
+                "Observação": e.atestadoFrequencia[0].observacao,
+            })
+
+        });
+
+        pdfMake.vfs = pdfFonts.pdfMake.vfs;
+        var dd = {
+            content: [
+                { text: `Relatório de comparecimento`, style: 'header1' },
+                { text: `Nome: ${atestados[0].Prestador ?? 'Prestador'}`, style: 'header2' },
+                { text: `Data: ${new Date().toLocaleDateString('pt-BR')}`, style: 'header3' },
+                table(atestados,
+                    ['Número Processo', 'Prestador', 'Tarefa', 'Entidade', 'Hora de entrada', 'Hora de saída', 'Horas Cumpridas', 'Observação'],
+                )
+            ],
+            styles: {
+                header1: {
+                    fontSize: 22,
+                    lineHeight: 1,
+                    bold: true
+                },
+                header2: {
+                    fontSize: 16,
+                    lineHeight: 1
+                },
+                header3: {
+                    fontSize: 10,
+                    lineHeight: 2
+                },
+                tableFont: {
+                    fontSize: 8
+                }
+            }
+        }
+        pdfMake.createPdf(dd).open({}, window.open('', '_blank'));
+
+    }
+
+    function table(data, columns) {
+
+        return {
+            table: {
+                headerRows: 1,
+                body: buildTableBody(data, columns)
+            }
+        };
+
+    }
+
+    function buildTableBody(data, columns) {
+        let body = [];
+
+        body.push(columns);
+
+        data.forEach(function (row) {
+            let dataRow = [];
+
+            columns.forEach(function (columns) {
+                let colData = row[columns] !== undefined ? row[columns] : "";
+                dataRow.push(String(colData))
+            })
+
+            body.push(dataRow);
+        });
+
+        return body;
+    }
 
 
     const localizer = momentLocalizer(moment);
-
-
-
     return (
 
         <>
@@ -235,113 +313,113 @@ export default function AgendamentosEntidades(props) {
 
 
 
-                <Tab.Container defaultActiveKey="agendamentos">
-                    <Nav variant="pills">
+            <Tab.Container defaultActiveKey="agendamentos">
+                <Nav variant="pills">
 
-                        <Nav.Item>
-                            <Nav.Link eventKey="agendamentos">
-                                <i className="fas fa-address-card"></i>  Lista Agendamentos
-                            </Nav.Link>
-                        </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link eventKey="agendamentos">
+                            <i className="fas fa-address-card"></i>  Lista Agendamentos
+                        </Nav.Link>
+                    </Nav.Item>
 
-                        <Nav.Item>
-                            <Nav.Link eventKey="calendario">
-                                <i className="fas fa-calendar"></i>  Calendário
-                            </Nav.Link>
-                        </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link eventKey="calendario">
+                            <i className="fas fa-calendar"></i>  Calendário
+                        </Nav.Link>
+                    </Nav.Item>
 
-                    </Nav>
-
-
-                    <Tab.Content>
-
-                        <Tab.Pane eventKey="agendamentos">
-                            <div className="row">
-                                <div className="col-md-12 no-padding">
-
-                                    {
-                                        agendamentos.length === 0 ?
-                                            <div className="col-md-12 zero-count">Nenhum registro localizado.</div>
-
-                                            :
-
-                                            <div className='row table-container mt-5'>
-                                                <div className='col-md-12'>
-                                                    <table className='table table-bordered table-hover'>
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Processo</th>
-                                                                <th>Prestador</th>
-                                                                <th>Data de Inicio</th>
-                                                                <th>Data de Fim</th>
-                                                                <th>Dias da Semana</th>
-                                                                <th>Hora inicial planejada</th>
-                                                                <th>Hora final planejada</th>
-                                                                <th>Tarefa</th>
-                                                                <th></th>
-
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {
-
-                                                                agendamentos.map(r => (
-
-                                                                    <tr key={r.id}>
-                                                                        <td>{r.processo.nro_processo}</td>
-                                                                        <td>{r.processo.nome_prestador}</td>
-                                                                        <td>{formatDate(r.agendamento_dia_inicial)}</td>
-                                                                        <td>{ r.agendamento_dia_final ? formatDate(r.agendamento_dia_final) : "--"}</td>
+                </Nav>
 
 
-                                                                        <td>
-                                                                            {r.agendamento_dias_semana.domingo == true ? <>Domingo </> : null}
-                                                                            {r.agendamento_dias_semana.segunda == true ? <>Segunda </> : null}
-                                                                            {r.agendamento_dias_semana.terca == true ? <>Terça </> : null}
-                                                                            {r.agendamento_dias_semana.quarta == true ? <>Quarta </> : null}
-                                                                            {r.agendamento_dias_semana.quinta == true ? <>Quinta </> : null}
-                                                                            {r.agendamento_dias_semana.sexta == true ? <>Sexta </> : null}
-                                                                            {r.agendamento_dias_semana.sabado == true ? <>Sábado </> : null}
+                <Tab.Content>
 
-                                                                        </td>
+                    <Tab.Pane eventKey="agendamentos">
+                        <div className="row">
+                            <div className="col-md-12 no-padding">
 
-                                                                        <td>{r.agendamento_horario_inicio}</td>
-                                                                        <td>{r.agendamento_horario_fim}</td>
+                                {
+                                    agendamentos.length === 0 ?
+                                        <div className="col-md-12 zero-count">Nenhum registro localizado.</div>
 
-                                                                        <td>{r.tarefa.titulo}</td>
-                                                                        <td>
+                                        :
 
-                                                                            <div className="btn-group" role="group">
-                                                                                <button className="btn btn-primary" onClick={() => { handleShow(r.id) }}><i className="fas fa-regular fa-clock"></i> registrar</button>
+                                        <div className='row table-container mt-5'>
+                                            <div className='col-md-12'>
+                                                <table className='table table-bordered table-hover'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Processo</th>
+                                                            <th>Prestador</th>
+                                                            <th>Data de Inicio</th>
+                                                            <th>Data de Fim</th>
+                                                            <th>Dias da Semana</th>
+                                                            <th>Hora inicial planejada</th>
+                                                            <th>Hora final planejada</th>
+                                                            <th>Tarefa</th>
+                                                            <th></th>
 
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                ))}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {
+
+                                                            agendamentos.map(r => (
+
+                                                                <tr key={r.id}>
+                                                                    <td>{r.processo.nro_processo}</td>
+                                                                    <td>{r.processo.nome_prestador}</td>
+                                                                    <td>{formatDate(r.agendamento_dia_inicial)}</td>
+                                                                    <td>{r.agendamento_dia_final ? formatDate(r.agendamento_dia_final) : "--"}</td>
+
+
+                                                                    <td>
+                                                                        {r.agendamento_dias_semana.domingo == true ? <>Domingo </> : null}
+                                                                        {r.agendamento_dias_semana.segunda == true ? <>Segunda </> : null}
+                                                                        {r.agendamento_dias_semana.terca == true ? <>Terça </> : null}
+                                                                        {r.agendamento_dias_semana.quarta == true ? <>Quarta </> : null}
+                                                                        {r.agendamento_dias_semana.quinta == true ? <>Quinta </> : null}
+                                                                        {r.agendamento_dias_semana.sexta == true ? <>Sexta </> : null}
+                                                                        {r.agendamento_dias_semana.sabado == true ? <>Sábado </> : null}
+
+                                                                    </td>
+
+                                                                    <td>{r.agendamento_horario_inicio}</td>
+                                                                    <td>{r.agendamento_horario_fim}</td>
+
+                                                                    <td>{r.tarefa.titulo}</td>
+                                                                    <td>
+                                                                        <div>
+                                                                            <button className="btn btn-sm btn-primary" onClick={() => { handleShow(r.id) }}><i className="fas fa-regular fa-clock"></i> Registrar</button>
+
+                                                                            <button className="btn btn-sm btn-primary mx-1" onClick={() => { GerarListagem(r) }}><i className="fas fa-solid fa-file"></i> Atestado</button>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                    </tbody>
+                                                </table>
                                             </div>
-                                    }
-                                </div>
+                                        </div>
+                                }
                             </div>
-                        </Tab.Pane>
+                        </div>
+                    </Tab.Pane>
 
-                        <Tab.Pane eventKey="calendario">
-                            <div className='calendar-tab'>
-                                <Calendar
-                                    localizer={localizer}
-                                    events={events}
-                                    startAccessor="start"
-                                    endAccessor="end"
-                                    eventPropGetter={getEventProp}
-                                    titleAccessor={formatEventTitle}
-                                />
-                            </div>
+                    <Tab.Pane eventKey="calendario">
+                        <div className='calendar-tab'>
+                            <Calendar
+                                localizer={localizer}
+                                events={events}
+                                startAccessor="start"
+                                endAccessor="end"
+                                eventPropGetter={getEventProp}
+                                titleAccessor={formatEventTitle}
+                            />
+                        </div>
 
-                        </Tab.Pane>
-                    </Tab.Content>
-                </Tab.Container>
+                    </Tab.Pane>
+                </Tab.Content>
+            </Tab.Container>
 
 
 

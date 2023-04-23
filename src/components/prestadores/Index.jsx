@@ -200,7 +200,7 @@ const Index = () => {
                             <table className='table table-small table-bordered table-hover'>
                                 <thead>
                                     <tr>
-                                        <th></th>
+                                        <th>Código</th>
                                         <th>Nome</th>
                                         {
                                             user.MODO_APLICACAO === 0 ?

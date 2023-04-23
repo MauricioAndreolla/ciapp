@@ -152,11 +152,25 @@ module.exports = {
 
     async Delete(id) {
         let Entidade = {};
+        
         try {
-            Entidade = await db.models.Entidade.findByPk(id);
-            let Endereco = await db.models.Endereco.findByPk(Entidade.EnderecoId);
-            await Entidade.destroy();
-            await Endereco.destroy();
+            const agendamento = await db.models.Agendamento.findOne({
+                include: [
+                    {
+                        model: db.models.Tarefa,
+                        where: { entidadeId: id }
+                    }
+                ]
+            });
+
+            if (agendamento != null) {
+                return { status: false, text: `Existe um agendamento para essa entidade não é possível descredenciar` };
+            } else {
+                Entidade = await db.models.Entidade.findByPk(id);
+                let Endereco = await db.models.Endereco.findByPk(Entidade.EnderecoId);
+                await Entidade.destroy();
+                await Endereco.destroy();
+            }
         } catch (error) {
             await db.sequelize.close();
             return { status: false, text: "Erro interno no servidor." };
@@ -198,7 +212,7 @@ module.exports = {
             ],
         }).finally(() => {
             db.sequelize.close();
-          });
+        });
 
         var mappedValues = data.map(s => {
             return {
@@ -208,7 +222,7 @@ module.exports = {
                 email: s.email,
                 telefone1: s.telefone1,
                 telefone2: s.telefone2,
-                tipo_instituicao: TipoInstituicao.Entidade,
+                tipo_instituicao: s.tipo_instituicao,
                 dt_descredenciamento: s.dt_descredenciamento,
                 motivo: s.observacao,
                 somente_leitura: s.somente_leitura,
@@ -245,7 +259,7 @@ module.exports = {
             }
         ).finally(() => {
             db.sequelize.close();
-          });
+        });
 
         // await db.sequelize.close();
 
@@ -299,7 +313,7 @@ module.exports = {
                 Entidade.observacao = payload.motivo;
                 await Entidade.save().finally(() => {
                     db.sequelize.close();
-                  });
+                });
                 // await db.sequelize.close();
                 return { status: true, text: `Entidade ${Entidade.nome} descredenciada!` };
             }
@@ -317,7 +331,7 @@ module.exports = {
             Entidade.observacao = null;
             await Entidade.save().finally(() => {
                 db.sequelize.close();
-              });
+            });
             // await db.sequelize.close();
             return { status: true, text: `Entidade ${Entidade.nome} credenciada!` };
         } catch (error) {
@@ -334,7 +348,7 @@ module.exports = {
             },
         }).finally(() => {
             db.sequelize.close();
-          });
+        });
 
         var mappedValues = data.map(s => {
             return {
@@ -353,7 +367,7 @@ module.exports = {
             },
         }).finally(() => {
             db.sequelize.close();
-          });
+        });
 
         var mappedValues = data.map(s => {
             return {

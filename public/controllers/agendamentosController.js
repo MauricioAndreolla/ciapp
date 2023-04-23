@@ -78,6 +78,7 @@ module.exports = {
 
                 Agendamento.data_inicial = payload.agendamento_dia_inicial,
                     Agendamento.data_final = payload.agendamento_dia_final,
+                    Agendamento.data_final = payload.agendamento_dia_final,
                     Agendamento.horario_inicio = payload.agendamento_horario_inicio,
                     Agendamento.horario_fim = payload.agendamento_horario_fim,
                     Agendamento.segunda = payload.agendamento_dias_semana.filter(s => s.value === 0).length > 0,
@@ -156,6 +157,7 @@ module.exports = {
         }).finally(() => {
             db.sequelize.close();
         });
+    
 
 
         var mappedValues = data.map(s => {
@@ -231,6 +233,9 @@ module.exports = {
                 where.id = search.processo;
             }
 
+            if (search.agendamento) {
+                where.id = search.agendamento;
+            }
         }
 
         const literalSQL = db.dialet === 0 ? 'SUM(TIME_TO_SEC(TIMEDIFF(`AtestadoFrequencia`.`dt_saida`, `AtestadoFrequencia`.`dt_entrada`))/3600)' : "SUM(strftime('%s', AtestadoFrequencia.dt_saida) - strftime('%s', AtestadoFrequencia.dt_entrada))/3600";
@@ -252,7 +257,7 @@ module.exports = {
                 'sexta',
                 'sabado',
                 'domingo',
-                [db.sequelize.literal(literalSQL), 'horas_cumpridas']
+                [db.sequelize.literal(literalSQL), 'horas_cumpridas'],
             ],
             include: [
                 {
@@ -299,8 +304,6 @@ module.exports = {
         }).finally(() => {
             db.sequelize.close();
         });
-
-
 
         var mappedValues = data.map(s => {
             let agendamentos = {
@@ -353,7 +356,16 @@ module.exports = {
                     email: s.Processo.Entidade.email,
                     telefone1: s.Processo.Entidade.telefone1,
                     telefone2: s.Processo.Entidade.telefone2
-                }
+                },
+
+                atestadoFrequencia: s.AtestadoFrequencia.map(e => {
+                    return ({
+                        dt_entrada: new Date(e.dt_entrada).toLocaleTimeString('pt-BR'),
+                        dt_saida:  new Date(e.dt_saida).toLocaleTimeString('pt-BR'),
+                        observacao: e.observacao,
+                        agendamentoId:  e.AgendamentoId,
+                    })
+                })
             }
             return agendamentos;
         });

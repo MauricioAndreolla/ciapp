@@ -61,6 +61,7 @@ const Main = () => {
                         <Route path="entidades" element={<Private><Entidades /></Private>} />
                         <Route path="entidades/Create" element={<Private><EntidadesCreate /></Private>} />
                         <Route path="entidades/Edit/:id" element={<Private><EntidadesCreate /></Private>} />
+                        
                        
 
                         <Route path="agendamentos" element={<Private><Agendamentos /></Private>} />
