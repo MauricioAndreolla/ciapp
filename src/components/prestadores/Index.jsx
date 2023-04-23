@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 
+
 const Index = () => {
     const { user } = useContext(AuthenticationContext);
     const [prestadores, setPrestadores] = useState([]);
