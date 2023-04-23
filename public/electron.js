@@ -86,6 +86,11 @@ app.whenReady().then(async () => {
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     });
+
+    app.on("browser-window-created", (e,win) => {
+        win.removeMenu();
+        win.setIcon(__dirname + '/favicon.ico');
+    });
 })
 
 
@@ -117,7 +122,7 @@ ipcMain.handle('maximize', async () => {
     win.resizable = true;
     win.setMinimumSize(1090, 640)
     win.setSize(1366, 768);
-  
+
     win.maximize();
 })
 
