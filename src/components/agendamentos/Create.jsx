@@ -4,17 +4,13 @@ import Title from "../layout/Title";
 import { useNavigate } from "react-router-dom";
 import Select from 'react-select';
 import ModalAgendamento from "./ModalAgendamento";
-import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
+import { Nav, Tab } from 'react-bootstrap';
 import Table from '../layout/Table';
 import { confirmAlert } from "react-confirm-alert";
 import { toast } from 'react-toastify';
-import makeAnimated from 'react-select/animated';
-
-
 
 export default function Create() {
     const navigate = useNavigate();
-    const animatedComponents = makeAnimated();
 
     const [tempID, setempID] = useState(0);
     const [tarefas, setTarefas] = useState([]);
@@ -141,10 +137,6 @@ export default function Create() {
             agendamento: object
         }
 
-        // if (verificaDatas() == true) {
-        //     window.api.Alert({ status: false, text: "Horário inicial inferior ou igual ao horário final", title: "Erro!" });
-        //     return;
-        // }
 
         const postResult = await window.api.Action({ controller: "Agendamentos", action: "Create", params: payload });
         if (!postResult.status) {

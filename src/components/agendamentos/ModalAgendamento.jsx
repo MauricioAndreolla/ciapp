@@ -1,11 +1,10 @@
-import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
+import { Nav, Tab} from 'react-bootstrap';
 import Table from '../layout/Table';
 import Title from "../layout/Title";
 import React, { useState, useEffect, useRef } from "react";
 import InputDiasSemana from '../layout/InputDiasSemana';
 import { Button, Modal } from 'react-bootstrap';
 import Select from 'react-select';
-import { confirmAlert } from "react-confirm-alert";
 import { toast } from 'react-toastify';
 
 

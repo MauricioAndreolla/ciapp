@@ -1,9 +1,8 @@
-import { useNavigate, NavLink, useParams } from 'react-router-dom'
+import { useNavigate, NavLink } from 'react-router-dom'
 import { useState, useEffect, useContext } from "react";
-import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import Title from "../layout/Title";
-import { Alert, Button, Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import Table from '../layout/Table';
 import ModalDescredenciar from './ModalDescredenciar';
 import { AuthenticationContext } from "../context/Authentication";
@@ -14,16 +13,28 @@ const Index = () => {
     const [entidades, setEntidades] = useState({});
     const [load, setLoad] = useState(false);
     const { user } = useContext(AuthenticationContext);
+    const [search, setSearch] = useState({
+        id: '',
+        nome: '',
+    });
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [search]);
 
     const fetchData = async () => {
         setLoad(true);
-        const data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: null });
+        const data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: search });
         setLoad(false);
         setEntidades(data);
+    }
+
+    const handleSearch = async (evt) => {
+        let value = evt.target.value;
+        setSearch({
+            ...search,
+            [evt.target.name]: value
+        });
     }
 
     const novaEntidade = () => {
@@ -54,7 +65,9 @@ const Index = () => {
         } else {
             toast.success(postResult.text, { autoClose: 3000 });
         }
+        setLoad(true);
         await fetchData();
+        setLoad(false);
     }
 
     const Credenciar = async (object) => {
@@ -66,7 +79,9 @@ const Index = () => {
         } else {
             toast.success(postResult.text, { autoClose: 3000 });
         }
+        setLoad(true);
         await fetchData();
+        setLoad(false);
     }
 
     const Descredenciar = async (object) => {
@@ -85,7 +100,10 @@ const Index = () => {
             toast.success(postResult.text, { autoClose: 3000 });
         }
         HandleModalDescredenciar(false, null);
+
+        setLoad(true);
         await fetchData();
+        setLoad(false);
     }
 
 
@@ -99,6 +117,39 @@ const Index = () => {
         <>
             <div>
                 <Title title={"Entidades"} />
+
+                <div className="row search-container form-group">
+                    <div className='search-title'>
+                        <i className='fas fa-search'></i> Pesquisa
+                    </div>
+                    <div className="input-form col-md-3">
+                        <label htmlFor="id">Código</label>
+                        <input
+                            id="id"
+                            name="id"
+                            className="form-control shadow-none input-custom"
+                            type="number"
+                            placeholder="Ex: 1"
+                            value={search.id}
+                            onChange={handleSearch}
+                        />
+                    </div>
+
+
+                    <div className="input-form col-md-3">
+                        <label htmlFor="nome">Nome</label>
+                        <input
+                            id="nome"
+                            name="nome"
+                            className="form-control shadow-none input-custom"
+                            type="text"
+                            placeholder="Ex: CIAP"
+                            value={search.nome}
+                            onChange={handleSearch}
+                        />
+                    </div>
+
+                </div>
                 {
                     user.MODO_APLICACAO === 0 ?
 

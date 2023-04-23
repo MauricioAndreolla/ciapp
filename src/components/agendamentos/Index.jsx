@@ -1,15 +1,14 @@
-import { useNavigate, NavLink } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import React, { useState, useEffect, useRef } from "react";
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import Title from "../layout/Title";
 import { toast } from 'react-toastify';
-import { Alert, Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
 import Table from '../layout/Table';
 import ModalAgendamento from './ModalAgendamento';
 import Load from "../layout/Load";
 
-export default function Index(props) {
+export default function Index() {
     const navigate = useNavigate();
     const [showModalAgendamento, setShowModalAgendamento] = useState(false);
     const [tempID, setempID] = useState(0);
@@ -186,8 +185,6 @@ export default function Index(props) {
 
         <>
             <Title title={"Agendamentos"} />
-
-
             <div className='menu'>
 
                 <button className='menu-button button-dark-blue ' onClick={() => { CreateAgendamento() }}>
@@ -199,17 +196,17 @@ export default function Index(props) {
                 <div className='col-md-12'>
                     {agendamentos.length > 0 ?
                         <div>
-                               <Title title={"Agendamentos Cadastrados"} />
-                                        <div className="row">
-                                            <div className="col-md-12">
-                                                <Table
-                                                    columns={columnsAgendamento}
-                                                    data={agendamentos}
-                                                    onEdit={EditAgendamento}
-                                                    onDelete={DeleteAgendamento}
-                                                />
-                                            </div>
-                                        </div>
+                            <Title title={"Agendamentos Cadastrados"} />
+                            <div className="row">
+                                <div className="col-md-12">
+                                    <Table
+                                        columns={columnsAgendamento}
+                                        data={agendamentos}
+                                        onEdit={EditAgendamento}
+                                        onDelete={DeleteAgendamento}
+                                    />
+                                </div>
+                            </div>
                         </div>
                         : <div className="col-md-12 zero-count">Nenhum registro localizado.</div>}
 

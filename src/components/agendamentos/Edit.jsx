@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom'
-// import Label from "../../shared/Label";
 import Title from "../layout/Title";
 import InputDiasSemana from "../layout/InputDiasSemana";
 import Select from 'react-select';
 import { toast } from 'react-toastify';
+import Load from "../layout/Load";
 
-export default function Edit(props) {
+
+export default function Edit() {
     const { id } = useParams();
 
     const [agendamento_horario_inicio, setAgendamento_horario_inicio] = useState('');
     const [agendamento_horario_fim, setAgendamento_horario_fim] = useState('');
     const [agendamento_dia_inicial, setAgendamento_dia_inicial] = useState(new Date().toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" }));
+    const [load, setLoad] = useState(false);
 
 
     const [agendamentos, setAgendamentos] = useState({
@@ -77,9 +79,9 @@ export default function Edit(props) {
             setPrestadores([prestadorLabel]);
 
         }
-
+        setLoad(true);
         fetchData();
-
+        setLoad(false);
 
     }, []);
 
@@ -355,6 +357,7 @@ export default function Edit(props) {
                         <button type="button" onClick={() => { navigate("/agendamentos"); }} className="btn btn-danger"><i className="fa fa-trash"></i> Cancelar</button>
                     </div>
                 </div>
+                <Load show={load} />
             </form>
 
         </>

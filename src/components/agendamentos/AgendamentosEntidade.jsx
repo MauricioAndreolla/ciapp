@@ -1,25 +1,23 @@
-import { useNavigate, NavLink } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from "react";
 // import Label from "../../shared/Label";
-import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-
 import Title from "../layout/Title";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { toast } from 'react-toastify';
-import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
+import { Nav, Tab } from 'react-bootstrap';
 import Load from "../layout/Load";
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import 'moment-timezone';
 
 
-export default function AgendamentosEntidades(props) {
+export default function AgendamentosEntidades() {
     moment.locale('pt-br');
     const date = new Date();
     const [show, setShow] = useState(false);

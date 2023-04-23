@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import React, { useState, useEffect, useContext } from "react";
 import Title from "../layout/Title";
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
+import { Nav, Tab } from 'react-bootstrap';
 import Table from '../layout/Table';
 import ModalUsuario from './ModalUsuario';
 import { toast } from "react-toastify";

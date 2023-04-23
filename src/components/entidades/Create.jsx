@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Title from "../layout/Title";
 import { toast } from 'react-toastify';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
+import { Nav, Tab } from 'react-bootstrap';
 import Table from '../layout/Table';
 import ModalTarefa from './ModalTarefa';
 import { confirmAlert } from "react-confirm-alert";
@@ -49,7 +49,6 @@ const Create = () => {
             editEntidade();
         }
     }
-
 
     const fetchData = async () => {
         if (id != null) {

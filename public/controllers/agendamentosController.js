@@ -129,12 +129,16 @@ module.exports = {
         let someAttributes = {};
 
         if (search) {
+            if (search.id) {
+                where.id = search.id;
+            }
             if (search.processo) {
                 where.id = search.processo;
             }
-
+            if (search.nome) {
+                where.nome = search.nome;
+            }
         }
-
 
         const data = await db.models.Agendamento.findAll({
             where: {
