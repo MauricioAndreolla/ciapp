@@ -7,6 +7,8 @@ import ModalRegistro from './ModalRegistros';
 import Load from "../layout/Load";
 import { confirmAlert } from 'react-confirm-alert';
 import { toast } from "react-toastify";
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
 
 const Index = () => {
     const { user } = useContext(AuthenticationContext);
@@ -119,6 +121,93 @@ const Index = () => {
             .replace(/(\d{3})(\d{1,2})$/, "$1-$2"); // Adiciona o hífen
     }
 
+    const GerarListagem = async (r) => {
+        const search = {
+            processo: r.nro_processo
+        }
+
+        const data = await window.api.Action({ controller: "Agendamentos", action: "GetAgendamentosEntidadeAtestado", params: search });
+
+        if (data.length == 0) {
+            toast.error("Sem registros para esse processo!", { autoClose: false });
+            return;
+        } else {
+            const atestados = data.map((e) => {
+                return ({
+                    "Número Processo": e.nro_processo,
+                    "Prestador": e.nome_prestador,
+                    "Tarefa": e.tarefa,
+                    "Entidade": e.entidade,
+                    "Hora de entrada": e.dt_entrada,
+                    "Hora de saída": e.dt_saida,
+                    "Horas Cumpridas": e.horas_cumpridas,
+                    "Observação": e.observacao,
+                })
+
+            });
+
+            pdfMake.vfs = pdfFonts.pdfMake.vfs;
+            var dd = {
+                content: [
+                    { text: `Relatório de comparecimento`, style: 'header1' },
+                    { text: `Nome: ${atestados[0]?.Prestador ?? 'Prestador'}`, style: 'header2' },
+                    { text: `Data: ${new Date().toLocaleDateString('pt-BR')}`, style: 'header3' },
+                    table(atestados,
+                        ['Número Processo', 'Prestador', 'Tarefa', 'Entidade', 'Hora de entrada', 'Hora de saída', 'Horas Cumpridas', 'Observação'],
+                    )
+                ],
+                styles: {
+                    header1: {
+                        fontSize: 22,
+                        lineHeight: 1,
+                        bold: true
+                    },
+                    header2: {
+                        fontSize: 16,
+                        lineHeight: 1
+                    },
+                    header3: {
+                        fontSize: 10,
+                        lineHeight: 2
+                    },
+                    tableFont: {
+                        fontSize: 8
+                    }
+                }
+            }
+            pdfMake.createPdf(dd).open({}, window.open('', '_blank'));
+        }
+    }
+
+    function table(data, columns) {
+
+        return {
+            table: {
+                headerRows: 1,
+                body: buildTableBody(data, columns)
+            }
+        };
+
+    }
+
+    function buildTableBody(data, columns) {
+        let body = [];
+
+        body.push(columns);
+
+        data.forEach(function (row) {
+            let dataRow = [];
+
+            columns.forEach(function (columns) {
+                let colData = row[columns] !== undefined ? row[columns] : "";
+                dataRow.push(String(colData))
+            })
+
+            body.push(dataRow);
+        });
+
+        return body;
+    }
 
     return (
         <>
@@ -254,7 +343,9 @@ const Index = () => {
                                                                 :
                                                                 <>
                                                                     <li> <a className="dropdown-item btn" onClick={() => { Visualizar(r.id) }} to="#"><i className="fa fa-eye"></i> Detalhes</a></li>
-
+                                                                    <li>
+                                                                        <a className="dropdown-item btn" onClick={() => { GerarListagem(r) }}><i className="fas fa-solid fa-file"> </i> Atestado</a>
+                                                                    </li>
                                                                 </>
 
 

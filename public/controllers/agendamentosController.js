@@ -161,7 +161,7 @@ module.exports = {
         }).finally(() => {
             db.sequelize.close();
         });
-    
+
 
 
         var mappedValues = data.map(s => {
@@ -365,9 +365,9 @@ module.exports = {
                 atestadoFrequencia: s.AtestadoFrequencia.map(e => {
                     return ({
                         dt_entrada: new Date(e.dt_entrada).toLocaleTimeString('pt-BR'),
-                        dt_saida:  new Date(e.dt_saida).toLocaleTimeString('pt-BR'),
+                        dt_saida: new Date(e.dt_saida).toLocaleTimeString('pt-BR'),
                         observacao: e.observacao,
-                        agendamentoId:  e.AgendamentoId,
+                        agendamentoId: e.AgendamentoId,
                     })
                 })
             }
@@ -375,6 +375,67 @@ module.exports = {
         });
 
         // await db.sequelize.close();
+        return mappedValues;
+    },
+
+    async GetAgendamentosEntidadeAtestado(search) {
+
+        let where = {
+
+        };
+        let someAttributes = {};
+
+        if (search) {
+            if (search.processo) {
+                where.nro_processo = search.processo;
+            }
+
+            // if (search.agendamento) {
+            //     where.id = search.agendamento;
+            // }
+        }
+
+        const data = await db.models.AtestadoFrequencia.findAll({
+            include: [
+                {
+                    model: db.models.Processo,
+                    where: where,
+                    include: [
+                        { model: db.models.Entidade },
+                        { model: db.models.Prestador },
+                        { model: db.models.Vara },
+                    ]
+                },
+                {
+                    model: db.models.Agendamento,
+                    include: [
+                        {
+                            model: db.models.Tarefa,
+                            where: {
+                                status: true
+                            }
+                        }
+                    ]
+                },
+            ],
+        }).finally(() => {
+            db.sequelize.close();
+        });
+
+        var mappedValues = data.map(e => {
+            return ({
+                dia_inicial: new Date(e.dt_entrada).toLocaleDateString('pt-BR'),
+                dia_final: new Date(e.dt_saida).toLocaleDateString('pt-BR'),
+                dt_entrada: new Date(e.dt_entrada).toLocaleTimeString('pt-BR'),
+                dt_saida: new Date(e.dt_saida).toLocaleTimeString('pt-BR'),
+                observacao: e.observacao,
+                nome_prestador: e.Processo.Prestadore.nome,
+                entidade: e.Processo.Entidade.nome,
+                nro_processo: e.Processo.nro_processo,
+                horas_cumpridas: diff_hours(e.dt_entrada, e.dt_saida),
+                tarefa: e.Agendamento.Tarefa.titulo
+            })
+        });
         return mappedValues;
     },
 
@@ -398,7 +459,8 @@ module.exports = {
                 dt_entrada: new Date(payload.registro.data + " " + payload.registro.horario_entrada),
                 dt_saida: new Date(payload.registro.data + " " + payload.registro.horario_saida),
                 observacao: payload.registro.observacao,
-                AgendamentoId: payload.id_agendamento
+                AgendamentoId: payload.id_agendamento,
+                ProcessoId: payload.id_processo
             }).finally(() => {
                 db.sequelize.close();
             });

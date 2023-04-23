@@ -2,8 +2,6 @@ import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from "react";
 // import Label from "../../shared/Label";
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
 import Title from "../layout/Title";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
@@ -191,8 +189,9 @@ export default function AgendamentosEntidades() {
 
     const submitRegistro = async () => {
         var id_agendamento = modalModel.id;
+        const id_processo = modalModel.processo.id;
         setLoad(true);
-        const postResult = await window.api.Action({ controller: "Agendamentos", action: "Registrar", params: { id_agendamento: id_agendamento, registro: registro } });
+        const postResult = await window.api.Action({ controller: "Agendamentos", action: "Registrar", params: { id_processo: id_processo, id_agendamento: id_agendamento, registro: registro } });
         setLoad(false);
         if (!postResult.status) {
             toast.error(postResult.text, { autoClose: false });
@@ -217,89 +216,6 @@ export default function AgendamentosEntidades() {
     const formatDate = (agendamento_dia_inicial) => {
         const [year, month, day] = agendamento_dia_inicial.split('-');
         return `${day}/${month}/${year}`;
-    }
-
-    const GerarListagem = async (r) => {
-        const search = {
-            agendamento: r.id,
-        }
-        
-        const data = await window.api.Action({ controller: "Agendamentos", action: "GetAgendamentosEntidade", params: search });
-        const atestados = data.map((e) => {
-            return ({
-                "Número Processo": e.processo.nro_processo,
-                "Prestador": e.processo.nome_prestador,
-                "Tarefa": e.tarefa.titulo,
-                "Entidade": e.entidade.nome,
-                "Hora de entrada": e.atestadoFrequencia[0].dt_entrada,
-                "Hora de saída": e.atestadoFrequencia[0].dt_saida,
-                "Horas Cumpridas": e.processo.horas_cumpridas,
-                "Observação": e.atestadoFrequencia[0].observacao,
-            })
-
-        });
-
-        pdfMake.vfs = pdfFonts.pdfMake.vfs;
-        var dd = {
-            content: [
-                { text: `Relatório de comparecimento`, style: 'header1' },
-                { text: `Nome: ${atestados[0].Prestador ?? 'Prestador'}`, style: 'header2' },
-                { text: `Data: ${new Date().toLocaleDateString('pt-BR')}`, style: 'header3' },
-                table(atestados,
-                    ['Número Processo', 'Prestador', 'Tarefa', 'Entidade', 'Hora de entrada', 'Hora de saída', 'Horas Cumpridas', 'Observação'],
-                )
-            ],
-            styles: {
-                header1: {
-                    fontSize: 22,
-                    lineHeight: 1,
-                    bold: true
-                },
-                header2: {
-                    fontSize: 16,
-                    lineHeight: 1
-                },
-                header3: {
-                    fontSize: 10,
-                    lineHeight: 2
-                },
-                tableFont: {
-                    fontSize: 8
-                }
-            }
-        }
-        pdfMake.createPdf(dd).open({}, window.open('', '_blank'));
-
-    }
-
-    function table(data, columns) {
-
-        return {
-            table: {
-                headerRows: 1,
-                body: buildTableBody(data, columns)
-            }
-        };
-
-    }
-
-    function buildTableBody(data, columns) {
-        let body = [];
-
-        body.push(columns);
-
-        data.forEach(function (row) {
-            let dataRow = [];
-
-            columns.forEach(function (columns) {
-                let colData = row[columns] !== undefined ? row[columns] : "";
-                dataRow.push(String(colData))
-            })
-
-            body.push(dataRow);
-        });
-
-        return body;
     }
 
 
@@ -386,10 +302,8 @@ export default function AgendamentosEntidades() {
 
                                                                     <td>{r.tarefa.titulo}</td>
                                                                     <td>
-                                                                        <div>
-                                                                            <button className="btn btn-sm btn-primary" onClick={() => { handleShow(r.id) }}><i className="fas fa-regular fa-clock"></i> Registrar</button>
-
-                                                                            <button className="btn btn-sm btn-primary mx-1" onClick={() => { GerarListagem(r) }}><i className="fas fa-solid fa-file"></i> Atestado</button>
+                                                                        <div className="btn-group" role="group">
+                                                                            <Button className="btn btn-primary" onClick={() => { handleShow(r.id) }}><i className="fas fa-regular fa-clock"> </i> Registrar</Button>
                                                                         </div>
                                                                     </td>
                                                                 </tr>

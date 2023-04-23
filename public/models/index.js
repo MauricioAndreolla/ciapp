@@ -64,8 +64,7 @@ Tarefa.belongsTo(Entidade)
 
 Agendamento.hasMany(AtestadoFrequencia);
 AtestadoFrequencia.belongsTo(Agendamento);
-
-AtestadoFrequencia.belongsTo(Agendamento);
+AtestadoFrequencia.belongsTo(Processo);
 
 
 Agendamento.belongsTo(Processo);
