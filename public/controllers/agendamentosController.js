@@ -242,72 +242,77 @@ module.exports = {
             }
         }
 
-        const literalSQL = db.dialet === 0 ? 'SUM(TIME_TO_SEC(TIMEDIFF(`AtestadoFrequencia`.`dt_saida`, `AtestadoFrequencia`.`dt_entrada`))/3600)' : "SUM(strftime('%s', AtestadoFrequencia.dt_saida) - strftime('%s', AtestadoFrequencia.dt_entrada))/3600";
+        const literalSQL = db.dialet === 0 ?
+            'SUM(TIME_TO_SEC(TIMEDIFF(`AtestadoFrequencia`.`dt_saida`, `AtestadoFrequencia`.`dt_entrada`))/3600)'
+            : "SUM(strftime('%s', AtestadoFrequencia.dt_saida) - strftime('%s', AtestadoFrequencia.dt_entrada))/3600";
 
-        const data = await db.models.Agendamento.findAll({
-            where: {
-                ativo: true
-            },
-            attributes: [
-                'id',
-                'horario_inicio',
-                'horario_fim',
-                'data_inicial',
-                'data_final',
-                'segunda',
-                'terca',
-                'quarta',
-                'quinta',
-                'sexta',
-                'sabado',
-                'domingo',
-                [db.sequelize.literal(literalSQL), 'horas_cumpridas'],
-            ],
-            include: [
-                {
+            const data = await db.models.Agendamento.findAll({
+                where: {
+                  ativo: true
+                },
+                attributes: [
+                  'id',
+                  'horario_inicio',
+                  'horario_fim',
+                  'data_inicial',
+                  'data_final',
+                  'segunda',
+                  'terca',
+                  'quarta',
+                  'quinta',
+                  'sexta',
+                  'sabado',
+                  'domingo'
+                ],
+                include: [
+                  {
                     model: db.models.Processo,
                     include: [
-                        { model: db.models.Entidade },
-                        { model: db.models.Prestador },
-                        { model: db.models.Vara },
+                      { model: db.models.Entidade },
+                      { model: db.models.Prestador },
+                      { model: db.models.Vara },
                     ]
-                },
-                {
+                  },
+                  {
                     model: db.models.Tarefa,
                     where: {
-                        status: true
+                      status: true
                     }
-                },
-                { model: db.models.AtestadoFrequencia }
-            ],
-            group: [
-                'Agendamento.id',
-                'Agendamento.horario_inicio',
-                'Agendamento.horario_fim',
-                'Agendamento.data_inicial',
-                'Agendamento.data_final',
-                'Agendamento.segunda',
-                'Agendamento.terca',
-                'Agendamento.quarta',
-                'Agendamento.quinta',
-                'Agendamento.sexta',
-                'Agendamento.sabado',
-                'Agendamento.domingo',
-                'Processo.id',
-                'Tarefa.id',
-                'Tarefa.titulo',
-                'Tarefa.descricao',
-                'Tarefa.status'
-            ],
-            having: {
-                [Op.or]: [
-                    { 'horas_cumpridas': null },
-                    db.sequelize.literal('`horas_cumpridas` < `Processo`.`horas_cumprir`')
-                ]
-            }
-        }).finally(() => {
-            //db.sequelize.close();
-        });
+                  },
+                  {
+                    model: db.models.AtestadoFrequencia , as: "AtestadoFrequencia",
+                    attributes: [
+                      [db.sequelize.literal(literalSQL), 'AtestadoFrequencia.horas_cumpridas']
+                    ]
+                  }
+                ],
+                group: [
+                  'Agendamento.id',
+                  'Agendamento.horario_inicio',
+                  'Agendamento.horario_fim',
+                  'Agendamento.data_inicial',
+                  'Agendamento.data_final',
+                  'Agendamento.segunda',
+                  'Agendamento.terca',
+                  'Agendamento.quarta',
+                  'Agendamento.quinta',
+                  'Agendamento.sexta',
+                  'Agendamento.sabado',
+                  'Agendamento.domingo',
+                  'Processo.id',
+                  'Tarefa.id',
+                  'Tarefa.titulo',
+                  'Tarefa.descricao',
+                  'Tarefa.status',
+                  'AtestadoFrequencia.horas_cumpridas'
+                ],
+                having: db.sequelize.literal('SUM(AtestadoFrequencia.horas_cumpridas) < Processo.horas_cumprir')
+              });
+              
+
+
+
+
 
         var mappedValues = data.map(s => {
             let agendamentos = {
