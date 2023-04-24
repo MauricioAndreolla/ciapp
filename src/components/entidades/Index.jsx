@@ -8,6 +8,9 @@ import ModalDescredenciar from './ModalDescredenciar';
 import { AuthenticationContext } from "../context/Authentication";
 import { toast } from 'react-toastify';
 import Load from "../layout/Load";
+import { confirmAlert } from 'react-confirm-alert';
+
+
 const Index = () => {
     const navigate = useNavigate();
     const [entidades, setEntidades] = useState({});
@@ -58,16 +61,34 @@ const Index = () => {
         setShowModalDescredenciar(show);
     }
 
-    const Delete = async (id) => {
-        const postResult = await window.api.Action({ controller: "Entidades", action: "Delete", params: id });
-        if (!postResult.status) {
-            toast.error(postResult.text, { autoClose: false });
-        } else {
-            toast.success(postResult.text, { autoClose: 3000 });
-        }
-        setLoad(true);
-        await fetchData();
-        setLoad(false);
+    const Delete = async (id, nome) => {
+
+        confirmAlert({
+            title: 'Confirmação',
+            message: `Deseja deletar a entidade ${nome}`,
+            buttons: [
+                {
+                    label: 'Sim',
+                    onClick: async () => {
+                        setLoad(true);
+                        const postResult = await window.api.Action({ controller: "Entidades", action: "Delete", params: id });
+                        fetchData();
+                        setLoad(false);
+                        if (!postResult.status) {
+                            toast.error(postResult.text, { autoClose: false });
+                        } else {
+                            toast.success(postResult.text, { autoClose: 3000 });
+                        }
+                    }
+                },
+                {
+                    className: 'btn-blue',
+                    label: 'Não',
+                    onClick: () => {
+                    }
+                }
+            ]
+        });
     }
 
     const Credenciar = async (object) => {
@@ -211,7 +232,7 @@ const Index = () => {
                                                                                         <li> <Button className="dropdown-item" id="credenciar" onClick={(_) => { Credenciar(r) }}> <i className='fa fa-plus'></i> Credenciar</Button></li>
                                                                                     }
                                                                                     <li> <Button className="dropdown-item" id="delete"
-                                                                                        onClick={(_) => { Delete(r.id) }}> <i className='fa fa-trash'></i> Excluir</Button></li>
+                                                                                        onClick={(_) => { Delete(r.id, r.nome) }}> <i className='fa fa-trash'></i> Excluir</Button></li>
                                                                                 </>
                                                                                 :
                                                                                 <>
