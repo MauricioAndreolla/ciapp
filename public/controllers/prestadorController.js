@@ -1,7 +1,7 @@
 const db = require('../config/database');
 const { Op } = require('sequelize');
 
-const { unformatCurrency, formatCurrency, diff_hours } = require('../utils/utils')
+const { unformatCurrency, formatCurrency, diff_hours, diff_seconds, secondsToHHMM } = require('../utils/utils')
 
 const checkDadosOrigatorios = (payload) => {
 
@@ -99,13 +99,13 @@ module.exports = {
                 somente_leitura: s.somente_leitura,
                 nro_processo: s.Processos.length > 0 ? s.Processos[s.Processos.length - 1].nro_processo : null,
                 horas_cumprir: s.Processos.length > 0 ? s.Processos[s.Processos.length - 1].horas_cumprir : 0,
-                horas_cumpridas: s.Processos.length > 0 ? s.Processos[s.Processos.length - 1].Agendamentos.map(s => {
+                horas_cumpridas: s.Processos.length > 0 ? secondsToHHMM(s.Processos[s.Processos.length - 1].Agendamentos.map(s => {
 
                     return s.AtestadoFrequencia.map(s => {
-                        return diff_hours(s.dt_entrada, s.dt_saida)
+                        return diff_seconds(s.dt_entrada, s.dt_saida)
                     }).reduce((a, b) => a + b, 0)
 
-                }).reduce((a, b) => a + b, 0) : 0,
+                }).reduce((a, b) => a + b, 0)) : 0,
             }
         });
         // //await db.sequelize.close();

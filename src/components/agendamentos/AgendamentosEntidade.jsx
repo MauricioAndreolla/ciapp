@@ -401,6 +401,8 @@ export default function AgendamentosEntidades() {
                                                 className="form-control input rounded-2"
                                                 type="time"
                                                 value={registro.horario_entrada}
+                                                min="00:00"
+                                                step={300}
                                                 onChange={handleRegistro}
                                             />
                                         </div>
@@ -414,6 +416,8 @@ export default function AgendamentosEntidades() {
                                                 className="form-control input rounded-2"
                                                 type="time"
                                                 value={registro.horario_saida}
+                                                min="00:00"
+                                                step={300}
                                                 onChange={handleRegistro}
                                             />
                                         </div>

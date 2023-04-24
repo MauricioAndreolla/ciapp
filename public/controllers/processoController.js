@@ -1,6 +1,6 @@
 const db = require('../config/database');
 const { Op } = require('sequelize');
-const { unformatCurrency, formatCurrency, diff_hours } = require('../utils/utils')
+const { unformatCurrency, formatCurrency, diff_hours, secondsToHHMM, diff_seconds } = require('../utils/utils')
 
 
 
@@ -122,14 +122,14 @@ module.exports = {
                 horas_cumprir: s.horas_cumprir,
                 somente_leitura: s.somente_leitura,
                 horas_cumpridas:
-
+                    secondsToHHMM(
                     s.Agendamentos.map(s => {
 
                         return s.AtestadoFrequencia.map(s => {
-                            return diff_hours(s.dt_entrada, s.dt_saida)
+                            return diff_seconds(s.dt_entrada, s.dt_saida)
                         }).reduce((a, b) => a + b, 0)
 
-                    }).reduce((a, b) => a + b, 0),
+                    }).reduce((a, b) => a + b, 0)),
 
                 vara: s.Vara ? s.Vara.descricao : 'N/A',
                 central: s.Entidade ? s.Entidade.nome : 'N/A'

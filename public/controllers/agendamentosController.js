@@ -1,6 +1,6 @@
 const db = require('../config/database');
 const { Op } = require("sequelize");
-const { diff_hours } = require('../utils/utils')
+const { diff_hours, secondsToHHMM, diff_seconds } = require('../utils/utils')
 
 
 module.exports = {
@@ -243,76 +243,41 @@ module.exports = {
         }
 
         const literalSQL = db.dialet === 0 ?
-            'SUM(TIME_TO_SEC(TIMEDIFF(`AtestadoFrequencia`.`dt_saida`, `AtestadoFrequencia`.`dt_entrada`))/3600)'
-            : "SUM(strftime('%s', AtestadoFrequencia.dt_saida) - strftime('%s', AtestadoFrequencia.dt_entrada))/3600";
+            'SUM(TIME_TO_SEC(TIMEDIFF(`AtestadoFrequencia`.`dt_saida`, `AtestadoFrequencia`.`dt_entrada`)))'
+            : "SUM(strftime('%s', AtestadoFrequencia.dt_saida) - strftime('%s', AtestadoFrequencia.dt_entrada))";
 
-            const data = await db.models.Agendamento.findAll({
-                where: {
-                  ativo: true
-                },
-                attributes: [
-                  'id',
-                  'horario_inicio',
-                  'horario_fim',
-                  'data_inicial',
-                  'data_final',
-                  'segunda',
-                  'terca',
-                  'quarta',
-                  'quinta',
-                  'sexta',
-                  'sabado',
-                  'domingo'
-                ],
-                include: [
-                  {
+        const data = await db.models.Agendamento.findAll({
+
+            include: [
+                { model: db.models.AtestadoFrequencia },
+                {
                     model: db.models.Processo,
                     include: [
-                      { model: db.models.Entidade },
-                      { model: db.models.Prestador },
-                      { model: db.models.Vara },
+                        { model: db.models.Entidade },
+                        { model: db.models.Prestador },
+                        { model: db.models.Vara },
+
                     ]
-                  },
-                  {
+                },
+                {
                     model: db.models.Tarefa,
                     where: {
-                      status: true
+                        status: true
                     }
-                  },
-                  {
-                    model: db.models.AtestadoFrequencia , as: "AtestadoFrequencia",
-                    attributes: [
-                      [db.sequelize.literal(literalSQL), 'AtestadoFrequencia.horas_cumpridas']
-                    ]
-                  }
-                ],
-                group: [
-                  'Agendamento.id',
-                  'Agendamento.horario_inicio',
-                  'Agendamento.horario_fim',
-                  'Agendamento.data_inicial',
-                  'Agendamento.data_final',
-                  'Agendamento.segunda',
-                  'Agendamento.terca',
-                  'Agendamento.quarta',
-                  'Agendamento.quinta',
-                  'Agendamento.sexta',
-                  'Agendamento.sabado',
-                  'Agendamento.domingo',
-                  'Processo.id',
-                  'Tarefa.id',
-                  'Tarefa.titulo',
-                  'Tarefa.descricao',
-                  'Tarefa.status',
-                  'AtestadoFrequencia.horas_cumpridas'
-                ],
-                having: db.sequelize.literal('SUM(AtestadoFrequencia.horas_cumpridas) < Processo.horas_cumprir')
-              });
-              
+                },
+            ],
 
+            where: db.sequelize.literal(`Agendamento.ativo = 1 AND (Agendamento.ProcessoId NOT IN (SELECT ProcessoId FROM AtestadoFrequencia ) OR  Agendamento.ProcessoId IN (
+                SELECT id
+                FROM Processos
+                WHERE (horas_cumprir * 3600) > (
+                  SELECT ${literalSQL}
+                  FROM AtestadoFrequencia
+                  WHERE ProcessoId = Processos.id
+                )
+        ))`),
 
-
-
+        });
 
         var mappedValues = data.map(s => {
             let agendamentos = {
@@ -354,9 +319,10 @@ module.exports = {
                     nome_prestador: s.Processo.Prestadore.nome,
                     imagem_prestador: s.Processo.Prestadore.image,
                     vara: s.Processo.Vara ? s.Processo.Vara.descricao : '',
-                    horas_cumpridas: s.AtestadoFrequencia.map(s => {
+
+                    horas_cumpridas: secondsToHHMM(s.AtestadoFrequencia.map(s => {
                         return diff_hours(s.dt_entrada, s.dt_saida)
-                    }).reduce((a, b) => a + b, 0)
+                    }).reduce((a, b) => a + b, 0))
                 },
                 entidade: {
                     id: s.Processo.Entidade.id,
@@ -437,7 +403,7 @@ module.exports = {
                 nome_prestador: e.Processo.Prestadore.nome,
                 entidade: e.Processo.Entidade.nome,
                 nro_processo: e.Processo.nro_processo,
-                horas_cumpridas: diff_hours(e.dt_entrada, e.dt_saida),
+                horas_cumpridas: secondsToHHMM(diff_seconds(e.dt_entrada, e.dt_saida)),
                 tarefa: e.Agendamento.Tarefa.titulo
             })
         });
@@ -453,11 +419,28 @@ module.exports = {
                 }
             });
 
-            let processo = await db.models.Processo.findByPk(Agendamento.ProcessoId);
+            let processo = await db.models.Processo.findByPk(Agendamento.ProcessoId, {
+                include: [
+                    {
+                        model: db.models.Agendamento,
+                        include: [
+                            { model: db.models.AtestadoFrequencia },
+                        ],
+                    }
+                ]
+            });
 
-            let total = diff_hours(new Date(payload.registro.data + " " + payload.registro.horario_entrada), new Date(payload.registro.data + " " + payload.registro.horario_saida));
+            let total = diff_seconds(new Date(payload.registro.data + " " + payload.registro.horario_entrada), new Date(payload.registro.data + " " + payload.registro.horario_saida));
 
-            if (total > (processo.horas_cumprir - total))
+            let totalCumprido = processo.Agendamentos.map(s => {
+                return s.AtestadoFrequencia.map(s => {
+                    return diff_seconds(s.dt_entrada, s.dt_saida)
+                }).reduce((a, b) => a + b, 0)
+            }).reduce((a, b) => a + b, 0);
+            
+
+
+            if ((total + totalCumprido) > (processo.horas_cumprir * 3600))
                 return { status: false, text: `Quantidade de horas maior que o necessário` };
 
             let addRESULT = await db.models.AtestadoFrequencia.create({

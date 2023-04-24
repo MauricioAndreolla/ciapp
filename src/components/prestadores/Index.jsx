@@ -320,7 +320,7 @@ const Index = () => {
                                             <td>{r.nro_processo ?? "--"}</td>
                                             <td>{r.horas_cumprir > 0 ? r.horas_cumprir : "0"}</td>
 
-                                            <td>{r.horas_cumpridas > 0 ? r.horas_cumpridas : "0"}</td>
+                                            <td>{r.horas_cumpridas ?? '00:00'}</td>
                                             <td>
                                                 <div className="btn-group" role="group">
 
