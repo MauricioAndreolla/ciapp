@@ -168,6 +168,9 @@ module.exports = {
             } else {
                 Entidade = await db.models.Entidade.findByPk(id);
                 let Endereco = await db.models.Endereco.findByPk(Entidade.EnderecoId);
+                await db.models.Tarefa.destroy({
+                    where:{ EntidadeId: id  }
+                });
                 await Entidade.destroy();
                 await Endereco.destroy();
             }
