@@ -126,18 +126,20 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
         let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: search });
         const tarefa = data[0].tarefa;
-
+        
         if (!tarefa) {
             value = { value: null, label: "Sem tarefa cadastrada" };
             return;
         }
 
+      
         let value = tarefa.map((element) => {
             if (element.status == true) {
                 return { value: element.id, label: element.titulo, name: 'tarefa' }
             }
         });
-
+        value = value.filter( (e) => e != undefined  );
+       
         setTarefas(value);
     }
 
@@ -227,7 +229,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
     const columnsAgendamento = [
         { id: e => e.agendamento_dia_inicial, Header: 'Data inicial', accessor: e => formatDateInitial(e) },
-        { id: e => e.agendamento_dia_final, Header: 'Data final', accessor: e => formatDateFinally(e) },
+        { id: e => e.agendamento_dia_final, Header: 'Data final', accessor: e => e.agendamento_dia_final == '' ? "Sem data definida" : formatDateFinally(e)   },
         { Header: 'Horário inicial', accessor: 'agendamento_horario_inicio' },
         { Header: 'Horário fim', accessor: 'agendamento_horario_fim' },
     ];
@@ -262,23 +264,26 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     const checkPeriod = () => {
         const [inicioHora, inicioMinuto] = agendamento.agendamento_horario_inicio.split(':').map(Number);
         const [fimHora, fimMinuto] = agendamento.agendamento_horario_fim.split(':').map(Number);
+        const dataInicial = agendamento.agendamento_dia_inicial;
         let result = false;
 
-        let tempoInicial1 = new Date(2023, 3, 16, inicioHora, inicioMinuto, 0);
-        let tempoFinal1 = new Date(2023, 3, 16, fimHora, fimMinuto, 0);
+        let tempoInicial1 = new Date(2023, 3, 17, inicioHora, inicioMinuto, 0);
+        let tempoFinal1 = new Date(2023, 3, 17, fimHora, fimMinuto, 0);
        
         const minutosInicio1 = tempoInicial1.getHours() * 60 + tempoInicial1.getMinutes();
         const minutosFim1 = tempoFinal1.getHours() * 60 + tempoFinal1.getMinutes();
 
 
         agendamentos.forEach((e) => {
-
+            if (e.agendamento_dia_inicial != dataInicial){
+                return;
+            }
             const [inicioHoraAgendado, inicioMinutoAgendado] = e.agendamento_horario_inicio.split(':').map(Number);
             const [fimHoraAgendado, fimMinutoAgendado] = e.agendamento_horario_fim.split(':').map(Number);
 
 
-            let tempoInicial2 = new Date(2023, 3, 16, inicioHoraAgendado, inicioMinutoAgendado, 0);
-            let tempoFinal2 = new Date(2023, 3, 16, fimHoraAgendado, fimMinutoAgendado, 0);
+            let tempoInicial2 = new Date(2023, 3, 17, inicioHoraAgendado, inicioMinutoAgendado, 0);
+            let tempoFinal2 = new Date(2023, 3, 17, fimHoraAgendado, fimMinutoAgendado, 0);
 
 
             const minutosInicio2 = tempoInicial2.getHours() * 60 + tempoInicial2.getMinutes();

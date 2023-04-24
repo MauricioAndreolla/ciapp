@@ -82,7 +82,7 @@ const Create = () => {
             entidade,
             endereco
         }
-
+        
         confirmAlert({
             title: 'Confirmação',
             message: `Confirma a criação da entidade ${entidade.nome}`,
@@ -119,7 +119,7 @@ const Create = () => {
             entidade,
             endereco
         }
-
+        console.log(payload)
         confirmAlert({
             title: 'Confirmação',
             message: `Confirma a edição da entidade ${entidade.nome}`,
@@ -129,6 +129,7 @@ const Create = () => {
                     onClick: async () => {
                         setLoad(true);
                         const postResult = await window.api.Action({ controller: "Entidades", action: "Edit", params: payload });
+                        fetchData();
                         setLoad(false);
                         if (postResult.status) {
                             toast.success(postResult.text, { autoClose: 3000 });
@@ -209,7 +210,7 @@ const Create = () => {
     const columnsTarefa = [
         { Header: 'Titulo', accessor: 'titulo' },
         { Header: 'Descricao', accessor: 'descricao' },
-        { id: 'status', Header: 'Status', accessor: d => d.status == true ? 'Ativa' : 'Inativa' }
+        { id: d => d.status, Header: 'Status', accessor: d => d.status == true || d.status == 'true' ? 'Ativa' : 'Inativa' }
     ];
 
     const [modelTarefa, setModelTarefa] = useState({
@@ -261,12 +262,12 @@ const Create = () => {
     }
 
     const EditTarefa = (object) => {
-
+        
         if (object) {
             var tarefas = entidade.tarefas;
 
             var exist = tarefas.find(s => s.titulo == object.titulo && s.id != object.id);
-
+            
             if (exist) {
                 toast.error(`Tarefa "${object.titulo}" já informado`, { autoClose: false });
                 HandleModalTarefa(false);

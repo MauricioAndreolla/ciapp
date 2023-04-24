@@ -24,9 +24,9 @@ const ModalTarefa = ({ Model, show, onHide, onAdd, onEdit }) => {
     };
 
     const handleTarefa = (evt, name = null) => {
-    
+        evt.preventDefault();
         const value = evt.value ?? evt.target.value;
-
+      
         setTarefa({
             ...tarefa,
             [name ? name : evt.target.name]: value
@@ -96,7 +96,15 @@ const ModalTarefa = ({ Model, show, onHide, onAdd, onEdit }) => {
                         <div className="form-group">
                             <div className="form-check form-check-inline">
 
-                                <input className="form-check-input" type="radio" name="status" id="status1" onChange={handleTarefa} value={true} defaultChecked />
+                                <input className="form-check-input" 
+                                type="radio" 
+                                name="status" 
+                                id="status1" 
+                                onChange={handleTarefa}
+                                value={true}
+                                defaultChecked 
+                                checked={tarefa.status == true || tarefa.status == 'true' }
+                                />
                                 <label className="form-check-label" htmlFor="status1">
                                     Ativa
                                 </label>
@@ -104,7 +112,14 @@ const ModalTarefa = ({ Model, show, onHide, onAdd, onEdit }) => {
 
                             <div className="form-check form-check-inline">
 
-                                <input className="form-check-input" type="radio" name="status" id="status2" onChange={handleTarefa} value={false} />
+                                <input className="form-check-input" 
+                                type="radio" 
+                                name="status" 
+                                // id="status2" 
+                                onChange={handleTarefa} 
+                                value={false} 
+                                checked={tarefa.status == false || tarefa.status == 'false'}
+                                />
                                 <label className="form-check-label" htmlFor="status2">
                                     Inativa
                                 </label>
