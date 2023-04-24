@@ -18,6 +18,11 @@ class Database {
 
     static async ConnectDatabase() {
 
+        if(this.sequelize != null) {
+            return this.sequelize;
+        }
+
+    
         let config = await dbInternal.DbConfig.findOne();
         if (!config) return null;
         this.dialet = config.dialet;
@@ -37,10 +42,8 @@ class Database {
                 dialect: 'mysql',
                 createDatabase: true,
                 pool: {
-                    max: 100, 
-                    min: 0,
-                    acquire: 30000,
-                    idle: 10000
+                    max: 10, 
+                    min: 1
                 }
             });
         }
@@ -48,10 +51,8 @@ class Database {
             this.sequelize = new Sequelize({
                 dialect: 'sqlite',
                 pool: {
-                    max: 100, 
-                    min: 0,
-                    acquire: 30000,
-                    idle: 10000
+                    max: 10, 
+                    min: 1
                 },
                 storage: `C://ciapp/database/${modo === 0 ? "central" : "entidade"}/${this.databaseName}.sqlite`,
             });

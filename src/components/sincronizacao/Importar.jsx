@@ -29,10 +29,10 @@ const Importar = () => {
             fr.onload = async () => {
                 setLoad(true);
                 var result = await window.api.Action({ controller: "Sincronizacao", action: "SetFile", params: { data: fr.result } });
+                debugger;
                 setLoad(false);
                 if (!result.status) {
                     toast.error(result.text, { autoClose: false });
-                    return;
                 }
                 else{
                     toast.success(result.text);

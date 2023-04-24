@@ -63,6 +63,7 @@ export default function AgendamentosEntidades() {
                 }
             })
 
+
             var repeatedEvents = await generateRepeatedEvents(mappedData);
 
 
@@ -355,7 +356,16 @@ export default function AgendamentosEntidades() {
                                     <p><b>Número do processo:</b> {modalModel.processo.nro_processo}</p>
                                     <div className="col-md-3" >
 
-                                        <img src={modalModel.processo.imagem_prestador} style={{ maxWidth: "150px" }} />
+                                        {
+                                            modalModel.processo.imagem_prestador ?
+                                                <img src={modalModel.processo.imagem_prestador} style={{ maxWidth: "150px" }} />
+                                                :
+                                                <span id="empty-image">
+                                                    <i className="fa fa-image"></i> <br />
+                                                    Foto
+                                                </span>
+                                        }
+
                                     </div>
 
                                     <div className="col-md-8" style={{ padding: "0" }}>

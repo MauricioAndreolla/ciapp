@@ -20,10 +20,10 @@ module.exports = {
         let cursos = await db.models.Curso.findAll({
             where: where
         }).finally(() => {
-            db.sequelize.close();
+            //db.sequelize.close();
           });
         var mappedValues = cursos.map(s => s.dataValues);
-        // await db.sequelize.close();
+        // //await db.sequelize.close();
         return mappedValues;
     },
 
@@ -34,9 +34,9 @@ module.exports = {
                 descricao: payload.descricao,
                 observacao: payload.observacao,
             }).finally(() => {
-                db.sequelize.close();
+                //db.sequelize.close();
               });
-            // await db.sequelize.close();
+            // //await db.sequelize.close();
             return { status: true, text: "Curso/ especialização cadastrada com sucesso!" }
 
         } catch (error) {

@@ -146,12 +146,15 @@ ipcMain.handle('action', async (event, args) => {
 
         //Se a controller não for a de configuração de banco, então valida a conexão com o banco externo
         if (controller != 'config') {
-            let connExternal = await Database.CheckConnectionDatabase();
-            if (!connExternal.status) {
-                dialog.showErrorBox('Não foi possível conectar na base de dados, verifique os dados de autenticação', connExternal.text);
-                return { status: false, text: "Não foi possível conectar na base de dados.\n" + connExternal.text };
+            try {
+                let connExternal = await Database.sequelize.authenticate();
+            } catch (error) {
+                dialog.showErrorBox('Não foi possível conectar na base de dados, verifique os dados de autenticação', error.message);
+                return { status: false, text: "Não foi possível conectar na base de dados.\n" + error.message };
             }
-            if (!Authentication.isAuthenticated && controller != 'login') {
+         
+          
+            if (!Authentication.isAuthenticated && controller != 'login' && (controller.toLowerCase() != 'sincronizacao' && action.toLowerCase() != 'setfile')) {
                 win.webContents.send('redirect-login');
                 return { status: false, text: "Unauthorized", unauthorized: true };
             }

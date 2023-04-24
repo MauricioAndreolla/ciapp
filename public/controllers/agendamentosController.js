@@ -43,9 +43,9 @@ module.exports = {
 
 
             await db.models.Agendamento.bulkCreate(agendamentos).finally(() => {
-                db.sequelize.close();
+                //db.sequelize.close();
             });
-            // await db.sequelize.close();
+            // //await db.sequelize.close();
         } catch (error) {
             return { status: false, text: `Erro interno no servidor. ${error}` };
         }
@@ -91,9 +91,9 @@ module.exports = {
                     Agendamento.ProcessoId = payload.processo.id,
                     Agendamento.TarefaId = payload.tarefa.id
                 await Agendamento.save().finally(() => {
-                    db.sequelize.close();
+                    //db.sequelize.close();
                 });
-                // await db.sequelize.close();
+                // //await db.sequelize.close();
             });
 
 
@@ -113,9 +113,9 @@ module.exports = {
         try {
             Agendamento = await db.models.Agendamento.findByPk(id);
             await Agendamento.destroy().finally(() => {
-                db.sequelize.close();
+                //db.sequelize.close();
             });
-            // await db.sequelize.close();
+            // //await db.sequelize.close();
         } catch (error) {
             return { status: false, text: "Erro interno no servidor." };
         }
@@ -159,7 +159,7 @@ module.exports = {
                 }
             ],
         }).finally(() => {
-            db.sequelize.close();
+            //db.sequelize.close();
         });
 
 
@@ -220,7 +220,7 @@ module.exports = {
             return agendamentos;
         });
 
-        // await db.sequelize.close();
+        // //await db.sequelize.close();
 
         return mappedValues;
     },
@@ -306,7 +306,7 @@ module.exports = {
                 ]
             }
         }).finally(() => {
-            db.sequelize.close();
+            //db.sequelize.close();
         });
 
         var mappedValues = data.map(s => {
@@ -374,7 +374,7 @@ module.exports = {
             return agendamentos;
         });
 
-        // await db.sequelize.close();
+        // //await db.sequelize.close();
         return mappedValues;
     },
 
@@ -419,7 +419,7 @@ module.exports = {
                 },
             ],
         }).finally(() => {
-            db.sequelize.close();
+            //db.sequelize.close();
         });
 
         var mappedValues = data.map(e => {
@@ -462,10 +462,10 @@ module.exports = {
                 AgendamentoId: payload.id_agendamento,
                 ProcessoId: payload.id_processo
             }).finally(() => {
-                db.sequelize.close();
+                //db.sequelize.close();
             });
 
-            // await db.sequelize.close();
+            // //await db.sequelize.close();
         } catch (error) {
             return { status: false, text: "Erro interno no servidor. " + error.message };
         }

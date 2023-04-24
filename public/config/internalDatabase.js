@@ -6,9 +6,7 @@ const sequelize = new Sequelize({
   storage: `C://ciapp/database/${modo === 0 ? "central" : "entidade"}/internalDataBase.sqlite`,
   pool: {
     max: 100,
-    min: 0,
-    acquire: 30000,
-    idle: 10000
+    min: 1
   }
 });
 

@@ -87,8 +87,8 @@ module.exports = {
                     ]
                 }
             ]
-        }).finally(() => {
-            db.sequelize.close();
+        }).finally(async () => {
+             //db.sequelize.close();
         });
 
         var mappedValues = Prestadores.map(s => {
@@ -108,7 +108,7 @@ module.exports = {
                 }).reduce((a, b) => a + b, 0) : 0,
             }
         });
-        // await db.sequelize.close();
+        // //await db.sequelize.close();
         return mappedValues;
     },
 
@@ -148,7 +148,7 @@ module.exports = {
                 },
             ]
         }).finally(() => {
-            db.sequelize.close();
+            //db.sequelize.close();
         });
 
         let mappedValues = Prestadores.map(s => {
@@ -249,15 +249,15 @@ module.exports = {
             }
         });
 
-        // await db.sequelize.close();
+        // //await db.sequelize.close();
         return mappedValues;
     },
 
     async GetPrestadorSimple(id) {
         let Prestadores = await db.models.Prestador.findByPk(id).finally(() => {
-            db.sequelize.close();
+            //db.sequelize.close();
         });
-        // await db.sequelize.close();
+        // //await db.sequelize.close();
         return {
             nome: Prestadores.nome,
             image: Prestadores.image,
@@ -404,7 +404,7 @@ module.exports = {
 
                 }
             }
-            await db.sequelize.close();
+            //await db.sequelize.close();
             return { status: true, text: `Prestador(a) ${Prestador.nome} cadastrado(a) com sucesso!`, id: Prestador.id };
 
         } catch (error) {
@@ -593,7 +593,7 @@ module.exports = {
             } else {
                 FichaMedica.setDrogas([]);
             }
-            await db.sequelize.close();
+            //await db.sequelize.close();
             return { status: true, text: `Prestador(a) ${Prestador.nome} alterado(a) com sucesso!` };
 
         } catch (error) {

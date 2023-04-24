@@ -41,17 +41,17 @@ const SetFileCentral = async (payload) => {
                 ref_integracao: AtestadoFrequencia.id
 
             }).finally(() => {
-                db.sequelize.close();
+                //db.sequelize.close();
             });
 
         }
         else {
 
-            checkAtestadoExistente.dt_entrada.AtestadoFrequencia.dt_entrada;
-            checkAtestadoExistente.dt_saida.AtestadoFrequencia.dt_saida;
-            checkAtestadoExistente.observacao.AtestadoFrequencia.observacao;
+            checkAtestadoExistente.dt_entrada = AtestadoFrequencia.dt_entrada;
+            checkAtestadoExistente.dt_saida = AtestadoFrequencia.dt_saida;
+            checkAtestadoExistente.observacao = AtestadoFrequencia.observacao;
             await checkAtestadoExistente.save().finally(() => {
-                db.sequelize.close();
+                //db.sequelize.close();
             });
         }
 

@@ -20,11 +20,11 @@ module.exports = {
         let beneficios = await db.models.Beneficio.findAll({
             where: where
         }).finally(() => {
-            db.sequelize.close();
+            //db.sequelize.close();
           });
 
         var mappedValues = beneficios.map(s => s.dataValues);
-        // await db.sequelize.close();
+        // //await db.sequelize.close();
 
         return mappedValues;
     },
@@ -36,10 +36,10 @@ module.exports = {
                 nome: payload.nome,
                 observacao: payload.observacao,
             }).finally(() => {
-                db.sequelize.close();
+                //db.sequelize.close();
               });
 
-            // await db.sequelize.close();
+            // //await db.sequelize.close();
             return { status: true, text: "Beneficio cadastrado com sucesso!" }
 
         } catch (error) {
