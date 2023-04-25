@@ -61,14 +61,7 @@ export default function Index() {
         return "--";
     }
 
-    const columnsAgendamento = [
-        { Header: 'Processo', accessor: e => e.processo.nro_processo },
-        { Header: 'Tarefa', accessor: e => e.tarefa.titulo },
-        { Header: 'Data inicial', accessor: e => formatDateInitial(e) },
-        { Header: 'Data final', accessor: e => e.agendamento_dia_final == null ? "Sem data informada" : formatDateFinally(e) },
-        { Header: 'Hora Inicial', accessor: 'agendamento_horario_inicio' },
-        { Header: 'Hora Final', accessor: 'agendamento_horario_fim' },
-    ]
+
 
     const CreateAgendamento = () => {
         handleModalAgendamento(true);
@@ -181,7 +174,6 @@ export default function Index() {
     }
     useEffect(() => {
         fetchData();
-        console.log(agendamentos)
     }, []);
 
     return (
@@ -251,26 +243,7 @@ export default function Index() {
                 </div>
             </div>
 
-            {/* <div className='row table-container'>
-                <div className='col-md-12'>
-                    {agendamentos.length > 0 ?
-                        <div>
-                            <Title title={"Agendamentos Cadastrados"} />
-                            <div className="row">
-                                <div className="col-md-12">
-                                    <Table
-                                        columns={columnsAgendamento}
-                                        data={agendamentos}
-                                        onEdit={EditAgendamento}
-                                        onDelete={DeleteAgendamento}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        : <div className="col-md-12 zero-count">Nenhum registro localizado.</div>}
-
-                </div>
-            </div> */}
+        
 
             <ModalAgendamento Model={modelAgendamento} show={showModalAgendamento} onHide={() => { handleModalAgendamento(false) }} onAdd={createAgendamento} onEdit={editAgendamento} />
             <Load show={load} />
