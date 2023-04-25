@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import Table from '../layout/Table';
 import ModalAgendamento from './ModalAgendamento';
 import Load from "../layout/Load";
+import { Button } from 'react-bootstrap';
 
 export default function Index() {
     const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function Index() {
     const [agendamento, setAgendamento] = useState([]);
     const [agendamentos, setAgendamentos] = useState({
         agendamento_dia_inicial: '',
-        agendamento_dia_final: '',
+        agendamento_dia_final: null,
         agendamento_horario_inicio: '09:00',
         agendamento_horario_fim: '17:00',
         agendamento_dias_semana: {},
@@ -28,7 +29,7 @@ export default function Index() {
     const [modelAgendamento, setModelAgendamento] = useState({
         id: null,
         agendamento_dia_inicial: '',
-        agendamento_dia_final: '',
+        agendamento_dia_final: null,
         agendamento_horario_inicio: '09:00',
         agendamento_horario_fim: '17:00',
         agendamento_dias_semana: [],
@@ -64,7 +65,7 @@ export default function Index() {
         { Header: 'Processo', accessor: e => e.processo.nro_processo },
         { Header: 'Tarefa', accessor: e => e.tarefa.titulo },
         { Header: 'Data inicial', accessor: e => formatDateInitial(e) },
-        { Header: 'Data final', accessor: e => formatDateFinally(e) },
+        { Header: 'Data final', accessor: e => e.agendamento_dia_final == null ? "Sem data informada" : formatDateFinally(e) },
         { Header: 'Hora Inicial', accessor: 'agendamento_horario_inicio' },
         { Header: 'Hora Final', accessor: 'agendamento_horario_fim' },
     ]
@@ -180,11 +181,12 @@ export default function Index() {
     }
     useEffect(() => {
         fetchData();
+        console.log(agendamentos)
     }, []);
+
     return (
 
         <>
-            <Title title={"Agendamentos"} />
             <div className='menu'>
 
                 <button className='menu-button button-dark-blue ' onClick={() => { CreateAgendamento() }}>
@@ -193,6 +195,63 @@ export default function Index() {
             </div>
 
             <div className='row table-container'>
+                <div className='col-md-12'>
+                    {agendamentos.length > 0 ?
+                        <div className="tabs-agendamentos">
+                            <Title title={"Agendamentos"} />
+
+                            <table className='table table-small table-bordered table-hover'>
+                                <thead>
+                                    <tr>
+                                        <th>Processo</th>
+                                        <th>Tarefa</th>
+                                        <th>Data Inicial</th>
+                                        <th>Data Final</th>
+                                        <th>Hora Inicial</th>
+                                        <th>Hora Final</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {agendamentos.map(r => (
+                                        <tr key={r.id} style={{ verticalAlign: "middle" }}>
+                                            <td>{r.processo.nro_processo}</td>
+                                            <td>{r.tarefa.titulo}</td>
+                                            <td>{new Date(r.agendamento_dia_inicial).toLocaleDateString("pt-BR")}</td>
+                                            <td>{r.agendamento_dia_final == null ? "Sem data definida" : new Date(r.agendamento_dia_final).toLocaleDateString("pt-BR")}</td>
+                                            <td>{r.agendamento_horario_inicio}</td>
+                                            <td>{r.agendamento_horario_fim}</td>
+
+                                            <td>
+                                                <div className="btn-group" role="group">
+
+                                                    <span id="btnGroupDrop1" type="button" className="btn btn-custom dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i className='fa fa-cog'></i> Opções
+                                                    </span>
+                                                    <ul className="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                        <li> <Button className="dropdown-item" id="edit" onClick={(_) => EditAgendamento(r)} > <i className='fa fa-edit'></i> Editar</Button></li>
+                                                        {r.somente_leitura == true ?
+                                                            null
+                                                            :
+                                                            <li> <Button className="dropdown-item" id="delete"
+                                                                onClick={(_) => { DeleteAgendamento(r) }}> <i className='fa fa-trash'></i> Excluir</Button>
+                                                            </li>
+                                                        }
+
+                                                    </ul>
+                                                </div>
+                                            </td>
+
+                                        </tr>
+
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        : <div className="col-md-12 zero-count">Nenhum registro localizado.</div>}
+                </div>
+            </div>
+
+            {/* <div className='row table-container'>
                 <div className='col-md-12'>
                     {agendamentos.length > 0 ?
                         <div>
@@ -211,7 +270,7 @@ export default function Index() {
                         : <div className="col-md-12 zero-count">Nenhum registro localizado.</div>}
 
                 </div>
-            </div>
+            </div> */}
 
             <ModalAgendamento Model={modelAgendamento} show={showModalAgendamento} onHide={() => { handleModalAgendamento(false) }} onAdd={createAgendamento} onEdit={editAgendamento} />
             <Load show={load} />

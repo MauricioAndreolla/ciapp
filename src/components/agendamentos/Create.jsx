@@ -28,6 +28,7 @@ export default function Create() {
     const [modelAgendamento, setModelAgendamento] = useState({
         id: null,
         agendamento_dia_inicial: '',
+        agendamento_dia_final: null,
         agendamento_horario_inicio: '08:00',
         agendamento_horario_fim: '18:00',
         agendamento_dias_semana: [],
@@ -64,7 +65,7 @@ export default function Create() {
                 label: `${element.nome} - ${element.cnpj}`
             }
         });
-        debugger;
+        
         setEntidades(values);
 
         // let data = tarefas.map((e) => {
@@ -110,7 +111,6 @@ export default function Create() {
 
         setAgendamento([...agendamento], {prestador});
         setProcessos(value);
-        console.log(agendamento);
     }
 
 

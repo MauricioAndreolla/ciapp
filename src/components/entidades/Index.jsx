@@ -231,8 +231,15 @@ const Index = () => {
                                                                                         :
                                                                                         <li> <Button className="dropdown-item" id="credenciar" onClick={(_) => { Credenciar(r) }}> <i className='fa fa-plus'></i> Credenciar</Button></li>
                                                                                     }
-                                                                                    <li> <Button className="dropdown-item" id="delete"
-                                                                                        onClick={(_) => { Delete(r.id, r.nome) }}> <i className='fa fa-trash'></i> Excluir</Button></li>
+
+                                                                                    {
+                                                                                        r.somente_leitura == true ?
+                                                                                        null
+                                                                                        :
+                                                                                        <li> <Button className="dropdown-item" id="delete"
+                                                                                            onClick={(_) => { Delete(r.id, r.nome) }}> <i className='fa fa-trash'></i> Excluir</Button>
+                                                                                        </li>
+                                                                                    }
                                                                                 </>
                                                                                 :
                                                                                 <>

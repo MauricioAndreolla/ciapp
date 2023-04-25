@@ -43,7 +43,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                 {
                     id: null,
                     agendamento_dia_inicial: '',
-                    agendamento_dia_final: '',
+                    agendamento_dia_final: null,
                     agendamento_horario_inicio: '09:00',
                     agendamento_horario_fim: '17:00',
                     agendamento_dias_semana: [],
@@ -193,7 +193,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         setAgendamento({
             id: null,
             agendamento_dia_inicial: '',
-            agendamento_dia_final: '',
+            agendamento_dia_final: null,
             agendamento_horario_inicio: '09:00',
             agendamento_horario_fim: '17:00',
             agendamento_dias_semana: [],
@@ -229,7 +229,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
     const columnsAgendamento = [
         { id: e => e.agendamento_dia_inicial, Header: 'Data inicial', accessor: e => formatDateInitial(e) },
-        { id: e => e.agendamento_dia_final, Header: 'Data final', accessor: e => e.agendamento_dia_final == '' ? "Sem data definida" : formatDateFinally(e)   },
+        { id: e => e.agendamento_dia_final, Header: 'Data final', accessor: e => e.agendamento_dia_final == null ? "Sem data definida" : formatDateFinally(e)   },
         { Header: 'Horário inicial', accessor: 'agendamento_horario_inicio' },
         { Header: 'Horário fim', accessor: 'agendamento_horario_fim' },
     ];
