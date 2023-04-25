@@ -21,6 +21,7 @@ const ModalTarefa = ({ Model, show, onHide, onAdd, onEdit }) => {
 
     const handleHide = () => {
         onHide();
+        resetTarefa();
     };
 
     const handleTarefa = (evt, name = null) => {
@@ -74,6 +75,7 @@ const ModalTarefa = ({ Model, show, onHide, onAdd, onEdit }) => {
                                 type="text"
                                 placeholder="Titulo"
                                 value={tarefa.titulo}
+                                disabled ={tarefa.somente_leitura ?? false}
                                 onChange={handleTarefa}
                             />
 
@@ -88,6 +90,7 @@ const ModalTarefa = ({ Model, show, onHide, onAdd, onEdit }) => {
                                 type="text"
                                 placeholder="Descricao"
                                 value={tarefa.descricao}
+                                disabled ={tarefa.somente_leitura ?? false}
                                 onChange={handleTarefa}
 
                             />

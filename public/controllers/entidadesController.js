@@ -291,6 +291,7 @@ module.exports = {
                     titulo: e.titulo,
                     descricao: e.descricao,
                     status: e.status,
+                    somente_leitura: e.somente_leitura,
                 }
             })
         }

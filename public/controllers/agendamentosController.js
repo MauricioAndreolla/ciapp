@@ -397,8 +397,8 @@ module.exports = {
             return ({
                 dia_inicial: new Date(e.dt_entrada).toLocaleDateString('pt-BR'),
                 dia_final: new Date(e.dt_saida).toLocaleDateString('pt-BR'),
-                dt_entrada: new Date(e.dt_entrada).toLocaleTimeString('pt-BR'),
-                dt_saida: new Date(e.dt_saida).toLocaleTimeString('pt-BR'),
+                dt_entrada: e.dt_entrada.toLocaleString("pt-BR"),
+                dt_saida: e.dt_saida.toLocaleString("pt-BR"),
                 observacao: e.observacao,
                 nome_prestador: e.Processo.Prestadore.nome,
                 entidade: e.Processo.Entidade.nome,
@@ -437,7 +437,7 @@ module.exports = {
                     return diff_seconds(s.dt_entrada, s.dt_saida)
                 }).reduce((a, b) => a + b, 0)
             }).reduce((a, b) => a + b, 0);
-            
+
 
 
             if ((total + totalCumprido) > (processo.horas_cumprir * 3600))

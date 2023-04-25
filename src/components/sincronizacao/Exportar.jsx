@@ -38,7 +38,7 @@ const Exportar = () => {
                 <p>Para proteger a integridade dos dados, algumas ações serão desabilitadas após gerar o arquivo:</p>
                 <ul>
                     <li><small><b>Exclusão</b> da entidade ${entidade.label}</small></li>
-                    <li><small><b>Alteração</b> dos agendamentos da entidade ${entidade.label} (apenas inativação)</small></li>
+                    <li><small><b>Alteração</b> dos agendamentos da entidade ${entidade.label}</small></li>
                     <li><small><b>Exclusão</b> dos agendamentos da entidade ${entidade.label}</small></li>
                     <li><small><b>Alteração</b> das tarefas da entidade ${entidade.label} (apenas inativação)</small></li>
                     <li><small><b>Exclusão</b> das tarefas da entidade ${entidade.label}</small></li>

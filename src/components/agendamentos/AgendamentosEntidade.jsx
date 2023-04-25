@@ -26,7 +26,7 @@ export default function AgendamentosEntidades() {
         horario_entrada: null,
         horario_saida: null,
         observacao: "",
-        data: date.toISOString().substring(0, 10)
+        data: date.toLocaleDateString().split('/').reverse().join('-')
     });
 
 
@@ -188,29 +188,52 @@ export default function AgendamentosEntidades() {
         })
     }
 
+    const checkTime = async (timeInput1, timeInput2) => {
+        const date1 = new Date(`1970-01-01T${timeInput1}:00`);
+        const date2 = new Date(`1970-01-01T${timeInput2}:00`);
+
+        if (date1.getTime() > date2.getTime()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     const submitRegistro = async () => {
         var id_agendamento = modalModel.id;
         const id_processo = modalModel.processo.id;
-        setLoad(true);
-        const postResult = await window.api.Action({ controller: "Agendamentos", action: "Registrar", params: { id_processo: id_processo, id_agendamento: id_agendamento, registro: registro } });
-        setLoad(false);
-        if (!postResult.status) {
-            toast.error(postResult.text, { autoClose: false });
-        } else {
-            toast.success(postResult.text, { autoClose: 3000 });
+
+        if (!registro.horario_entrada || !registro.horario_saida) {
+            toast.error("Por favor informe os horários de entrada e saída.", { autoClose: 3000 });
+
         }
+        else if (await checkTime(registro.horario_entrada, registro.horario_saida)) {
+            toast.error("O horário de entrada deve ser menor que o horário de saída.", { autoClose: 3000 });
+        }
+        else {
+
+            setLoad(true);
+            const postResult = await window.api.Action({ controller: "Agendamentos", action: "Registrar", params: { id_processo: id_processo, id_agendamento: id_agendamento, registro: registro } });
+            setLoad(false);
+            if (!postResult.status) {
+                toast.error(postResult.text, { autoClose: false });
+            } else {
+                toast.success(postResult.text, { autoClose: 3000 });
+            }
 
 
-        if (postResult.status) {
-            setShow(false);
-            setRegistro({
-                horario_entrada: null,
-                horario_saida: null,
-                observacao: "",
-                data: date.toISOString().substring(0, 10)
-            });
-            fetchData();
+            if (postResult.status) {
+                setShow(false);
+                setRegistro({
+                    horario_entrada: null,
+                    horario_saida: null,
+                    observacao: "",
+                    data: date.toISOString().substring(0, 10)
+                });
+                fetchData();
+            }
         }
+
 
     }
 

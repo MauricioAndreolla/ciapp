@@ -958,9 +958,8 @@ const Create = () => {
                                 <option defaultValue={true} value={0}>Branco</option>
                                 <option value={1}>Preto</option>
                                 <option value={2}>Pardo</option>
-                                <option value={3}>Pardo</option>
-                                <option value={4}>Amarela</option>
-                                <option value={5}>Indigena</option>
+                                <option value={3}>Amarela</option>
+                                <option value={4}>Indigena</option>
                             </select>
                         </div>
 

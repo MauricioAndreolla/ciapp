@@ -136,7 +136,6 @@ const Index = () => {
             const atestados = data.map((e) => {
                 return ({
                     "Número Processo": e.nro_processo,
-                    "Prestador": e.nome_prestador,
                     "Tarefa": e.tarefa,
                     "Entidade": e.entidade,
                     "Hora de entrada": e.dt_entrada,
@@ -154,7 +153,7 @@ const Index = () => {
                     { text: `Nome: ${atestados[0]?.Prestador ?? 'Prestador'}`, style: 'header2' },
                     { text: `Data: ${new Date().toLocaleDateString('pt-BR')}`, style: 'header3' },
                     table(atestados,
-                        ['Número Processo', 'Prestador', 'Tarefa', 'Entidade', 'Hora de entrada', 'Hora de saída', 'Horas Cumpridas', 'Observação'],
+                        ['Número Processo', 'Tarefa', 'Entidade', 'Hora de entrada', 'Hora de saída', 'Horas Cumpridas', 'Observação'],
                     )
                 ],
                 styles: {

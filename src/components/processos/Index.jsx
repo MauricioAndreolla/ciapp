@@ -164,34 +164,38 @@ const Index = () => {
                                             <td>{r.central}</td>
 
                                             <td>
-                                                <div className="btn-group" role="group">
 
-                                                    <span id="btnGroupDrop1" type="button" className="btn btn-custom dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i className='fa fa-cog'></i> opções
-                                                    </span>
-                                                    <ul className="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                        {
-                                                            user.MODO_APLICACAO === 0 ?
 
-                                                                <>
+                                                {
+                                                    user.MODO_APLICACAO === 0 ?
+
+                                                        <>
+                                                            <div className="btn-group" role="group">
+
+                                                                <span id="btnGroupDrop1" type="button" className="btn btn-custom dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <i className='fa fa-cog'></i> opções
+                                                                </span>
+                                                                <ul className="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                                     <li> <NavLink className="dropdown-item" id="edit" to={`/processos/edit/${r.id}`}> <i className='fa fa-edit'></i> Editar</NavLink></li>
                                                                     {!r.somente_leitura ?
                                                                         <li> <a className="dropdown-item btn" onClick={() => { Deletar(r.id, r.nro_processo) }} to="#"><i className="fa fa-trash"></i> Deletar</a></li>
                                                                         : null
                                                                     }
-                                                                </>
+                                                                </ul>
+                                                            </div>
 
-                                                                :
+                                                        </>
 
-                                                                null
+                                                        :
 
-                                                            // <li> <NavLink className="dropdown-item" id="edit" to={`/processos/edit/${r.id}`}> <i className='fa fa-eye'></i> Visualizar</NavLink></li>
-                                                        }
+                                                        null
 
-                                                        {/* <li> <a className="dropdown-item" onClick={() => { showRegistros(r.id) }} to="#"><i className="fa-solid fa-list-check"></i> Ver registros</a></li>
+                                                    // <li> <NavLink className="dropdown-item" id="edit" to={`/processos/edit/${r.id}`}> <i className='fa fa-eye'></i> Visualizar</NavLink></li>
+                                                }
+
+                                                {/* <li> <a className="dropdown-item" onClick={() => { showRegistros(r.id) }} to="#"><i className="fa-solid fa-list-check"></i> Ver registros</a></li>
                                                         <li> <a className="dropdown-item" onClick={() => { DeleteProcesso(r.id, r.nro_processo) }} to="#"><i className="fa-solid fa-trash"></i> Excluir </a></li> */}
-                                                    </ul>
-                                                </div>
+
 
 
                                             </td>
