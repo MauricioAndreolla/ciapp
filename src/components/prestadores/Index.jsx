@@ -343,13 +343,13 @@ const Index = () => {
                                                                 :
                                                                 <>
                                                                     <li> <a className="dropdown-item btn" onClick={() => { Visualizar(r.id) }} to="#"><i className="fa fa-eye"></i> Detalhes</a></li>
-                                                                    <li>
-                                                                        <a className="dropdown-item btn" onClick={() => { GerarListagem(r) }}><i className="fas fa-solid fa-file"> </i> Atestado</a>
-                                                                    </li>
                                                                 </>
 
 
                                                         }
+                                                        <li>
+                                                            <a className="dropdown-item btn" onClick={() => { GerarListagem(r) }}><i className="fas fa-solid fa-file"> </i> Atestado</a>
+                                                        </li>
 
                                                         <li> <a className="dropdown-item btn" onClick={() => { Registros(r.id) }} to="#"><i className="fa fa-eye"></i> Ver Registros</a></li>
 

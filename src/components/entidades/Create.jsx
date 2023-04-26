@@ -57,7 +57,7 @@ const Create = () => {
             setLoad(false);
             setEntidade(data);
             setEndereco(data.endereco);
-           
+
         }
     }
 
@@ -82,7 +82,7 @@ const Create = () => {
             entidade,
             endereco
         }
-        
+
         confirmAlert({
             title: 'Confirmação',
             message: `Confirma a criação da entidade ${entidade.nome}`,
@@ -95,6 +95,10 @@ const Create = () => {
                         setLoad(false);
                         if (postResult.status) {
                             toast.success(postResult.text, { autoClose: 3000 });
+                            if (postResult.mensagemAdicional != '') {
+                                toast.warning(postResult.mensagemAdicional, { autoClose: false });
+
+                            }
                             navigate("/entidades");
                         }
                         else {
@@ -114,7 +118,7 @@ const Create = () => {
 
     const editEntidade = async () => {
         resetTarefasEmCentrais();
-        
+
         const payload = {
             entidade,
             endereco
@@ -179,7 +183,7 @@ const Create = () => {
         return `${cnpjLimpo.slice(0, 2)}.${cnpjLimpo.slice(2, 5)}.${cnpjLimpo.slice(5, 8)}/${cnpjLimpo.slice(8, 12)}-${cnpjLimpo.slice(12)}`;
     }
 
-   
+
     const handleEntidade = (evt, prop_name = null) => {
         let value = evt.value ?? evt.target.value;
 
@@ -262,12 +266,12 @@ const Create = () => {
     }
 
     const EditTarefa = (object) => {
-        
+
         if (object) {
             var tarefas = entidade.tarefas;
 
             var exist = tarefas.find(s => s.titulo == object.titulo && s.id != object.id);
-            
+
             if (exist) {
                 toast.error(`Tarefa "${object.titulo}" já informado`, { autoClose: false });
                 HandleModalTarefa(false);
@@ -364,7 +368,7 @@ const Create = () => {
                                     required={true}
                                     value={entidade.cnpj}
                                     onChange={handleEntidade}
-                                    maxLength={17}
+                                    maxLength={18}
                                 />
                             </div>
                         </div>
@@ -432,9 +436,9 @@ const Create = () => {
 
                         <div className="form-check form-check-inline">
 
-                            <input className="form-check-input" type="radio" name="tipoInstituicao" id="entidade"  defaultChecked={true} 
-                            value="1"
-                            onChange={handleEntidade}
+                            <input className="form-check-input" type="radio" name="tipoInstituicao" id="entidade" defaultChecked={true}
+                                value="1"
+                                onChange={handleEntidade}
                             />
                             <label className="form-check-label" htmlFor="entidade">
                                 Entidade parceira
@@ -444,7 +448,7 @@ const Create = () => {
                         <div className="form-check form-check-inline">
 
                             <input className="form-check-input" type="radio" value="0" name="tipoInstituicao" id="central"
-                            onChange={handleEntidade}
+                                onChange={handleEntidade}
                             />
                             <label className="form-check-label" htmlFor="central">
                                 Central

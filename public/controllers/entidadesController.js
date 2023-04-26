@@ -5,6 +5,7 @@ const { TipoInstituicao } = require('../utils/enums');
 module.exports = {
 
     async Create(payload) {
+        let mensagemAdicional = '';
         if (!payload)
             return { status: false, text: "Nenhuma informação recebida" };
 
@@ -41,8 +42,10 @@ module.exports = {
                 }
             });
 
-            if (check.length > 0)
-                return { status: false, text: `CNPJ já cadastrado no sistema` };
+            if (check.length > 0){
+                mensagemAdicional = "CNPJ já cadastrado se certifique se esta correto";
+            }
+               
 
             await db.models.Endereco.create({
                 rua: payload.endereco.rua,
@@ -77,7 +80,7 @@ module.exports = {
         } catch (error) {
             return { status: false, text: `Erro interno no servidor` };
         }
-        return { status: true, text: `Entidade ${payload.entidade.nome} criada!` };
+        return { status: true, text: `Entidade ${payload.entidade.nome} criada!`, mensagemAdicional: mensagemAdicional  };
     },
 
     async Edit(payload) {
