@@ -166,6 +166,7 @@ module.exports = {
                 telefone1: s.telefone1,
                 telefone2: s.telefone2,
                 religiao: s.religiao,
+                genero: s.GeneroId,
                 beneficios: s.Beneficios.length === 0 ? [] : s.Beneficios.map(b => {
                     return {
                         id: b.id,
@@ -310,6 +311,7 @@ module.exports = {
                 telefone1: payload.prestador.telefone1,
                 telefone2: payload.prestador.telefone2,
                 religiao: payload.prestador.religiao,
+                GeneroId: payload.prestador.genero,
                 image: buffer
 
             });
@@ -459,6 +461,7 @@ module.exports = {
             Prestador.telefone2 = payload.prestador.telefone2;
             Prestador.religiao = payload.prestador.religiao;
             Prestador.image = buffer;
+            Prestador.GeneroId = payload.prestador.genero,
             await Prestador.save();
 
             if (payload.trabalho) {

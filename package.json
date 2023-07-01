@@ -36,7 +36,9 @@
     "react-table": "^7.8.0",
     "react-toastify": "^9.1.1",
     "sequelize": "^6.28.0",
+    "sequelize-cli": "^6.6.1",
     "sqlite3": "^5.1.4",
+    "umzug": "^3.2.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -44,9 +46,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron-start": "set ELECTRON_START_URL=http://localhost:3000 && electron .",
+    "electron-start": "set ELECTRON_START_URL=http://192.168.100.53:3000 && electron .",
     "electron-build": "npm run build && electron-builder",
-    "dev": "concurrently \"npm run start\" \"wait-on http://localhost:3000 && npm run electron-start\""
+    "dev": "concurrently \"npm run start\" \"wait-on http://192.168.100.53:3000 && npm run electron-start\""
   },
   "eslintConfig": {
     "extends": [

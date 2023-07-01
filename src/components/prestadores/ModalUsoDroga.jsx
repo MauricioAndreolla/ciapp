@@ -19,7 +19,7 @@ const ModalUsoDroga = ({ show, onHide, onAdd }) => {
 
     const getDrogas = async () => {
         setLoad(true);
-        const data = await await window.api.Action({ controller: "Droga", action: "GetDrogas" });
+        const data = await window.api.Action({ controller: "Droga", action: "GetDrogas" });
         setLoad(false);
         setDrogas(data.map(s => { return { value: s.id, label: s.nome } }))
     }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from "react";
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom';
+import Select from 'react-select';
 import Title from "../layout/Title";
 import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
 import { NavLink } from "react-router-dom";
@@ -9,6 +10,7 @@ import ModalHabilidade from './ModalHabilidade';
 import ModalCurso from './ModalCursos';
 import ModalUsoDroga from './ModalUsoDroga';
 import ModalBeneficios from './ModalBeneficios';
+import ModalCreateGenero from './ModalCreateGenero';
 
 import { toast } from "react-toastify";
 import { confirmAlert } from 'react-confirm-alert';
@@ -26,6 +28,7 @@ const Create = () => {
     const { id } = useParams();
     const [tempID, setempID] = useState(0);
     const [image, setImage] = useState('');
+    const [generos, setGeneros] = useState();
     const [prestador, setPrestador] = useState({
         nome: '',
         cpf: '',
@@ -38,6 +41,7 @@ const Create = () => {
         telefone1: '',
         telefone2: '',
         religiao: '',
+        genero: 1,
         possui_beneficios: false,
         familiares: [],
         beneficios: [],
@@ -288,7 +292,6 @@ const Create = () => {
         return formattedValue;
     }
 
-
     const handleSaude = (evt, prop_name = null) => {
 
         const value = evt.value ?? evt.target.value;
@@ -302,6 +305,7 @@ const Create = () => {
         })
 
     }
+
     const handleTrabalho = (evt, prop_name = null) => {
 
         const value = evt.value ?? evt.target.value;
@@ -352,6 +356,28 @@ const Create = () => {
         handleModalUsoDroga(false);
     }
 
+    const [showModalGenero, setShowModalGenero] = useState(false);
+
+    const handleModalGenero = (show = true) => {
+        setShowModalGenero(show);
+    }
+    const addNewGenero = async (genero) => {
+
+        setLoad(true);
+        const data = await await window.api.Action({ controller: "Genero", action: "CreateGenero", params: genero });
+        setLoad(false);
+        if(!data.status){
+            toast.error(`Erro: ${data.text}`, { autoClose: false });
+        }
+        else{
+            toast.success(data.text);
+            await getGeneros();
+            handleModalGenero(false);
+        }
+     
+    }
+
+
     const [showModalCurso, setShowModalCurso] = useState(false);
 
     const handleModalCurso = (show = true) => {
@@ -376,7 +402,6 @@ const Create = () => {
                 }
             }
         }
-
         setShowModalCurso(false)
     }
 
@@ -681,7 +706,28 @@ const Create = () => {
         }
 
     }
+    const handleGenero = (evt, name = null) => {
 
+        const value = evt.value ?? evt.target.value;
+
+        if (name && name.name) {
+            setPrestador
+                ({
+                    ...prestador,
+                    [name.name ?? evt.target.name]: value
+                });
+
+        }
+        else {
+            setPrestador
+                ({
+                    ...prestador,
+                    [name ? name : evt.target.name]: value
+                });
+
+        }
+
+    }
 
     const columnsFamiliar = [
         { Header: 'Nome', accessor: 'familiar_nome' },
@@ -690,12 +736,18 @@ const Create = () => {
         { Header: 'Profissão', accessor: 'familiar_profissao' },
     ];
 
+    const getGeneros = async () => {
+        const data = await window.api.Action({ controller: "Genero", action: "GetGeneros" });
+        setGeneros(data.map(s => { return { value: s.id, label: s.descricao } }))
+    }
+
     useEffect(() => {
 
         if (id) {
 
             const fetchData = async () => {
                 setLoad(true);
+                await getGeneros();
                 let data = await window.api.Action({ controller: "Prestador", action: "GetPrestador", params: id });
                 data = data[0];
                 setImage(data.image);
@@ -716,7 +768,8 @@ const Create = () => {
                     beneficios: data.beneficios,
                     habilidades: data.habilidades,
                     cursos: data.cursos,
-                    saude: data.saude
+                    saude: data.saude,
+                    genero: data.genero
                 });
 
                 setTrabalho(data.trabalho);
@@ -734,6 +787,15 @@ const Create = () => {
 
             fetchData();
         }
+        else {
+            const fetchData = async () => {
+                setLoad(true);
+                await getGeneros();
+                setLoad(false);
+            }
+            fetchData();
+        }
+
 
     }, []);
 
@@ -949,7 +1011,7 @@ const Create = () => {
                         </div>
 
                         <div className="col-md-3">
-                            <label htmlFor="nome">Etnia <small className="campo-obrigatorio"></small></label>
+                            <label htmlFor="etnia">Etnia <small className="campo-obrigatorio"></small></label>
                             <select className="select-custom w-10 form-select form-select-md" id="etnia" name="etnia"
                                 value={prestador.etnia}
                                 required={true}
@@ -1007,6 +1069,30 @@ const Create = () => {
                                 onInput={handleInputChange}
                                 onChange={handleInputChange}
                             />
+                        </div>
+
+                        <div className="col-md-3">
+                            <label htmlFor="genero">Gênero <small className="campo-obrigatorio"></small></label>
+                            <div className="input-group" style={{ 
+                                flexWrap: 'nowrap',
+                                alignItems: 'stretch',
+                                width: '100%',
+                                justifyContent: 'space-between'
+                                }}>
+                                <div style={{ width: '100%' }}>
+                                    <Select
+                                        options={generos}
+                                        id="genero"
+                                        name="genero"
+                                        placeholder=""
+                                        value={(generos != null && generos.length > 0) ? generos.find(s => s.value == prestador.genero) : 1}
+                                        onChange={handleGenero}
+                                    />
+                                </div>
+
+                                <button className="btn btn-blue" onClick={() => { handleModalGenero(true) }}><i className="fa-solid fa-plus"></i></button>
+                            </div>
+
                         </div>
 
                     </div>
@@ -1347,6 +1433,9 @@ const Create = () => {
             <ModalBeneficios show={showModalBeneficio} onHide={() => { handleModalBeneficio(false) }} onAdd={addNewBeneficio} />
             <ModalCurso show={showModalCurso} onHide={() => { handleModalCurso(false) }} onAdd={addNewCurso} />
             <ModalUsoDroga show={showModalUsoDroga} onHide={() => { handleModalUsoDroga(false) }} onAdd={addNewUsoDroga} />
+            <ModalCreateGenero show={showModalGenero} onHide={() => { handleModalGenero(false) }} onAdd={addNewGenero} />
+
+            
             <Load show={load} />
         </>
     );

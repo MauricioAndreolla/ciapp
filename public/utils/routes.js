@@ -13,7 +13,7 @@ const Prestador = require('../controllers/prestadorController');
 const Vara = require('../controllers/varaController');
 const Processo = require('../controllers/processoController');
 const Sincronizacao = require('../controllers/sincronizacaoController');
-
+const Genero = require('../controllers/generosController');
 
 module.exports = {
 

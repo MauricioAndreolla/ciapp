@@ -19,6 +19,9 @@ const Processo = require('./Processo');
 const Tarefa = require('./Tarefa');
 const Agendamento = require('./Agendamento');
 const AtestadoFrequencia = require('./AtestadoFrequencia');
+const Genero = require('./Genero');
+
+Prestador.belongsTo(Genero); 
 
 Endereco.belongsTo(Cidade);
 Cidade.belongsTo(UF);
@@ -94,6 +97,7 @@ module.exports = {
     Trabalho,
     FichaMedicaDrogas,
     Vara,
-    Processo
+    Processo,
+    Genero
     
 };

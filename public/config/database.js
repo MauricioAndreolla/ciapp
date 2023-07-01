@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const { Umzug, SequelizeStorage } = require("umzug");
 const dbInternal = require('../models/indexInternal');
 const Encrypt = require('../utils/encrypt');
 const mysql = require('mysql2/promise');
@@ -108,6 +109,24 @@ class Database {
             return { status: false, text: "Erro ao associar models: " + error };
         }
 
+    }
+
+    static async RunMigrations(){
+        const migration = require('./migration')
+        var sequelize = this.sequelize;
+        const umzug = new Umzug({
+            migrations: migration,
+            context: sequelize.getQueryInterface(),
+            storage: new SequelizeStorage({ sequelize }),
+            logger: console,
+          });
+        try {
+            const migrations = await umzug.up();
+            return {status: true}
+          } catch (error) {
+
+            return {status: false, text: "Erro ao executar as migrações: " + error.message }
+          }
     }
 
 

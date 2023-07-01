@@ -79,6 +79,16 @@ app.whenReady().then(async () => {
             })
         }
 
+        let migrations =  await Database.RunMigrations();
+        if (!migrations.status) {
+            dialog.showMessageBox({
+                type: 'warning',
+                title: 'Atenção, não foi possível migrar as tabelas do banco de dados',
+                message: 'Por Favor verifique os dados de conexão na configuração de banco de dados\n' + migrations.text,
+                buttons: ['OK']
+            })
+        }
+
     }
 
     createWindow();
