@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Select from 'react-select';
 import _ from 'lodash';
+import Map from './Map';
 
 const Endereco = (props) => {
 
@@ -28,7 +29,7 @@ const Endereco = (props) => {
 
     const handleCepChange = (event) => {
         const { value } = event.target;
-        props.handleChange({value: formatCep(value)}, "cep")
+        props.handleChange({ value: formatCep(value) }, "cep")
     };
     const formatCep = (cep) => cep.replace(/\D/g, "").replace(/(\d{5})(\d{3})/, "$1-$2");
 
@@ -142,6 +143,10 @@ const Endereco = (props) => {
                         value={props.endereco.complemento}
                         onChange={props.handleChange}
                     />
+                </div>
+
+                <div className="my-2">
+                    <Map endereco={props.endereco} cidades={cidades} />
                 </div>
 
             </div>

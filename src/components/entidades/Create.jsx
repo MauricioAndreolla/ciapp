@@ -364,7 +364,7 @@ const Create = () => {
                                     className="form-control shadow-none input-custom"
                                     type="text"
                                     name="cnpj"
-                                    placeholder="000.000.000-00"
+                                    placeholder="00.000.000/0000-00"
                                     required={true}
                                     value={entidade.cnpj}
                                     onChange={handleEntidade}
