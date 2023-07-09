@@ -32,6 +32,10 @@ Entidade.init({
     allowNull: true,
     type: DataTypes.STRING
   },
+  data_entrega: {
+    allowNull: true,
+    type: DataTypes.DATE
+  },
   tipo_instituicao:
   {
     allowNull: false,

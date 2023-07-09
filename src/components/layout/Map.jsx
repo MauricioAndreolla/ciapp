@@ -13,7 +13,7 @@ export default function Map({ endereco }) {
     }
 
     useEffect( () =>{
-        if (endereco.rua != '' && endereco.cep != '' && endereco.bairro != '' && endereco.numero != '' && endereco.id_cidade != "" ) {
+        if (endereco.rua !== '' && endereco.cep !== '' && endereco.bairro !== '' && endereco.numero !== '' && endereco.id_cidade !== "" ) {
             const cidade = GetCidadeById(endereco.id_cidade);
             address = `&q=${endereco.rua}, ${endereco.numero} - ${endereco.bairro}, ${cidade}, ${endereco.cep} `;
         }
@@ -31,9 +31,10 @@ export default function Map({ endereco }) {
                 height="450"
                 loading="lazy"
                 title="Endereco"
-                allowfullscreenreferrerpolicy="no-referrer-when-downgrade"
+                // allowfullscreenreferrerpolicy="no-referrer-when-downgrade"
+                referrerPolicy="no-referrer-when-downgrade"
                 src={mapRequest}
-                frameborder="0">
+                >
             </iframe>
 
         </div>

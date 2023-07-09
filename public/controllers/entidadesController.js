@@ -62,6 +62,7 @@ module.exports = {
                     telefone1: payload.entidade.telefone1,
                     telefone2: payload.entidade.telefone2,
                     tipo_instituicao: payload.entidade.tipoInstituicao,
+                    data_entrega: payload.entidade.dataDeEntrega,
                     EnderecoId: endereco.id
                 });
             });
@@ -118,6 +119,7 @@ module.exports = {
             Entidade.email = payload.entidade.email;
             Entidade.telefone1 = payload.entidade.telefone1;
             Entidade.telefone2 = payload.entidade.telefone2;
+            Entidade.data_entrega = payload.entidade.dataDeEntrega;
             Entidade.tipo_instituicao = payload.entidade.tipoInstituicao;
             await Entidade.save();
 
@@ -230,6 +232,7 @@ module.exports = {
                 telefone2: s.telefone2,
                 tipo_instituicao: s.tipo_instituicao,
                 dt_descredenciamento: s.dt_descredenciamento,
+                dataDeEntrega: s?.data_entrega ?? null,
                 motivo: s.observacao,
                 somente_leitura: s.somente_leitura,
                 endereco: {
@@ -252,6 +255,7 @@ module.exports = {
             }
         });
         // //await db.sequelize.close();
+
         return mappedValues;
     },
 
@@ -279,6 +283,7 @@ module.exports = {
             tipoInstituicao: data.dataValues.tipo_instituicao,
             dt_descredenciamento: data.dataValues.dt_descredenciamento,
             observacao: data.dataValues.observacao,
+            dataDeEntrega: data.data_entrega,
             endereco: {
                 id: data.dataValues.Endereco.id,
                 cep: data.dataValues.Endereco.cep,

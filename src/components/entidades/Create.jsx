@@ -9,6 +9,7 @@ import ModalTarefa from './ModalTarefa';
 import { confirmAlert } from "react-confirm-alert";
 import Endereco from "../layout/Endereco";
 import Load from '../layout/Load';
+import moment from 'moment';
 
 
 const Create = () => {
@@ -24,6 +25,7 @@ const Create = () => {
         telefone2: '',
         email: '',
         tarefas: [],
+        dataDeEntrega: null,
         tipoInstituicao: 1,
         status: true
     });
@@ -55,7 +57,12 @@ const Create = () => {
             setLoad(true);
             const data = await window.api.Action({ controller: "Entidades", action: "GetEntidade", params: id });
             setLoad(false);
-            setEntidade(data);
+
+            setEntidade({
+                ...data,
+                ["dataDeEntrega"]: data?.dataDeEntrega != null ? new Date(data.dataDeEntrega).toISOString().slice(0, 10) : null
+            });
+
             setEndereco(data.endereco);
 
         }
@@ -75,8 +82,18 @@ const Create = () => {
         }
     }
 
+    const resetDataEntradaEmCentrais = () => {
+        if (entidade.tipoInstituicao == 0) {
+            setEntidade({
+                ...entidade,
+                dataDeEntrega: null
+            });
+        }
+    }
+
     const submitEntidade = async () => {
         resetTarefasEmCentrais();
+        resetDataEntradaEmCentrais();
 
         const payload = {
             entidade,
@@ -118,12 +135,13 @@ const Create = () => {
 
     const editEntidade = async () => {
         resetTarefasEmCentrais();
+        resetDataEntradaEmCentrais();
 
         const payload = {
             entidade,
             endereco
         }
-        console.log(payload)
+
         confirmAlert({
             title: 'Confirmação',
             message: `Confirma a edição da entidade ${entidade.nome}`,
@@ -318,6 +336,7 @@ const Create = () => {
 
 
 
+
     return (
         <>
             <Title title={"Nova entidade"} />
@@ -426,6 +445,26 @@ const Create = () => {
                             </div>
 
                         </div>
+
+                        {entidade.tipoInstituicao == 0 ?
+                            <div> </div>
+                            :
+                            <div className="col-md-4">
+                                <div className="input-form">
+                                    <label htmlFor="dataDeEntrega">Data de entrega</label>
+                                    <input
+                                        id="dataDeEntrega"
+                                        name="dataDeEntrega"
+                                        className="form-control shadow-none input-custom"
+                                        type="date"
+                                        value={entidade.dataDeEntrega}
+                                        required={false}
+                                        onChange={handleEntidade}
+                                        min={new Date().toISOString().split('T')[0]}
+                                    />
+                                </div>
+                            </div>
+                        }
                     </div>
 
                 </div>

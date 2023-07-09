@@ -112,7 +112,7 @@ const Index = () => {
                     />
                 </div>
 
-                {/* <div className="input-form col-md-3">
+                <div className="input-form col-md-3">
                     <label htmlFor="nome">Nome Prestador</label>
                     <input
                         id="nome"
@@ -123,7 +123,7 @@ const Index = () => {
                         value={search.nome}
                         onChange={handleSearch}
                     />
-                </div> */}
+                </div>
 
 
 
