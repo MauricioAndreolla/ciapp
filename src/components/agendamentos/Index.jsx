@@ -4,10 +4,10 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import Title from "../layout/Title";
 import { toast } from 'react-toastify';
-import Table from '../layout/Table';
 import ModalAgendamento from './ModalAgendamento';
 import Load from "../layout/Load";
 import { Button } from 'react-bootstrap';
+import moment from 'moment';
 
 export default function Index() {
     const navigate = useNavigate();
@@ -208,8 +208,11 @@ export default function Index() {
                                         <tr key={r.id} style={{ verticalAlign: "middle" }}>
                                             <td>{r.processo.nro_processo}</td>
                                             <td>{r.tarefa.titulo}</td>
-                                            <td>{new Date(r.agendamento_dia_inicial).toLocaleDateString("pt-BR")}</td>
-                                            <td>{r.agendamento_dia_final == null ? "Sem data definida" : new Date(r.agendamento_dia_final).toLocaleDateString("pt-BR")}</td>
+                                            <td>{ moment(r.agendamento_dia_inicial).locale('pt').format('L')}</td>
+                                            <td>{r.agendamento_dia_final == null ? 
+                                            "Sem data definida": 
+                                            moment(r.agendamento_dia_final).locale('pt').format('L') }
+                                            </td>
                                             <td>{r.agendamento_horario_inicio}</td>
                                             <td>{r.agendamento_horario_fim}</td>
 

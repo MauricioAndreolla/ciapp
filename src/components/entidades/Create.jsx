@@ -9,8 +9,6 @@ import ModalTarefa from './ModalTarefa';
 import { confirmAlert } from "react-confirm-alert";
 import Endereco from "../layout/Endereco";
 import Load from '../layout/Load';
-import moment from 'moment';
-
 
 const Create = () => {
     const navigate = useNavigate();
