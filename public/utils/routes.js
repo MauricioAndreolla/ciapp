@@ -14,6 +14,7 @@ const Vara = require('../controllers/varaController');
 const Processo = require('../controllers/processoController');
 const Sincronizacao = require('../controllers/sincronizacaoController');
 const Genero = require('../controllers/generosController');
+const Atendimento = require('../controllers/atendimentoController');
 
 module.exports = {
 

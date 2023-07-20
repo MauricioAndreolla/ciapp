@@ -330,6 +330,7 @@ const Index = () => {
                                                         {
                                                             user.MODO_APLICACAO === 0 ?
                                                                 <>
+                                                                    <li> <NavLink className="dropdown-item" id="atendimento" to={`/prestadores/atendimentos/${r.id}`}> <i className='fa-regular fa-file-lines'></i> Atendimentos</NavLink></li>
                                                                     <li> <NavLink className="dropdown-item" id="edit" to={`/prestadores/edit/${r.id}`}> <i className='fa fa-edit'></i> Editar</NavLink></li>
                                                                     <li> <NavLink className="dropdown-item" id="novoProcesso" to={`/processos/create/${r.id}`}> <i className='fa fa-plus'></i> Novo Processo</NavLink></li>
 

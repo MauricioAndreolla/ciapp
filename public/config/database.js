@@ -45,7 +45,7 @@ class Database {
                 pool: {
                     max: 10, 
                     min: 1
-                }
+                },
             });
         }
         else if (this.dialet === 1) {

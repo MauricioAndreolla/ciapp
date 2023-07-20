@@ -20,8 +20,10 @@ const Tarefa = require('./Tarefa');
 const Agendamento = require('./Agendamento');
 const AtestadoFrequencia = require('./AtestadoFrequencia');
 const Genero = require('./Genero');
+const RegistroAtendimento = require('./RegistroAtendimento');
 
 Prestador.belongsTo(Genero); 
+Prestador.hasMany(RegistroAtendimento); 
 
 Endereco.belongsTo(Cidade);
 Cidade.belongsTo(UF);
@@ -98,6 +100,7 @@ module.exports = {
     FichaMedicaDrogas,
     Vara,
     Processo,
-    Genero
+    Genero,
+    RegistroAtendimento
     
 };

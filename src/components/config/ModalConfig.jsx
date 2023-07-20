@@ -51,7 +51,7 @@ const ModalConfig = ({ show, onHide }) => {
     const handleSaveConnection = async () => {
 
         let postResult = await window.api.Action({ controller: "Config", action: "SetConfig", params: config });
-        // debugger;
+   
         postResult.status ? toast.success(postResult.text) : toast.error(postResult.text, { autoClose: false });
 
     }
