@@ -1,4 +1,4 @@
-import { useNavigate, NavLink } from 'react-router-dom'
+import { useNavigate, NavLink  } from 'react-router-dom'
 import { useState, useEffect, useContext } from "react";
 import Title from "../layout/Title";
 import { AuthenticationContext } from "../context/Authentication";
@@ -26,6 +26,7 @@ const Index = () => {
     const [showModalRegistro, setShowModalRegistro] = useState(false);
     const [idRegistro, setIdRegistro] = useState(null);
     const [load, setLoad] = useState(false);
+
     const handleModalDetalhes = (show = true) => {
         setShowModalDetalhes(show);
     }
@@ -209,6 +210,11 @@ const Index = () => {
         return body;
     }
 
+
+    const VisualizarPrestador = (id) => {
+        navigate(`/prestadores/edit/${id}?readOnly=true`);
+    }
+
     return (
         <>
             <Title title={"Cadastro de Prestadores"} />
@@ -307,7 +313,7 @@ const Index = () => {
                                 <tbody>
                                     {prestadores.map(r => (
 
-                                        <tr key={r.id} style={{ verticalAlign: "middle" }}>
+                                        <tr key={r.id} style={{ verticalAlign: "middle", cursor: "pointer" }} onDoubleClick={()=>{VisualizarPrestador(r.id)}}>
                                             <td>{r.id}</td>
                                             <td>{r.nome}</td>
                                             {

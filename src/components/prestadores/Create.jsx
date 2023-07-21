@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Select from 'react-select';
 import Title from "../layout/Title";
 import { Nav, NavItem, Tab, TabContainer, TabContent, TabPane } from 'react-bootstrap';
@@ -26,6 +26,8 @@ const Create = () => {
     const { user } = useContext(AuthenticationContext);
     const [load, setLoad] = useState(false);
     const { id } = useParams();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [readOnly, setReadOnly] = useState(false);
     const [tempID, setempID] = useState(0);
     const [image, setImage] = useState('');
     const [generos, setGeneros] = useState();
@@ -742,7 +744,7 @@ const Create = () => {
     }
 
     useEffect(() => {
-
+        setReadOnly(searchParams.get('readOnly') ?? false)
         if (id) {
 
             const fetchData = async () => {
@@ -806,7 +808,7 @@ const Create = () => {
             }
 
             {
-                user.MODO_APLICACAO === 0 ?
+                !readOnly ?
                     <div className='menu'>
 
                         {
@@ -841,7 +843,7 @@ const Create = () => {
 
                     {
 
-                        user.MODO_APLICACAO === 0 ?
+                        !readOnly ?
                             <>
 
                                 <div className="input-group mb-2 mt-2">
@@ -909,7 +911,7 @@ const Create = () => {
                                 placeholder=""
                                 value={prestador.nome}
                                 required={true}
-                                disabled={user.MODO_APLICACAO === 1}
+                                disabled={readOnly}
                                 onChange={handlePrestador} />
                         </div>
                         <div className="col-md-6">
@@ -922,7 +924,7 @@ const Create = () => {
                                 placeholder=""
                                 value={prestador.nome_mae}
                                 required={true}
-                                disabled={user.MODO_APLICACAO === 1}
+                                disabled={readOnly}
                                 onChange={handlePrestador} />
                         </div>
 
@@ -941,7 +943,7 @@ const Create = () => {
                                 placeholder="000.000.000-00"
                                 value={prestador.cpf}
                                 required={true}
-                                disabled={user.MODO_APLICACAO === 1}
+                                disabled={readOnly}
                                 onChange={handlePrestador} />
                         </div>
 
@@ -955,7 +957,7 @@ const Create = () => {
                                 placeholder="Data de Nascimento"
                                 value={prestador.dt_nascimento}
                                 required={true}
-                                disabled={user.MODO_APLICACAO === 1}
+                                disabled={readOnly}
                                 onChange={handlePrestador} />
                         </div>
 
@@ -969,7 +971,7 @@ const Create = () => {
                                 placeholder="(00) 00000-0000"
                                 value={prestador.telefone1}
                                 required={true}
-                                disabled={user.MODO_APLICACAO === 1}
+                                disabled={readOnly}
                                 onChange={handlePrestador} />
                         </div>
 
@@ -983,7 +985,7 @@ const Create = () => {
                                 placeholder="(00) 00000-0000"
                                 value={prestador.telefone2}
                                 required={true}
-                                disabled={user.MODO_APLICACAO === 1}
+                                disabled={readOnly}
                                 onChange={handlePrestador} />
                         </div>
 
@@ -999,7 +1001,7 @@ const Create = () => {
                             <select className="select-custom w-10 form-select form-select-md" id="estado_civil" name="estado_civil"
                                 value={prestador.estado_civil}
                                 required={true}
-                                disabled={user.MODO_APLICACAO === 1}
+                                disabled={readOnly}
                                 onChange={handlePrestador}>
                                 <option defaultValue={true} value={0}>Solteiro</option>
                                 <option value={1}>Casado</option>
@@ -1015,7 +1017,7 @@ const Create = () => {
                             <select className="select-custom w-10 form-select form-select-md" id="etnia" name="etnia"
                                 value={prestador.etnia}
                                 required={true}
-                                disabled={user.MODO_APLICACAO === 1}
+                                disabled={readOnly}
                                 onChange={handlePrestador}>
                                 <option defaultValue={true} value={0}>Branco</option>
                                 <option value={1}>Preto</option>
@@ -1030,7 +1032,7 @@ const Create = () => {
                             <select className="select-custom w-10 form-select form-select-md" id="escolaridade" name="escolaridade"
                                 value={prestador.escolaridade}
                                 required={true}
-                                disabled={user.MODO_APLICACAO === 1}
+                                disabled={readOnly}
                                 onChange={handlePrestador}>
                                 <option defaultValue={true} value={0}>Analfabeto</option>
                                 <option value={1}>Fundamental Incompleto</option>
@@ -1051,7 +1053,7 @@ const Create = () => {
                                 className="form-control shadow-none input-custom"
                                 type="text"
                                 placeholder=""
-                                disabled={user.MODO_APLICACAO === 1}
+                                disabled={readOnly}
                                 value={prestador.religiao}
                                 onChange={handlePrestador}
                             />
@@ -1065,7 +1067,7 @@ const Create = () => {
                                 className="form-control shadow-none input-custom"
                                 type="text"
                                 value={prestador.renda_familiar}
-                                disabled={user.MODO_APLICACAO === 1}
+                                disabled={readOnly}
                                 onInput={handleInputChange}
                                 onChange={handleInputChange}
                             />
@@ -1085,12 +1087,17 @@ const Create = () => {
                                         id="genero"
                                         name="genero"
                                         placeholder=""
+                                        isDisabled={readOnly}
                                         value={(generos != null && generos.length > 0) ? generos.find(s => s.value == prestador.genero) : 1}
                                         onChange={handleGenero}
                                     />
                                 </div>
-
-                                <button className="btn btn-blue" onClick={() => { handleModalGenero(true) }}><i className="fa-solid fa-plus"></i></button>
+                                {
+                                    !readOnly ? 
+                                    <button className="btn btn-blue" disabled={readOnly} onClick={() => { handleModalGenero(true) }}><i className="fa-solid fa-plus"></i></button>
+                                    : null
+                                }
+                               
                             </div>
 
                         </div>
@@ -1155,7 +1162,7 @@ const Create = () => {
                         <Tab.Pane eventKey="endereco">
                             <div className="row">
                                 <div className="col-md-12 no-padding">
-                                    <Endereco endereco={endereco} handleChange={handleEndereco} camposObrigatorios={true} disabled={user.MODO_APLICACAO === 1} />
+                                    <Endereco endereco={endereco} handleChange={handleEndereco} camposObrigatorios={true} disabled={readOnly} />
                                 </div>
                             </div>
                         </Tab.Pane>
@@ -1165,7 +1172,7 @@ const Create = () => {
                                 <div className="col-md-12 no-padding">
 
                                     {
-                                        user.MODO_APLICACAO === 0 ?
+                                        !readOnly ?
                                             <>
                                                 <div className='menu'>
 
@@ -1191,7 +1198,7 @@ const Create = () => {
                             <div className="row">
                                 <div className="col-md-12 no-padding">
                                     {
-                                        user.MODO_APLICACAO === 0 ?
+                                        !readOnly ?
 
                                             <>
                                                 <div className='menu'>
@@ -1229,7 +1236,7 @@ const Create = () => {
                                             name="trabalho_descricao"
                                             className="form-control shadow-none input-custom"
                                             placeholder=""
-                                            disabled={user.MODO_APLICACAO === 1}
+                                            disabled={readOnly}
                                             value={trabalho.trabalho_descricao}
                                             onChange={handleTrabalho}
 
@@ -1244,7 +1251,7 @@ const Create = () => {
                                             name="trabalho_horario_inicio"
                                             className="form-control input rounded-2"
                                             type="time"
-                                            disabled={user.MODO_APLICACAO === 1}
+                                            disabled={readOnly}
                                             value={trabalho.trabalho_horario_inicio}
                                             onChange={handleTrabalho}
                                         />
@@ -1259,7 +1266,7 @@ const Create = () => {
                                             name="trabalho_horario_fim"
                                             className="form-control input rounded-2"
                                             type="time"
-                                            disabled={user.MODO_APLICACAO === 1}
+                                            disabled={readOnly}
                                             value={trabalho.trabalho_horario_fim}
                                             onChange={handleTrabalho}
                                         />
@@ -1269,7 +1276,7 @@ const Create = () => {
                                 <div className="col-md-6">
                                     <div className="input-form">
                                         <label htmlFor="trabalho_dias_semana">Dias Semana</label>
-                                        <InputDiasSemana disabled={user.MODO_APLICACAO === 1} id="trabalho_dias_semana" name="trabalho_dias_semana" handleChange={handleDias} value={trabalho.trabalho_dias_semana} />
+                                        <InputDiasSemana disabled={readOnly} id="trabalho_dias_semana" name="trabalho_dias_semana" handleChange={handleDias} value={trabalho.trabalho_dias_semana} />
                                     </div>
                                 </div>
                             </div>
@@ -1281,7 +1288,7 @@ const Create = () => {
                                 <div className="col-md-12 no-padding">
 
                                     {
-                                        user.MODO_APLICACAO === 0 ?
+                                        !readOnly ?
                                             <>
                                                 <div className='menu'>
 
@@ -1314,7 +1321,7 @@ const Create = () => {
                             <div className="row">
                                 <div className="col-md-12 no-padding">
                                     {
-                                        user.MODO_APLICACAO === 0 ?
+                                        !readOnly ?
                                             <>
                                                 <div className='menu'>
 
@@ -1357,7 +1364,7 @@ const Create = () => {
                                                 <select className="select-custom w-10 form-select form-select-md" id="deficiencia" name="deficiencia"
                                                     value={prestador.saude.deficiencia}
                                                     required={true}
-                                                    disabled={user.MODO_APLICACAO === 1}
+                                                    disabled={readOnly}
                                                     onChange={handleSaude}>
                                                     <option defaultValue={true} value='0'>Não</option>
                                                     <option value='1'>Mental</option>
@@ -1377,7 +1384,7 @@ const Create = () => {
                                                     type="text"
                                                     placeholder=""
                                                     value={prestador.saude.observacao}
-                                                    disabled={user.MODO_APLICACAO === 1}
+                                                    disabled={readOnly}
                                                     rows={5}
                                                     onChange={handleSaude} />
                                             </div>
@@ -1386,7 +1393,7 @@ const Create = () => {
 
                                         <div className="col-md-12" style={{ marginTop: "1rem" }}>
                                             {
-                                                user.MODO_APLICACAO === 0 ?
+                                                !readOnly ?
 
                                                     <>
                                                         <div className='menu'>
