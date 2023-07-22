@@ -12,15 +12,24 @@ export default function Map({ endereco }) {
         return await window.api.Action({ controller: "Cidades", action: "GetCidadeById", params: id_cidade });
     }
 
-    useEffect( () =>{
-        if (endereco.rua !== '' && endereco.cep !== '' && endereco.bairro !== '' && endereco.numero !== '' && endereco.id_cidade !== "" ) {
-            const cidade = GetCidadeById(endereco.id_cidade);
-            address = `&q=${endereco.rua}, ${endereco.numero} - ${endereco.bairro}, ${cidade}, ${endereco.cep} `;
+    useEffect(() => {
+
+        const setMap = async () => {
+            
+            if (endereco.rua !== '' && endereco.cep !== '' && endereco.bairro !== '' && endereco.numero !== '' && endereco.id_cidade !== "") {
+                const cidade = await GetCidadeById(endereco.id_cidade);
+                address = `&q=${endereco.rua}, ${endereco.numero} - ${endereco.bairro},${cidade[0].label}, ${endereco.cep} `;
+
+                console.log(srcBase + key + address + zoom)
+                setMapRequest(srcBase + key + address + zoom);
+            }
         }
-        
-        setMapRequest(srcBase + key + address + zoom);
-        
-    },[endereco]);
+
+
+        setMap();
+
+
+    }, [endereco]);
 
 
     return (
@@ -34,7 +43,7 @@ export default function Map({ endereco }) {
                 // allowfullscreenreferrerpolicy="no-referrer-when-downgrade"
                 referrerPolicy="no-referrer-when-downgrade"
                 src={mapRequest}
-                >
+            >
             </iframe>
 
         </div>
