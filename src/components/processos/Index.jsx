@@ -29,7 +29,6 @@ const Index = () => {
             data = await window.api.Action({ controller: "Processo", action: "GetProcessos", params: search });
         }
         setLoad(false);
-        console.log(data)
         setProcessos(data);
     }
 
