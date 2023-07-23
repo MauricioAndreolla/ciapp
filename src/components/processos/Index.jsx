@@ -21,8 +21,15 @@ const Index = () => {
 
     const fetchData = async () => {
         setLoad(true);
-        const data = await window.api.Action({ controller: "Processo", action: "GetProcessos", params: search });
+        let data = null;
+    
+        if (search.nome != '') {
+            data = processos.filter( (processos) => processos.prestador.includes(search.nome)  );
+        } else {
+            data = await window.api.Action({ controller: "Processo", action: "GetProcessos", params: search });
+        }
         setLoad(false);
+        console.log(data)
         setProcessos(data);
     }
 
