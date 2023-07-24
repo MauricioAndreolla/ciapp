@@ -21,6 +21,7 @@ const Agendamento = require('./Agendamento');
 const AtestadoFrequencia = require('./AtestadoFrequencia');
 const Genero = require('./Genero');
 const RegistroAtendimento = require('./RegistroAtendimento');
+const Origem = require('./Origem');
 
 Prestador.belongsTo(Genero); 
 Prestador.hasMany(RegistroAtendimento); 
@@ -44,6 +45,9 @@ Beneficio.belongsToMany(Prestador, {through: "PrestadoresBeneficios"});
 
 Prestador.belongsToMany(Habilidade, {through: "PrestadoresHabilidades"});
 Habilidade.belongsToMany(Prestador, {through: "PrestadoresHabilidades"});
+
+Prestador.belongsToMany(Origem, {through: "PrestadoresOrigens"});
+Origem.belongsToMany(Prestador, {through: "PrestadoresOrigens"});
 
 Prestador.belongsToMany(Curso, {through: "PrestadoresCursos"});
 Curso.belongsToMany(Prestador, {through: "PrestadoresCursos"});
@@ -101,6 +105,6 @@ module.exports = {
     Vara,
     Processo,
     Genero,
-    RegistroAtendimento
-    
+    RegistroAtendimento,
+    Origem
 };

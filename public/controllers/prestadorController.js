@@ -140,6 +140,10 @@ module.exports = {
                     through: "PrestadoresCursos"
                 },
                 {
+                    model: db.models.Origem,
+                    through: "PrestadoresOrigens"
+                },
+                {
                     model: db.models.FichaMedica,
                     include: {
                         model: db.models.Droga,
@@ -185,6 +189,13 @@ module.exports = {
                     }
                 }),
                 habilidades: s.Habilidades.length === 0 ? [] : s.Habilidades.map(b => {
+                    return {
+                        id: b.id,
+                        descricao: b.descricao,
+                        observacao: b.observacao
+                    }
+                }),
+                origens: s.Origems.length === 0 ? [] : s.Origems.map(b => {
                     return {
                         id: b.id,
                         descricao: b.descricao,
@@ -372,6 +383,17 @@ module.exports = {
                 }
             }
 
+            if (payload.prestador.origens.length > 0) {
+                
+                for (let i = 0; i < payload.prestador.origens.length; i++) {
+
+                    const origens = payload.prestador.origens[i];
+                    let Origens = await db.models.Origem.findByPk(origens.id);
+                    await Prestador.addOrigems([Origens]);
+                    await Origens.addPrestadores([Prestador]);
+                }
+            }
+
             if (payload.prestador.cursos.length > 0) {
                 for (let i = 0; i < payload.prestador.cursos.length; i++) {
 
@@ -555,6 +577,21 @@ module.exports = {
             }
             else {
                 Prestador.setHabilidades([]);
+            }
+
+            if (payload.prestador.origens.length > 0) {
+                Prestador.setOrigems([]);
+                for (let i = 0; i < payload.prestador.origens.length; i++) {
+
+                    const origens = payload.prestador.origens[i];
+                    let Origens = await db.models.Origem.findByPk(origens.id);
+                    await Prestador.addOrigems([Origens]);
+                    await Origens.addPrestadores([Prestador]);
+
+                }
+            }
+            else {
+                Prestador.setOrigems([]);
             }
 
             if (payload.prestador.cursos.length > 0) {

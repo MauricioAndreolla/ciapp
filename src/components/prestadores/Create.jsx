@@ -11,6 +11,7 @@ import ModalCurso from './ModalCursos';
 import ModalUsoDroga from './ModalUsoDroga';
 import ModalBeneficios from './ModalBeneficios';
 import ModalCreateGenero from './ModalCreateGenero';
+import ModalOrigem from "./ModalOrigem";
 
 import { toast } from "react-toastify";
 import { confirmAlert } from 'react-confirm-alert';
@@ -49,6 +50,7 @@ const Create = () => {
         beneficios: [],
         habilidades: [],
         cursos: [],
+        origens: [],
         saude: {
             deficiencia: 0,
             observacao: "",
@@ -368,15 +370,15 @@ const Create = () => {
         setLoad(true);
         const data = await await window.api.Action({ controller: "Genero", action: "CreateGenero", params: genero });
         setLoad(false);
-        if(!data.status){
+        if (!data.status) {
             toast.error(`Erro: ${data.text}`, { autoClose: false });
         }
-        else{
+        else {
             toast.success(data.text);
             await getGeneros();
             handleModalGenero(false);
         }
-     
+
     }
 
 
@@ -461,7 +463,35 @@ const Create = () => {
         setShowModalHabilidade(false)
     }
 
+    const [showModalOrigem, setShowModalOrigem] = useState(false);
 
+    const handleModalOrigem = (show = true) => {
+        setShowModalOrigem(show);
+    }
+
+    const addNewOrigens = async (origens) => {
+
+        if (origens && origens.length > 0) {
+            setLoad(true);
+            const data = await await window.api.Action({ controller: "Origem", action: "GetOrigens", params: { filter: origens.map(s => s.value) } });
+            setLoad(false);
+            if (data) {
+                let adicionar = data.filter(s => prestador.origens.filter(p => p.id === s.id).length == 0);
+                if (adicionar.length > 0) {
+                    let novaLista = prestador.origens
+                    novaLista.push(...adicionar);
+                    setPrestador({
+                        ...prestador,
+                        ["origens"]: novaLista
+                    })
+                }
+            }
+        }
+
+        setShowModalOrigem(false)
+    }
+
+    
     const [showModalFamiliar, setShowModalFamiliar] = useState(false);
 
     const [modelFamiliar, setModelFamiliar] = useState({
@@ -596,6 +626,40 @@ const Create = () => {
 
         }
 
+    }
+
+    const deleteOrigem = async (object) => {
+        if (object) {
+            confirmAlert({
+                title: 'Confirmação',
+                message: 'Tem certeza que deseja remover este item?',
+                buttons: [
+                    {
+                        label: 'Sim',
+                        onClick: () => {
+                            var novaLista = prestador.origens.filter(s => s.id !== object.id);
+                            if (novaLista.length === 0) {
+                                setPrestador({
+                                    ...prestador,
+                                    ["origens"]: []
+                                })
+                                return;
+                            }
+                            setPrestador({
+                                ...prestador,
+                                ["origens"]: novaLista
+                            })
+                        }
+                    },
+                    {
+                        className: 'btn-blue',
+                        label: 'Não',
+                        onClick: () => {
+                        }
+                    }
+                ]
+            });
+        }
     }
 
     const deleteBeneficio = async (object) => {
@@ -769,10 +833,12 @@ const Create = () => {
                     familiares: data.familiares,
                     beneficios: data.beneficios,
                     habilidades: data.habilidades,
+                    origens: data.origens,
                     cursos: data.cursos,
                     saude: data.saude,
                     genero: data.genero
                 });
+
 
                 setTrabalho(data.trabalho);
                 setEndereco({
@@ -1075,12 +1141,12 @@ const Create = () => {
 
                         <div className="col-md-3">
                             <label htmlFor="genero">Gênero <small className="campo-obrigatorio"></small></label>
-                            <div className="input-group" style={{ 
+                            <div className="input-group" style={{
                                 flexWrap: 'nowrap',
                                 alignItems: 'stretch',
                                 width: '100%',
                                 justifyContent: 'space-between'
-                                }}>
+                            }}>
                                 <div style={{ width: '100%' }}>
                                     <Select
                                         options={generos}
@@ -1093,11 +1159,11 @@ const Create = () => {
                                     />
                                 </div>
                                 {
-                                    !readOnly ? 
-                                    <button className="btn btn-blue" disabled={readOnly} onClick={() => { handleModalGenero(true) }}><i className="fa-solid fa-plus"></i></button>
-                                    : null
+                                    !readOnly ?
+                                        <button className="btn btn-blue" disabled={readOnly} onClick={() => { handleModalGenero(true) }}><i className="fa-solid fa-plus"></i></button>
+                                        : null
                                 }
-                               
+
                             </div>
 
                         </div>
@@ -1155,6 +1221,14 @@ const Create = () => {
                                 <i className="fas fa-heartbeat"></i>   Saúde
                             </Nav.Link>
                         </Nav.Item>
+
+                        
+                        <Nav.Item>
+                            <Nav.Link eventKey="origem">
+                                <i className="fas fa-compass"></i>   Origem
+                            </Nav.Link>
+                        </Nav.Item>
+
 
                     </Nav>
 
@@ -1428,6 +1502,40 @@ const Create = () => {
 
                         </Tab.Pane>
 
+                        <Tab.Pane eventKey="origem">
+
+                            <div className="row">
+                                <div className="col-md-12 no-padding">
+
+                                    {
+                                        !readOnly ?
+                                            <>
+                                                <div className='menu'>
+
+                                                    <button className='menu-button button-blue' onClick={() => { handleModalOrigem(true) }}>
+                                                        <i className='fa-solid fa-plus'></i> Adicionar Origem
+                                                    </button>
+                                                </div>
+                                                <Table columns={[
+                                                    { Header: 'Descrição', accessor: 'descricao' },
+                                                    { Header: 'Observação', accessor: 'observacao' }
+                                                ]} data={prestador?.origens} onDelete={deleteOrigem} />
+                                            </>
+
+                                            :
+
+                                            <Table columns={[
+                                                { Header: 'Descrição', accessor: 'descricao' },
+                                                { Header: 'Observação', accessor: 'observacao' }
+                                            ]} data={prestador?.origens} />
+                                    }
+
+
+                                </div>
+                            </div>
+
+                        </Tab.Pane>
+
 
                     </Tab.Content>
                 </Tab.Container>
@@ -1437,12 +1545,13 @@ const Create = () => {
 
             <ModalFamiliar Model={modelFamiliar} show={showModalFamiliar} onHide={() => { handleModalFamiliar(false) }} onAdd={addnewFamiliar} onEdit={editFamiliar} />
             <ModalHabilidade show={showModalHabilidade} onHide={() => { handleModalHabilidade(false) }} onAdd={addNewHabilidades} />
+            <ModalOrigem show={showModalOrigem} onHide={() => { handleModalOrigem(false) }} onAdd={addNewOrigens} />
             <ModalBeneficios show={showModalBeneficio} onHide={() => { handleModalBeneficio(false) }} onAdd={addNewBeneficio} />
             <ModalCurso show={showModalCurso} onHide={() => { handleModalCurso(false) }} onAdd={addNewCurso} />
             <ModalUsoDroga show={showModalUsoDroga} onHide={() => { handleModalUsoDroga(false) }} onAdd={addNewUsoDroga} />
             <ModalCreateGenero show={showModalGenero} onHide={() => { handleModalGenero(false) }} onAdd={addNewGenero} />
+                                
 
-            
             <Load show={load} />
         </>
     );
