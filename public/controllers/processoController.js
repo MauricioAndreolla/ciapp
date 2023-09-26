@@ -150,7 +150,7 @@ module.exports = {
                 PrestadoreId: parseInt(payload.id_prestador),
                 EntidadeId: payload.processo.id_central.value,
                 VaraId: payload.processo.id_vara.value,
-                nro_processo: parseInt(payload.processo.nro_processo),
+                nro_processo: payload.processo.nro_processo,
                 nro_artigo_penal: payload.processo.nro_artigo_penal,
                 pena_originaria: payload.processo.pena_originaria,
                 pena_originaria_regime: parseInt(payload.processo.pena_originaria_regime),
@@ -183,7 +183,7 @@ module.exports = {
             let Processo = await db.models.Processo.findByPk(payload.id);
             Processo.EntidadeId = payload.processo.id_central.value,
                 Processo.VaraId = payload.processo.id_vara.value,
-                Processo.nro_prcesso = parseInt(payload.processo.nro_processo);
+                Processo.nro_processo = payload.processo.nro_processo;
             Processo.nro_artigo_penal = payload.processo.nro_artigo_penal;
             Processo.pena_originaria = payload.processo.pena_originaria;
             Processo.pena_originaria_regime = parseInt(payload.processo.pena_originaria_regime);
@@ -201,7 +201,7 @@ module.exports = {
             });
             // //await db.sequelize.close();
 
-            return { status: true, text: `Processo ${payload.processo.nro_processo} salvo!` };
+            return { status: true, text: `Processo ${Processo.nro_processo } salvo!` };
         } catch (error) {
             return { status: false, text: "Erro interno no servidor." };
         }

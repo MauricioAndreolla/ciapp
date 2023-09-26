@@ -6,7 +6,7 @@ class Processo extends Model { }
 
 Processo.init({
     nro_processo: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.STRING,
         allowNull: false
     },
   

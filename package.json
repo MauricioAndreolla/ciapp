@@ -46,9 +46,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron-start": "set ELECTRON_START_URL=http://localhost:3000 && electron .",
+    "electron-start": "set ELECTRON_START_URL=http://192.168.100.53:3000 && electron .",
     "electron-build": "npm run build && electron-builder",
-    "dev": "concurrently \"npm run start\" \"wait-on http://localhost:3000 && npm run electron-start\""
+    "dev": "concurrently \"npm run start\" \"wait-on http://192.168.100.53:3000 && npm run electron-start\""
   },
   "eslintConfig": {
     "extends": [
@@ -79,10 +79,10 @@
     "wait-on": "^7.0.1"
   },
   "build": {
-    "productName": "CIAPP - Entidade",
-    "appId": "com.ciapp.entidade",
+    "productName": "CIAPP - Central",
+    "appId": "com.ciapp.central",
     "directories": {
-      "output": "dist/Entidade"
+      "output": "dist/Central"
     },
     "files": [
       "dist/**/*",
@@ -99,7 +99,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "CIAPP - Entidade",
+      "shortcutName": "CIAPP - Central",
       "artifactName": "${productName}-setup-${version}.${ext}"
     }
   }
