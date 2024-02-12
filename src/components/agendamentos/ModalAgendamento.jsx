@@ -1,4 +1,4 @@
-import { Nav, Tab} from 'react-bootstrap';
+import { Nav, Tab } from 'react-bootstrap';
 import Table from '../layout/Table';
 import Title from "../layout/Title";
 import React, { useState, useEffect, useRef } from "react";
@@ -6,7 +6,7 @@ import InputDiasSemana from '../layout/InputDiasSemana';
 import { Button, Modal } from 'react-bootstrap';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
-
+import moment from 'moment';
 
 
 const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
@@ -43,7 +43,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                 {
                     id: null,
                     agendamento_dia_inicial: '',
-                    agendamento_dia_final: null,
+                    agendamento_dia_final: '',
                     agendamento_horario_inicio: '09:00',
                     agendamento_horario_fim: '17:00',
                     agendamento_dias_semana: [],
@@ -105,7 +105,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
     const fetchEntidades = async () => {
         let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: { tipo_instituicao: 1, dt_descredenciamento: 0 } });
 
-        
+
         let entidade;
         let values = data.map((element) => {
             return entidade = {
@@ -126,20 +126,20 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
         let data = await window.api.Action({ controller: "Entidades", action: "GetEntidades", params: search });
         const tarefa = data[0].tarefa;
-        
+
         if (!tarefa) {
             value = { value: null, label: "Sem tarefa cadastrada" };
             return;
         }
 
-      
+
         let value = tarefa.map((element) => {
             if (element.status == true) {
                 return { value: element.id, label: element.titulo, name: 'tarefa' }
             }
         });
-        value = value.filter( (e) => e != undefined  );
-       
+        value = value.filter((e) => e != undefined);
+
         setTarefas(value);
     }
 
@@ -162,17 +162,9 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
     const handleAgendamento = (evt, name = null) => {
         let value = evt.value ?? evt.target.value;
-        if (evt.target.name == 'agendamento_dia_inicial' && checkIfChangeDay() == true) {
-            let date = new Date(evt.target.value);
-            date.setDate(date.getDate() + 1);
-            evt.target.value = date.toISOString().slice(0, 10);
-            value = evt.target.value;
-            toast.warning(`Virada do dia adicao de 1 dia na data inicial`, { autoClose: 4000 });
-        }
-
 
         if (evt.target.name == 'agendamento_horario_fim' && checkMoreThanEightHours(value) == true) {
-            toast.warning(`Aviso:Agendamento acima de 8 horas`, { autoClose: 4000 });
+            toast.warning(`Aviso: Agendamento acima de 8 horas`, { autoClose: 4000 });
         }
 
         setAgendamento({
@@ -217,19 +209,19 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         await resetAgendamento();
     }
 
-    const formatDateInitial = ({ agendamento_dia_inicial  }) => {
+    const formatDateInitial = ({ agendamento_dia_inicial }) => {
         const [year, month, day] = agendamento_dia_inicial?.split('-');
         return `${day}/${month}/${year}`;
     }
 
-    const formatDateFinally = ({ agendamento_dia_final  }) => {
+    const formatDateFinally = ({ agendamento_dia_final }) => {
         const [year, month, day] = agendamento_dia_final?.split('-');
         return `${day}/${month}/${year}`;
     }
 
     const columnsAgendamento = [
         { id: e => e.agendamento_dia_inicial, Header: 'Data inicial', accessor: e => formatDateInitial(e) },
-        { id: e => e.agendamento_dia_final, Header: 'Data final', accessor: e => e.agendamento_dia_final == null ? "Sem data definida" : formatDateFinally(e)   },
+        { id: e => e.agendamento_dia_final, Header: 'Data final', accessor: e => e.agendamento_dia_final == null ? "Sem data definida" : formatDateFinally(e) },
         { Header: 'Horário inicial', accessor: 'agendamento_horario_inicio' },
         { Header: 'Horário fim', accessor: 'agendamento_horario_fim' },
     ];
@@ -238,26 +230,34 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         setIdTemp(idTemp + 1);
     }
 
-    const checkIfChangeDay = () => {
-        const [inicioHora, inicioMinuto] = agendamento.agendamento_horario_inicio.split(':').map(Number);
-        const [fimHora, fimMinuto] = agendamento.agendamento_horario_fim.split(':').map(Number);
+    const checkInitialLessThanFinal = () => {
+        const formatoHora = "YYYY-MM-DDHH:mm";
 
-        const inicio = new Date(0, 0, 0, inicioHora, inicioMinuto);
-        const fim = new Date(0, 0, 0, fimHora, fimMinuto);
+        const tempoInicial = moment(agendamento.agendamento_dia_inicial + agendamento.agendamento_horario_inicio, formatoHora);
+        const tempoFinal = moment(agendamento.agendamento_dia_final + agendamento.agendamento_horario_fim, formatoHora);
 
-        return fim < inicio || (fim.getDate() !== inicio.getDate());
+        const duracao = moment.duration(tempoFinal.diff(tempoInicial));
+     
+        if (duracao <= 0) {
+            return true;
+        }
+
+        return false;
     }
 
     const checkMoreThanEightHours = (horarioFim) => {
-        const [inicioHora, inicioMinuto] = agendamento.agendamento_horario_inicio.split(':').map(Number);
-        const [fimHora, fimMinuto] = horarioFim.split(':').map(Number);
+        const formatoHora = "HH:mm";
 
-        const horaInicialDate = new Date(0, 0, 0, inicioHora, inicioMinuto);
-        const horaFinalDate = new Date(0, 0, 0, fimHora, fimMinuto);
+        const tempoInicial = moment(agendamento.agendamento_horario_inicio, formatoHora);
+        const tempoFinal = moment(horarioFim, formatoHora);
 
-        const diferencaHoras = (horaFinalDate - horaInicialDate) / (1000 * 60 * 60)
+        const duracao = moment.duration(tempoFinal.diff(tempoInicial)).asMinutes();
 
-        return diferencaHoras > 8;
+        if (duracao >= 480) {
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -269,13 +269,13 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
 
         let tempoInicial1 = new Date(2023, 3, 17, inicioHora, inicioMinuto, 0);
         let tempoFinal1 = new Date(2023, 3, 17, fimHora, fimMinuto, 0);
-       
+
         const minutosInicio1 = tempoInicial1.getHours() * 60 + tempoInicial1.getMinutes();
         const minutosFim1 = tempoFinal1.getHours() * 60 + tempoFinal1.getMinutes();
 
 
         agendamentos.forEach((e) => {
-            if (e.agendamento_dia_inicial != dataInicial){
+            if (e.agendamento_dia_inicial != dataInicial) {
                 return;
             }
             const [inicioHoraAgendado, inicioMinutoAgendado] = e.agendamento_horario_inicio.split(':').map(Number);
@@ -311,6 +311,7 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
         }
     }
 
+
     const handleAddTable = () => {
         agendamento.idTemp = idTemp;
         addTempId();
@@ -320,12 +321,17 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
             agendamento
         })
 
+        if (checkInitialLessThanFinal() == true) {
+            toast.error(`Verifique se as datas estão corretas`, { autoClose: 4000 });
+            return;
+        } 
+        
         if (checkPeriod() == true) {
             toast.error(`Verifique o horário inicial e final, pois haverá conflito na agenda`, { autoClose: 4000 });
             return;
-        } else {
-            setAgendamentos([...agendamentos, agendamento]);
         }
+
+        setAgendamentos([...agendamentos, agendamento]);
     }
 
     return (
@@ -421,7 +427,6 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                             name="agendamento_dia_inicial"
                                             className="form-control input rounded-2"
                                             type="date"
-                                            min={new Date().toISOString().split('T')[0]}
                                             value={agendamento.agendamento_dia_inicial}
                                             onChange={handleAgendamento}
                                         />
@@ -434,7 +439,6 @@ const ModalAgendamento = ({ Model, show, onHide, onAdd, onEdit }) => {
                                             name="agendamento_dia_final"
                                             className="form-control input rounded-2"
                                             type="date"
-                                            min={new Date().toISOString().split('T')[0]}
                                             value={agendamento.agendamento_dia_final}
                                             onChange={handleAgendamento}
                                         />

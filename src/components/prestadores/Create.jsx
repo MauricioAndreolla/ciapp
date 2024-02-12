@@ -1074,7 +1074,7 @@ const Create = () => {
                                 <option value={2}>Separado</option>
                                 <option value={3}>Divorciado</option>
                                 <option value={4}>Viúvo</option>
-
+                                <option value={5}>União Estável</option>
                             </select>
                         </div>
 

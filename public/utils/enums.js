@@ -33,6 +33,7 @@ const EstadoCivil = {
     Separado: 2,
     Divorciado: 3,
     Viuvo: 4,
+    UniaoEstavel: 5
 }
 Object.freeze(EstadoCivil);
 

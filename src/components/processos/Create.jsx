@@ -432,7 +432,7 @@ const Create = () => {
                             <br />
                             <div className="input-form">
 
-                                <label htmlFor="nro_artigo_penal">Número do artigo penal</label>
+                                <label htmlFor="nro_artigo_penal">Artigo penal</label>
                                 <input
                                     id="nro_artigo_penal"
                                     name="nro_artigo_penal"
