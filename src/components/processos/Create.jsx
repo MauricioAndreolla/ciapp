@@ -25,7 +25,6 @@ const Create = () => {
         id_central: { value: -1, label: "" },
         nro_processo: '',
         nro_artigo_penal: '',
-        pena_originaria: '',
         pena_originaria_regime: '0',
         inciso: '',
         detalhamento: '',
@@ -391,41 +390,6 @@ const Create = () => {
                             </div>
 
 
-                            <div className="input-form inline">
-                                <form>
-                                    <div>
-                                        <label htmlFor="persecucao_penal">Persecução penal?</label>
-
-                                        <label className="label-radio">
-                                            Não
-                                            <input
-                                                className="radio"
-                                                type="radio"
-                                                name="persecucao_penal"
-                                                value="false"
-                                                checked={!processo.persecucao_penal}
-                                                disabled={user.MODO_APLICACAO === 1}
-                                                onChange={handleRadio}
-                                            />
-                                        </label>
-
-                                        <label className="label-radio">
-                                            Sim
-                                            <input
-                                                className="radio"
-                                                type="radio"
-                                                name="persecucao_penal"
-                                                value="true"
-                                                checked={processo.persecucao_penal}
-                                                disabled={user.MODO_APLICACAO === 1}
-                                                onChange={handleRadio}
-                                            />
-                                        </label>
-                                    </div>
-                                </form>
-                            </div>
-
-
                         </div>
 
                         <div className="col-md-6">
@@ -442,22 +406,6 @@ const Create = () => {
                                     value={processo.nro_artigo_penal}
                                     required={true}
                                     disabled={user.MODO_APLICACAO === 1}
-                                    onChange={handleProcesso}
-                                />
-                            </div>
-
-                            <div className="input-form">
-
-                                <label htmlFor="pena_originaria">Pena original</label>
-                                <input
-                                    id="pena_originaria"
-                                    name="pena_originaria"
-                                    className="form-control shadow-none input-custom"
-                                    type="text"
-                                    placeholder=""
-                                    disabled={user.MODO_APLICACAO === 1}
-                                    value={processo.pena_originaria}
-                                    required={true}
                                     onChange={handleProcesso}
                                 />
                             </div>

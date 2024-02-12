@@ -9,13 +9,8 @@ Processo.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-  
     nro_artigo_penal: {
         type: DataTypes.STRING
-    },
-
-    pena_originaria: {
-        type: DataTypes.TEXT
     },
     inciso: {
         type: DataTypes.TEXT
@@ -28,9 +23,6 @@ Processo.init({
     },
     prd_descricao: {
         type: DataTypes.TEXT
-    },
-    persecucao_penal: {
-        type: DataTypes.BOOLEAN
     },
     pena_originaria_regime: {
         type: DataTypes.BIGINT

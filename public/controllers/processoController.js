@@ -60,7 +60,6 @@ module.exports = {
             id_vara: { value: Processo.VaraId, label: Processo.Vara.descricao },
             nro_processo: Processo.nro_processo,
             nro_artigo_penal: Processo.nro_artigo_penal,
-            pena_originaria: Processo.pena_originaria,
             pena_originaria_regime: Processo.pena_originaria_regime,
             inciso: Processo.inciso,
             detalhamento: Processo.detalhamento,
@@ -152,13 +151,11 @@ module.exports = {
                 VaraId: payload.processo.id_vara.value,
                 nro_processo: payload.processo.nro_processo,
                 nro_artigo_penal: payload.processo.nro_artigo_penal,
-                pena_originaria: payload.processo.pena_originaria,
                 pena_originaria_regime: parseInt(payload.processo.pena_originaria_regime),
                 inciso: payload.processo.inciso,
                 detalhamento: payload.processo.detalhamento,
                 prd: payload.processo.prd,
                 prd_descricao: payload.processo.prd ? payload.processo.prd_descricao : null,
-                persecucao_penal: payload.processo.persecucao_penal,
                 horas_cumprir: parseInt(payload.processo.horas_cumprir),
                 possui_multa: payload.processo.prd ? payload.processo.possui_multa : false,
                 valor_a_pagar: payload.processo.prd && payload.processo.possui_multa ? unformatCurrency(payload.processo.valor_a_pagar ?? '0') ?? 0 : 0,
@@ -185,13 +182,11 @@ module.exports = {
                 Processo.VaraId = payload.processo.id_vara.value,
                 Processo.nro_processo = payload.processo.nro_processo;
             Processo.nro_artigo_penal = payload.processo.nro_artigo_penal;
-            Processo.pena_originaria = payload.processo.pena_originaria;
             Processo.pena_originaria_regime = parseInt(payload.processo.pena_originaria_regime);
             Processo.inciso = payload.processo.inciso;
             Processo.detalhamento = payload.processo.detalhamento;
             Processo.prd = payload.processo.prd;
             Processo.prd_descricao = payload.processo.prd ? payload.processo.prd_descricao : null;
-            Processo.persecucao_penal = payload.processo.persecucao_penal;
             Processo.horas_cumprir = parseInt(payload.processo.horas_cumprir);
             Processo.possui_multa = payload.processo.prd ? payload.processo.possui_multa : false;
             Processo.valor_a_pagar = payload.processo.prd && payload.processo.possui_multa ? unformatCurrency(payload.processo.valor_a_pagar ?? '0') ?? 0 : 0;
