@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Select from 'react-select';
 import Title from "../layout/Title";
 import ModalCreateHabilidade from '../vara/ModalCreateVara';
+import Tooltip from "../layout/Tooltip";
+
 
 import { toast } from "react-toastify";
 import { confirmAlert } from 'react-confirm-alert';
@@ -37,6 +39,7 @@ const Create = () => {
         id_vara: { value: -1, label: "" },
     });
     const [varas, setVaras] = useState([]);
+    const [artigos, setArtigos] = useState([]);
 
     const [showModalCreateVara, setShowModalCreateVara] = useState(false);
 
@@ -209,7 +212,10 @@ const Create = () => {
     }
 
 
-
+    const getArtigos = async () => {
+        let data = await window.api.Action({ controller: "Processo", action: "GetUltimosArtigos" })
+        setArtigos(data);
+    }
 
     useEffect(() => {
 
@@ -228,15 +234,12 @@ const Create = () => {
         }
 
         fetchAllData();
-
-
-
-
-
-    },[]);
+        getArtigos();
+    }, []);
 
     return (
         <>
+
 
             <div className="top-page">
                 {
@@ -396,18 +399,23 @@ const Create = () => {
                             <br />
                             <div className="input-form">
 
+
                                 <label htmlFor="nro_artigo_penal">Artigo penal</label>
-                                <input
-                                    id="nro_artigo_penal"
-                                    name="nro_artigo_penal"
-                                    className="form-control shadow-none input-custom"
-                                    type="number"
-                                    placeholder=""
-                                    value={processo.nro_artigo_penal}
-                                    required={true}
-                                    disabled={user.MODO_APLICACAO === 1}
-                                    onChange={handleProcesso}
-                                />
+                                
+                                <Tooltip texts={artigos} title="Exemplos de artigos:" >
+                                    <input
+                                        id="nro_artigo_penal"
+                                        name="nro_artigo_penal"
+                                        className="form-control shadow-none input-custom"
+                                        type="number"
+                                        placeholder=""
+                                        value={processo.nro_artigo_penal}
+                                        required={true}
+                                        disabled={user.MODO_APLICACAO === 1}
+                                        onChange={handleProcesso}
+                                    />
+                                </Tooltip>
+
                             </div>
 
                             <div className="input-form">

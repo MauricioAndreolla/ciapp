@@ -587,3 +587,8 @@ table td {
   margin-top: 0.5rem;
   padding: 1rem;
 }
+
+/* .custom-tooltip {
+  --bs-tooltip-bg: var(--dark-blue);
+  --bs-tooltip-color: var(--white-grey);
+} */

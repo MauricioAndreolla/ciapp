@@ -1,5 +1,5 @@
 const db = require('../config/database');
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const { unformatCurrency, formatCurrency, diff_hours, secondsToHHMM, diff_seconds } = require('../utils/utils')
 
 
@@ -122,13 +122,13 @@ module.exports = {
                 somente_leitura: s.somente_leitura,
                 horas_cumpridas:
                     secondsToHHMM(
-                    s.Agendamentos.map(s => {
+                        s.Agendamentos.map(s => {
 
-                        return s.AtestadoFrequencia.map(s => {
-                            return diff_seconds(s.dt_entrada, s.dt_saida)
-                        }).reduce((a, b) => a + b, 0)
+                            return s.AtestadoFrequencia.map(s => {
+                                return diff_seconds(s.dt_entrada, s.dt_saida)
+                            }).reduce((a, b) => a + b, 0)
 
-                    }).reduce((a, b) => a + b, 0)),
+                        }).reduce((a, b) => a + b, 0)),
 
                 vara: s.Vara ? s.Vara.descricao : 'N/A',
                 central: s.Entidade ? s.Entidade.nome : 'N/A'
@@ -137,6 +137,8 @@ module.exports = {
         // //await db.sequelize.close();
         return listaProcessos;
     },
+
+
 
     async Create(payload) {
         try {
@@ -196,9 +198,39 @@ module.exports = {
             });
             // //await db.sequelize.close();
 
-            return { status: true, text: `Processo ${Processo.nro_processo } salvo!` };
+            return { status: true, text: `Processo ${Processo.nro_processo} salvo!` };
         } catch (error) {
             return { status: false, text: "Erro interno no servidor." };
+        }
+
+    },
+
+    async GetUltimosArtigos() {
+
+        try {
+            const Processos = await db.models.Processo.findAll({
+                where: {},
+                order: [["updatedAt", "DESC"]],
+                limit: 3
+            });
+
+            const listaArtigos = Processos.map(s => {
+                return {
+                    id: s.id,
+                    nro_artigo_penal: s.nro_artigo_penal
+                }
+            });
+
+            const artigos = listaArtigos?.map(objeto => objeto?.nro_artigo_penal).join(" ");
+            
+            if (artigos == null) {
+                artigos = "Sem exemplo de artigos utilizados!";
+            }
+
+            return artigos;
+
+        } catch (error) {
+            return { status: false, text: `Erro interno no servidor. ${error}` };
         }
 
     },
@@ -258,5 +290,7 @@ module.exports = {
         }
 
     }
+
+
 
 }
