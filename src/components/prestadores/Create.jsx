@@ -20,7 +20,9 @@ import InputDiasSemana from '../layout/InputDiasSemana';
 import Endereco from "../layout/Endereco";
 import Load from "../layout/Load";
 
+
 import { AuthenticationContext } from "../context/Authentication";
+import { data } from "jquery";
 
 const Create = () => {
     const navigate = useNavigate();
@@ -491,13 +493,13 @@ const Create = () => {
         setShowModalOrigem(false)
     }
 
-    
+
     const [showModalFamiliar, setShowModalFamiliar] = useState(false);
 
     const [modelFamiliar, setModelFamiliar] = useState({
         id: null,
         familiar_nome: '',
-        familiar_parentesco: '',
+        familiar_parentesco: 11,
         familiar_idade: '',
         familiar_profissao: '',
         novo_registro: true
@@ -797,7 +799,7 @@ const Create = () => {
 
     const columnsFamiliar = [
         { Header: 'Nome', accessor: 'familiar_nome' },
-        { Header: 'Parentesco', accessor: 'familiar_parentesco' },
+        // { Header: 'Parentesco', accessor: 'familiar_parentesco' },
         { Header: 'Idade', accessor: 'familiar_idade' },
         { Header: 'Profissão', accessor: 'familiar_profissao' },
     ];
@@ -838,7 +840,6 @@ const Create = () => {
                     saude: data.saude,
                     genero: data.genero
                 });
-
 
                 setTrabalho(data.trabalho);
                 setEndereco({
@@ -1222,7 +1223,7 @@ const Create = () => {
                             </Nav.Link>
                         </Nav.Item>
 
-                        
+
                         <Nav.Item>
                             <Nav.Link eventKey="origem">
                                 <i className="fas fa-compass"></i>   Origem
@@ -1259,7 +1260,7 @@ const Create = () => {
 
                                             :
 
-                                            <Table columns={columnsFamiliar} data={prestador.familiares} />
+                                            <Table columnsk={columnsFamiliar} data={prestador.familiares} />
                                     }
 
 
@@ -1550,7 +1551,7 @@ const Create = () => {
             <ModalCurso show={showModalCurso} onHide={() => { handleModalCurso(false) }} onAdd={addNewCurso} />
             <ModalUsoDroga show={showModalUsoDroga} onHide={() => { handleModalUsoDroga(false) }} onAdd={addNewUsoDroga} />
             <ModalCreateGenero show={showModalGenero} onHide={() => { handleModalGenero(false) }} onAdd={addNewGenero} />
-                                
+
 
             <Load show={load} />
         </>

@@ -10,7 +10,7 @@ Familiar.init({
     },
 
     parentesco: {
-        type: DataTypes.STRING,
+        type: DataTypes.NUMBER,
     },
 
     idade: {

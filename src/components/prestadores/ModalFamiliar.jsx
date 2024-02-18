@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { toast } from "react-toastify";
 
 const ModalFamiliar = ({ Model, show, onHide, onAdd, onEdit }) => {
 
@@ -9,7 +8,7 @@ const ModalFamiliar = ({ Model, show, onHide, onAdd, onEdit }) => {
     const [familiar, setFamiliar] = useState({
         id: null,
         familiar_nome: '',
-        familiar_parentesco: '',
+        familiar_parentesco: 11,
         familiar_idade: '',
         familiar_profissao: '',
         novo_registro: true
@@ -28,6 +27,7 @@ const ModalFamiliar = ({ Model, show, onHide, onAdd, onEdit }) => {
     const handleFamilia = (evt, name = null) => {
         const value = evt.value ?? evt.target.value;
 
+
         setFamiliar({
             ...familiar,
             [name ? name : evt.target.name]: value
@@ -39,7 +39,7 @@ const ModalFamiliar = ({ Model, show, onHide, onAdd, onEdit }) => {
         setFamiliar({
             id: null,
             familiar_nome: '',
-            familiar_parentesco: '',
+            familiar_parentesco: 11,
             familiar_idade: '',
             familiar_profissao: '',
             novo_registro: true
@@ -81,17 +81,24 @@ const ModalFamiliar = ({ Model, show, onHide, onAdd, onEdit }) => {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="familiar_parentesco">Parentesco</label>
-                            <input
-                                id="familiar_parentesco"
-                                name="familiar_parentesco"
-                                className="form-control shadow-none input-custom"
-                                type="text"
-                                placeholder="Parentesco"
+                            <label htmlFor="familiar_parentesco">Parentesco<small className="campo-obrigatorio"></small></label>
+                            <select className="select-custom w-10 form-select form-select-md" id="familiar_parentesco" name="familiar_parentesco"
                                 value={familiar.familiar_parentesco}
-                                onChange={handleFamilia}
-
-                            />
+                                required={true}
+                                onChange={handleFamilia}>
+                                <option value={0}>Pai</option>
+                                <option value={1}>Mãe</option>
+                                <option value={2}>Filho(a)</option>
+                                <option value={3}>Tio(a)</option>
+                                <option value={4}>Primo(a)</option>
+                                <option value={5}>Avô</option>
+                                <option value={6}>Avó</option>
+                                <option value={7}>Irmã</option>
+                                <option value={8}>Irmão</option>
+                                <option value={9}>Esposo(a)</option>
+                                <option value={10}>Namorado(a)</option>
+                                <option defaultValue={true} value={11}>Outro(a)</option>
+                            </select>
                         </div>
 
                         <div className="form-group">

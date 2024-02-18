@@ -63,6 +63,23 @@ const TipoUsuario = {
 }
 Object.freeze(TipoUsuario);
 
+const Parentesco = {
+    "Pai": 0,
+    "Mãe": 1,
+    "Filho(a)": 2,
+    "Tio(a)": 3,
+    "Primo(a)": 4,
+    "Avô": 5,
+    "Avó": 6,
+    "Irmã": 7,
+    "Irmão": 8,
+    "Esposo(a)": 9,
+    "Namorado(a)": 10,
+    "Outro(a)": 11
+}
+Object.freeze(Parentesco);
+
+
 module.exports = {
     TipoInstituicao: TipoInstituicao,
     EstadoCivil: EstadoCivil,
@@ -70,5 +87,6 @@ module.exports = {
     Etnia: Etnia,
     Deficiencia: Deficiencia,
     Frequencia: Frequencia,
-    TipoUsuario: TipoUsuario
+    TipoUsuario: TipoUsuario,
+    Parentesco: Parentesco
 }
