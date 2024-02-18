@@ -23,6 +23,9 @@ import Agendamentos from './components/agendamentos/Index';
 import AgendamentosCreate from './components/agendamentos/Create';
 import AgendamentosEntidade from './components/agendamentos/AgendamentosEntidade';
 
+import Acolhimento from './components/acolhimento/Index';
+
+
 
 import Sincronizacao from './components/sincronizacao/Index';
 
@@ -73,6 +76,8 @@ const Main = () => {
 
 
                         <Route path="sincronizacao" element={<Private><Sincronizacao /></Private>} />
+
+                        <Route path="acolhimento" element={<Private><Acolhimento /></Private>} />
                         
                     </Route>
                 </Routes>

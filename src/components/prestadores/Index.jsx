@@ -4,6 +4,7 @@ import Title from "../layout/Title";
 import { AuthenticationContext } from "../context/Authentication";
 import ModalDetalhes from './ModalDetalhes';
 import ModalRegistro from './ModalRegistros';
+import ModalCreateAcolhimento from './Acolhimento';
 import Load from "../layout/Load";
 import { confirmAlert } from 'react-confirm-alert';
 import { toast } from "react-toastify";
@@ -24,6 +25,8 @@ const Index = () => {
     const [showModalDetalhes, setShowModalDetalhes] = useState(false);
     const [idDetalhes, setIdDetalhes] = useState(null);
     const [showModalRegistro, setShowModalRegistro] = useState(false);
+    const [showModalAcolhimento, setShowModalAcolhimento] = useState(false);
+    const [idAcolhimento, setIdAcolhimento] = useState(null);
     const [idRegistro, setIdRegistro] = useState(null);
     const [load, setLoad] = useState(false);
 
@@ -33,6 +36,10 @@ const Index = () => {
 
     const handleModalRegistro = (show = true) => {
         setShowModalRegistro(show);
+    }
+
+    const handleModalAcolhimento = (show = true) => {
+        setShowModalAcolhimento(show);
     }
 
     const navigate = useNavigate();
@@ -45,6 +52,10 @@ const Index = () => {
         handleModalDetalhes(true);
     }
 
+    const EntrevistaAcolhimento = (id) => {
+        setIdAcolhimento(id);
+        handleModalAcolhimento(true);
+    }
     const Registros = (id) => {
         setIdRegistro(id);
         handleModalRegistro(true);
@@ -339,6 +350,7 @@ const Index = () => {
                                                                     <li> <NavLink className="dropdown-item" id="atendimento" to={`/prestadores/atendimentos/${r.id}`}> <i className='fa-regular fa-file-lines'></i> Atendimentos</NavLink></li>
                                                                     <li> <NavLink className="dropdown-item" id="edit" to={`/prestadores/edit/${r.id}`}> <i className='fa fa-edit'></i> Editar</NavLink></li>
                                                                     <li> <NavLink className="dropdown-item" id="novoProcesso" to={`/processos/create/${r.id}`}> <i className='fa fa-plus'></i> Novo Processo</NavLink></li>
+                                                                    <li> <a className="dropdown-item btn" onClick={() => { EntrevistaAcolhimento(r.id) }} to="#"><i className="fa-regular fa-file"></i> Entrevista de Acolhimento</a></li>
 
                                                                     {!r.somente_leitura ?
                                                                         <li> <a className="dropdown-item btn" onClick={() => { Deletar(r.id, r.nome) }} to="#"><i className="fa fa-trash"></i> Deletar</a></li>
@@ -376,6 +388,8 @@ const Index = () => {
             }
             <ModalDetalhes show={showModalDetalhes} onHide={() => { handleModalDetalhes(false) }} id={idDetalhes} />
             <ModalRegistro show={showModalRegistro} onHide={() => { handleModalRegistro(false) }} id={idRegistro} />
+            <ModalCreateAcolhimento show={showModalAcolhimento} onHide={() => { handleModalAcolhimento(false)}} id={idAcolhimento} />
+            
             <Load show={load} />
 
         </>

@@ -16,6 +16,8 @@ const Sincronizacao = require('../controllers/sincronizacaoController');
 const Genero = require('../controllers/generosController');
 const Atendimento = require('../controllers/atendimentoController');
 const Origem = require('../controllers/origemController');
+const Acolhimento = require('../controllers/acolhimentoController');
+
 
 module.exports = {
 

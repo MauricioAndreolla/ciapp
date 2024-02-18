@@ -22,6 +22,8 @@ const AtestadoFrequencia = require('./AtestadoFrequencia');
 const Genero = require('./Genero');
 const RegistroAtendimento = require('./RegistroAtendimento');
 const Origem = require('./Origem');
+const Acolhimento = require('./Acolhimento');
+
 
 Prestador.belongsTo(Genero); 
 Prestador.hasMany(RegistroAtendimento); 
@@ -84,6 +86,9 @@ Processo.hasMany(Agendamento);
 FichaMedica.belongsToMany(Droga, {through: FichaMedicaDrogas});
 Droga.belongsToMany(FichaMedica, {through: FichaMedicaDrogas});
 
+Acolhimento.belongsTo(Processo);
+Acolhimento.belongsTo(Prestador);
+
 module.exports = {
     Agendamento,
     AtestadoFrequencia,
@@ -106,5 +111,6 @@ module.exports = {
     Processo,
     Genero,
     RegistroAtendimento,
-    Origem
+    Origem,
+    Acolhimento
 };
