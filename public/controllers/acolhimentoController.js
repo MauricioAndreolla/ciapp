@@ -98,10 +98,10 @@ module.exports = {
         }
     },
 
-    async DeleteAtendimento(id) {
+    async Delete(id) {
         try {
 
-            let atendimento = await db.models.RegistroAtendimento.findOne({
+            let atendimento = await db.models.Acolhimento.findOne({
                 where: {
                     id: id
                 }
@@ -109,13 +109,13 @@ module.exports = {
 
             if (atendimento) {
                 await atendimento.destroy();
-                return { status: true, text: "Atendimento removido com sucesso!" }
+                return { status: true, text: "Registro removido com sucesso!" }
             }
-            return { status: true, text: "Atendimento não encontrado!" }
+            return { status: true, text: "Registro não encontrado!" }
 
 
         } catch (error) {
-            return { status: false, text: "Erro ao salvar registro: " + error };
+            return { status: false, text: "Erro ao deletar registro: " + error };
         }
     }
 

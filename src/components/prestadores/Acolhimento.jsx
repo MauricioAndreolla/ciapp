@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import ModalCreateAcolhimento from '../acolhimento/ModalCreateAcolhimento';
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
+import { confirmAlert } from 'react-confirm-alert';
 
 const ModalEntrevistaAcolhimento = ({ id, show, onHide }) => {
     const [entrevistas, setEntrevistas] = useState([]);
@@ -153,8 +154,47 @@ const ModalEntrevistaAcolhimento = ({ id, show, onHide }) => {
         pdfMake.createPdf(docDefinition).download('AgendamentoEntrevista.pdf');
 
     }
+
+    const Deletar = (id) => {
+        confirmAlert({
+            title: 'Confirmação',
+            message: `Deseja deletar o registro?`,
+            buttons: [
+                {
+                    label: 'Sim',
+                    onClick: async () => {
+                        setLoad(true);
+                        let postResult = await window.api.Action({ controller: "Acolhimento", action: "Delete", params: id });
+
+                        setLoad(false);
+
+                        if (postResult.status) {
+                            toast.success(postResult.text);
+                            return fetchData()
+                        }
+                        else
+                            toast.error(postResult.text, { autoClose: false });
+
+                    }
+                },
+                {
+                    className: 'btn-blue',
+                    label: 'Não',
+                    onClick: () => {
+                    }
+                }
+            ]
+        });
+    }
+
     return (
         <>
+            <style>{`
+          #react-confirm-alert {
+            z-index: 9999;
+            position: absolute;
+    }
+      `}</style>
             <Modal className='modal-lg' ref={modalRef} show={show} onHide={handleHide}>
                 <Modal.Header closeButton>
                     <Modal.Title><i className="fa-solid fa-users"></i> <small> Entrevista de Acolhimento</small></Modal.Title>
@@ -193,6 +233,7 @@ const ModalEntrevistaAcolhimento = ({ id, show, onHide }) => {
                                                         </span>
                                                         <ul className="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                             <li> <a className="dropdown-item btn" onClick={() => { Imprimir(r.id) }} to="#"><i className="fa-solid fa-print"></i> Imprimir</a></li>
+                                                            <li> <a className="dropdown-item btn" onClick={() => { Deletar(r.id) }} to="#"><i className="fa fa-trash"></i> Deletar</a></li>
                                                         </ul>
                                                     </div>
                                                 </td>
