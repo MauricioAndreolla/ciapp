@@ -72,6 +72,11 @@ Para ficar mais fácil para você criamos um usuário administrador para você.
 ![image](https://github.com/MauricioAndreolla/ciapp/assets/44854911/679a5606-bcd2-41c7-8b9b-9803c2bd8b0b)
 
 
+## 👨‍🚀 Autores
+
+
+| [<img loading="lazy" src="https://avatars.githubusercontent.com/u/42683967?v=4" width=115><br><sub>Gabriel da Silva</sub>](https://github.com/GabrielSRodriguesBR) |  [<img loading="lazy" src="https://avatars.githubusercontent.com/u/44854911?s=96&v=4" width=115><br><sub>Maurício Andreolla de Brito</sub>](https://github.com/MauricioAndreolla)|
+| :---: | :---: | 
 
 
 
